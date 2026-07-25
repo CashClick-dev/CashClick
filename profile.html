@@ -123,7 +123,7 @@ header .dp {
 .stat-item h3 {
     margin: 0 0 5px 0;
     color: #22c55e;
-    font-size: 18px;
+    font-size: 16px; /* Thora chota kiya taake 3 items adjust ho saken */
 }
 
 .stat-item h3.plan-text {
@@ -373,15 +373,19 @@ header .dp {
         <p id="profileUid">UID: Loading...</p>
     </div>
 
-    <!-- STATS -->
+    <!-- STATS (Updated to show 3 columns: Deposit, Earned, Plans) -->
     <div class="stats-box">
         <div class="stat-item">
-            <h3 id="profileBalance">Rs. 0</h3>
-            <p>Wallet Balance</p>
+            <h3 id="profileDeposit">Rs. 0</h3>
+            <p>Deposit</p>
+        </div>
+        <div class="stat-item" style="border-right: 1px solid #1e293b;">
+            <h3 id="profileEarn">Rs. 0</h3>
+            <p>Earned</p>
         </div>
         <div class="stat-item">
             <h3 class="plan-text" id="profilePlan">None</h3>
-            <p>Active Plan</p>
+            <p>Plans</p>
         </div>
     </div>
 
@@ -528,14 +532,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Load User Name, UID & Avatar
     loadUserData();
 
-    // 2. Load Balance
-    let currentBalance = localStorage.getItem('winwave_balance') ? parseInt(localStorage.getItem('winwave_balance')) : 0; 
-    document.getElementById('profileBalance').innerText = 'Rs. ' + currentBalance.toLocaleString();
+    // 2. Load Balances (Deposit & Earn updated logic)
+    let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 5000;
+    let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
+    
+    document.getElementById('profileDeposit').innerText = 'Rs. ' + depositBalance.toLocaleString();
+    document.getElementById('profileEarn').innerText = 'Rs. ' + earnBalance.toLocaleString();
 
-    // 3. Load Active Plan
-    let activePlan = localStorage.getItem('winwave_active_plan');
-    if (activePlan) {
-        document.getElementById('profilePlan').innerText = 'Plan ' + activePlan;
+    // 3. Load Active Plans (Array logic for multiple plans)
+    let activePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
+    
+    if (activePlans.length > 0) {
+        // Agar ek se zyada plans hain to comma ke sath show karega (Example: 1, 3, 4)
+        document.getElementById('profilePlan').innerText = activePlans.join(', ');
     } else {
         document.getElementById('profilePlan').innerText = 'None';
     }
@@ -615,7 +624,7 @@ function logout() {
         // Optional: clear localstorage variables to reset session
         // localStorage.clear();
         alert("Logged out successfully!");
-        window.location.href = "index.html"; // Changed from login.html to index.html
+        window.location.href = "index.html"; 
     }
 }
 </script>
