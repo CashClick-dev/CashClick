@@ -41,18 +41,39 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 /* CONTAINER */
 .container { padding: 20px; max-width: 1000px; margin: 0 auto; }
 
-/* ACTIVE PLAN BANNER */
-.active-plan-banner {
-    background: rgba(34, 197, 94, 0.1);
-    border: 1px solid #22c55e;
+/* PLAN SECTION (Har plan ka alag box) */
+.plan-section {
+    background: #020617;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 12px;
     padding: 20px;
-    border-radius: 10px;
-    text-align: center;
     margin-bottom: 30px;
-    display: none; /* JS se show hoga */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
-.active-plan-banner h2 { color: #22c55e; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.active-plan-banner p { color: #94a3b8; margin: 0; }
+
+.plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.plan-header h2 {
+    color: #22c55e;
+    margin: 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.plan-header p {
+    color: #94a3b8;
+    margin: 0;
+    font-size: 14px;
+}
 
 /* NO PLAN MESSAGE */
 .no-plan-msg {
@@ -61,6 +82,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
     background: #020617;
     border-radius: 10px;
     display: none; /* JS se show hoga */
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 .no-plan-msg h3 { color: #ef4444; }
 .no-plan-msg a { display: inline-block; margin-top: 15px; padding: 10px 20px; background: #38bdf8; color: black; text-decoration: none; font-weight: bold; border-radius: 5px; }
@@ -69,7 +91,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
 
 .ad-card {
-    background: #020617;
+    background: #0f172a;
     border: 1px solid #1e293b;
     border-radius: 10px;
     padding: 20px 10px;
@@ -86,8 +108,8 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 .ad-btn.watched { background: #22c55e; color: white; border: none; }
 
 /* BALANCE DISPLAY */
-.current-balance { text-align: center; font-size: 18px; margin-bottom: 20px; color: #f8fafc; background: #020617; padding: 15px; border-radius: 10px; }
-.current-balance span { color: #22c55e; font-weight: bold; font-size: 22px; }
+.current-balance { text-align: center; font-size: 18px; margin-bottom: 30px; color: #f8fafc; background: #020617; padding: 20px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.3); }
+.current-balance span { color: #22c55e; font-weight: bold; font-size: 26px; display: block; margin-top: 5px; }
 
 /* BOTTOM NAVIGATION */
 .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #020617; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -4px 6px rgba(0,0,0,0.3); z-index: 1000; }
@@ -95,7 +117,10 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 .bottom-nav a i { font-size: 20px; margin-bottom: 4px; }
 .bottom-nav a:hover, .bottom-nav a.active { color: #38bdf8; }
 
-@media (max-width: 600px) { header { padding: 15px 20px; } }
+@media (max-width: 600px) { 
+    header { padding: 15px 20px; } 
+    .plan-header { flex-direction: column; gap: 10px; text-align: center; }
+}
 </style>
 </head>
 <body>
@@ -107,15 +132,9 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 
 <div class="container">
     
-    <!-- Balance Show Hoga -->
+    <!-- Balance Show Hoga (Sirf Earn Balance) -->
     <div class="current-balance" id="balanceDisplay">
-        Balance: <span id="balanceAmount">Rs. 0</span>
-    </div>
-
-    <!-- Agar Plan Active hai to ye show hoga -->
-    <div class="active-plan-banner" id="activePlanBanner">
-        <h2><i class="fa-solid fa-circle-check"></i> Plan <span id="planNameDisplay"></span> Active</h2>
-        <p>Aapke daily <span id="adsCountDisplay"></span> Ads available hain.</p>
+        Your Earn Balance: <span id="earnBalanceAmount">Rs. 0</span>
     </div>
 
     <!-- Agar koi plan nahi hai to ye show hoga -->
@@ -125,8 +144,8 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
         <a href="index.html">Buy Plan Now</a>
     </div>
 
-    <!-- Ads Yahan Generate Hongay -->
-    <div class="ads-grid" id="adsGrid"></div>
+    <!-- Multiple Plans Yahan Generate Hongay -->
+    <div id="allPlansContainer"></div>
 
 </div>
 
@@ -162,14 +181,16 @@ document.addEventListener('DOMContentLoaded', () => {
         '5': 50
     };
 
-    // Ek ad dekhne ka reward (Misal ke tor par 20 rupay)
+    // Ek ad dekhne ka reward
     const adReward = 20;
 
-    // LocalStorage se Data uthana
-    let currentBalance = localStorage.getItem('winwave_balance') ? parseInt(localStorage.getItem('winwave_balance')) : 0; 
-    let activePlan = localStorage.getItem('winwave_active_plan');
+    // LocalStorage se Earn Balance uthana (Deposit Balance nahi)
+    let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0; 
     
-    // Daily Reset Logic (Agar agla din ho jaye to ads reset ho jayein)
+    // Multiple active plans ko array ki shakal me uthana
+    let activePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
+    
+    // Daily Reset Logic
     let today = new Date().toDateString();
     let savedDate = localStorage.getItem('winwave_ads_date');
     if(savedDate !== today) {
@@ -180,46 +201,65 @@ document.addEventListener('DOMContentLoaded', () => {
     let watchedAds = localStorage.getItem('winwave_watched_ads') ? JSON.parse(localStorage.getItem('winwave_watched_ads')) : [];
 
     // Screen elements
-    const balanceDisplay = document.getElementById('balanceAmount');
-    const activePlanBanner = document.getElementById('activePlanBanner');
+    const balanceDisplay = document.getElementById('earnBalanceAmount');
     const noPlanMsg = document.getElementById('noPlanMsg');
-    const adsGrid = document.getElementById('adsGrid');
+    const allPlansContainer = document.getElementById('allPlansContainer');
 
-    balanceDisplay.innerText = 'Rs. ' + currentBalance.toLocaleString();
+    // Display Initial Balance
+    balanceDisplay.innerText = 'Rs. ' + earnBalance.toLocaleString();
 
-    if(activePlan && plansInfo[activePlan]) {
-        // Plan mojud hai to Banner show karo aur no-plan message hide karo
-        activePlanBanner.style.display = 'block';
-        document.getElementById('planNameDisplay').innerText = activePlan;
-        document.getElementById('planNameDisplay').innerText = activePlan;
+    // Agar ek bhi plan active hai
+    if(activePlans.length > 0) {
         
-        let totalAds = plansInfo[activePlan];
-        document.getElementById('adsCountDisplay').innerText = totalAds;
+        // Har plan k liye loop chalao
+        activePlans.forEach(planId => {
+            if(plansInfo[planId]) {
+                let totalAds = plansInfo[planId];
 
-        // Ads Generate karna
-        for(let i = 1; i <= totalAds; i++) {
-            let isWatched = watchedAds.includes(i);
-            
-            let card = document.createElement('div');
-            card.className = 'ad-card';
-            
-            card.innerHTML = `
-                <i class="fa-solid fa-play-circle"></i>
-                <h4>Task ${i}</h4>
-                <button class="ad-btn ${isWatched ? 'watched' : ''}" id="ad-btn-${i}" ${isWatched ? 'disabled' : ''} onclick="watchAd(${i})">
-                    ${isWatched ? '<i class="fa-solid fa-check"></i> Watched' : 'Watch Ad'}
-                </button>
-            `;
-            adsGrid.appendChild(card);
-        }
+                // Plan ka Box/Section banana
+                let planSection = document.createElement('div');
+                planSection.className = 'plan-section';
+                
+                let planHeaderHTML = `
+                    <div class="plan-header">
+                        <h2><i class="fa-solid fa-circle-check"></i> Plan ${planId} Active</h2>
+                        <p>Available Ads: <strong>${totalAds}</strong></p>
+                    </div>
+                    <div class="ads-grid" id="ads-grid-${planId}"></div>
+                `;
+                planSection.innerHTML = planHeaderHTML;
+                allPlansContainer.appendChild(planSection);
+
+                let currentAdsGrid = document.getElementById(`ads-grid-${planId}`);
+
+                // Us plan k ads generate karna
+                for(let i = 1; i <= totalAds; i++) {
+                    let uniqueAdId = `plan${planId}-ad${i}`; // Ex: plan1-ad1, plan2-ad1 taake mix na hon
+                    let isWatched = watchedAds.includes(uniqueAdId);
+                    
+                    let card = document.createElement('div');
+                    card.className = 'ad-card';
+                    
+                    card.innerHTML = `
+                        <i class="fa-solid fa-play-circle"></i>
+                        <h4>Task ${i}</h4>
+                        <button class="ad-btn ${isWatched ? 'watched' : ''}" id="btn-${uniqueAdId}" ${isWatched ? 'disabled' : ''} onclick="watchAd('${uniqueAdId}')">
+                            ${isWatched ? '<i class="fa-solid fa-check"></i> Watched' : 'Watch Ad'}
+                        </button>
+                    `;
+                    currentAdsGrid.appendChild(card);
+                }
+            }
+        });
+
     } else {
-        // Agar plan nahi hai
+        // Agar koi plan hi nahi hai
         noPlanMsg.style.display = 'block';
     }
 
     // Ad Watch karne ka Function
-    window.watchAd = function(adId) {
-        let btn = document.getElementById(`ad-btn-${adId}`);
+    window.watchAd = function(uniqueAdId) {
+        let btn = document.getElementById(`btn-${uniqueAdId}`);
         
         // Button ko loading state me dalna
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
@@ -227,13 +267,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fake 2 seconds ka delay ad dikhane ke liye
         setTimeout(() => {
-            // Balance update karna
-            currentBalance += adReward;
-            localStorage.setItem('winwave_balance', currentBalance);
-            balanceDisplay.innerText = 'Rs. ' + currentBalance.toLocaleString();
+            // Earn Balance update karna
+            earnBalance += adReward;
+            localStorage.setItem('winwave_earn_balance', earnBalance);
+            balanceDisplay.innerText = 'Rs. ' + earnBalance.toLocaleString();
 
             // Ad ko watched me save karna
-            watchedAds.push(adId);
+            watchedAds.push(uniqueAdId);
             localStorage.setItem('winwave_watched_ads', JSON.stringify(watchedAds));
 
             // Button ka style change karna
