@@ -309,7 +309,16 @@ input:focus {
 
 <script>
     let selectedMethod = "";
-    let availableBalance = 0; 
+    
+    // Naye balances read karna
+    let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 5000;
+    let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
+    let availableBalance = depositBalance + earnBalance; 
+
+    // Page load hone par balance dikhana
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
+    });
 
     function selectMethod(element, method) {
         document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active'));
@@ -346,10 +355,25 @@ input:focus {
         statusMsg.style.display = "none";
 
         setTimeout(() => {
-            availableBalance -= amount;
-            document.getElementById('displayBalance').innerText = `Rs. ${availableBalance}`;
+            // Withdrawal ki deduction logic (Pehle Earn balance se katay ga)
+            if (amount <= earnBalance) {
+                earnBalance -= amount;
+            } else {
+                let remaining = amount - earnBalance;
+                earnBalance = 0;
+                depositBalance -= remaining;
+            }
 
-            showSuccess(`Request Submitted Successfully!\nYour withdrawal of Rs. ${amount} is currently Pending.`);
+            availableBalance = depositBalance + earnBalance;
+            
+            // Naya balance LocalStorage mein save karna
+            localStorage.setItem('winwave_earn_balance', earnBalance);
+            localStorage.setItem('winwave_deposit_balance', depositBalance);
+
+            // Screen par balance update karna
+            document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
+
+            showSuccess(`Request Submitted Successfully!\nYour withdrawal of Rs. ${amount.toLocaleString()} is currently Pending.`);
             
             addRecordToHistory(amount, selectedMethod, accNumber);
 
@@ -375,7 +399,7 @@ input:focus {
         const newCard = `
             <div class="history-card">
                 <div class="history-flex">
-                    <span class="history-amount">Rs. ${amount}</span>
+                    <span class="history-amount">Rs. ${amount.toLocaleString()}</span>
                     <span class="badge pending">Pending</span>
                 </div>
                 <div class="history-flex">
