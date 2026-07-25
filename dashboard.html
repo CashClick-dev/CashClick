@@ -64,16 +64,38 @@ header .dp {
     margin: 0 auto;
 }
 
-/* BALANCE */
-.balance-box {
-    background: #020617;
-    padding: 20px;
-    border-radius: 10px;
+/* BALANCES WRAPPER */
+.balances-wrapper {
+    display: flex;
+    gap: 15px; /* Thora gap kam kiya taake choti screen pe achay lagein */
     margin-bottom: 30px;
-    text-align: center;
+    justify-content: center;
 }
 
-.balance-box h3 { color: #94a3b8; margin-top: 0; }
+.balance-box {
+    background: #020617;
+    padding: 15px 10px;
+    border-radius: 10px;
+    text-align: center;
+    flex: 1; /* Dono boxes barabar jagah lenge, choti screen par bhi */
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.balance-box h3 { 
+    color: #94a3b8; 
+    margin-top: 0; 
+    font-size: 14px; /* Mobile pe fit aane k liye font size thora set kia */
+}
+
+.balance-box h2 {
+    margin-bottom: 0;
+    font-size: 20px;
+}
+
+.earn-box h2 {
+    color: #22c55e; /* Earn balance green show hoga */
+}
 
 /* WITHDRAWAL SLIDER STYLES */
 .withdrawal-section {
@@ -114,7 +136,6 @@ header .dp {
     display: flex;
     gap: 15px;
     width: max-content;
-    /* Speed slowed down from 150s to 500s */
     animation: scroll 500s linear infinite;
 }
 
@@ -236,6 +257,9 @@ header .dp {
     header { padding: 15px 20px; }
     .dashboard { padding: 15px; }
     .plan { max-width: 100%; }
+    /* Yahan se .balances-wrapper ka column hata diya hai taake mobile pe bhi aamne samne rahein */
+    .balance-box h3 { font-size: 12px; } /* Mobile pe headings aur chhoti ki hain */
+    .balance-box h2 { font-size: 16px; } /* Mobile pe amount text size adjust kia hai */
 }
 </style>
 </head>
@@ -244,16 +268,22 @@ header .dp {
 
 <header>
     <div class="logo">Winwave</div>
-    <!-- Sirf is line mein onclick add kiya gaya hai -->
     <div class="dp" title="Qasam Ali" onclick="window.location.href='profile.html'">QA</div>
 </header>
 
 <div class="dashboard">
 
-    <!-- BALANCE -->
-    <div class="balance-box">
-        <h3>Your Balance</h3>
-        <h2 id="userBalance">Rs. 5000</h2>
+    <!-- BALANCES WRAPPER (2 BOXES) -->
+    <div class="balances-wrapper">
+        <div class="balance-box">
+            <h3>Deposit Balance</h3>
+            <h2 id="depositBalanceDisplay">Rs. 5000</h2>
+        </div>
+        
+        <div class="balance-box earn-box">
+            <h3>Earn Balance</h3>
+            <h2 id="earnBalanceDisplay">Rs. 0</h2>
+        </div>
     </div>
 
     <!-- LIVE WITHDRAWAL SLIDER (200 CARDS) -->
@@ -326,13 +356,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     track.innerHTML = cardsHTML + cardsHTML;
 
-    // --- PLAN BUYING LOGIC ---
+    // --- PLAN BUYING & BALANCE LOGIC ---
     
-    // Yahan default balance 5000 set kar diya gaya hai
-    let currentBalance = localStorage.getItem('winwave_balance') ? parseInt(localStorage.getItem('winwave_balance')) : 5000; 
+    // Deposit aur Earn balance dono localStorage se read kiye hain
+    let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 5000; 
+    let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0; 
     
-    // Page load hotay hi balance show karein
-    document.getElementById('userBalance').innerText = 'Rs. ' + currentBalance.toLocaleString();
+    // Page load hotay hi dono balances show karein
+    document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+    document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
 
     // Button ko Green Tick se replace karne ka function
     function showActivePlanTick(planId) {
@@ -342,40 +374,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Page refresh honay par check karein ke plan pehle se active to nahi
-    let activePlan = localStorage.getItem('winwave_active_plan');
-    if (activePlan) {
-        showActivePlanTick(activePlan);
-    }
+    // Page refresh honay par check karein ke kon kon se plans active hain
+    let activePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
+    activePlans.forEach(planId => {
+        showActivePlanTick(planId);
+    });
 
-    // Plan Buy karne ka function (Global scope me available karne ke liye window me set kiya hai)
+    // Plan Buy karne ka function
     window.buyPlan = function(planId, price) {
-        let activePlan = localStorage.getItem('winwave_active_plan');
+        let currentActivePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
         
-        // Agar pehle se koi plan active hai
-        if (activePlan) {
-            alert(`Aapke paas pehle se Plan ${activePlan} active hai! Ek waqt mein ek hi plan use ho sakta hai.`);
+        if (currentActivePlans.includes(planId)) {
+            alert(`Aapke paas pehle se Plan ${planId} active hai!`);
             return;
         }
 
-        // Agar balance price ke barabar ya us se zyada hai
-        if (currentBalance >= price) {
-            currentBalance -= price;
+        // Check karein ke sirf DEPOSIT balance se buy ho raha hai
+        if (depositBalance >= price) {
+            depositBalance -= price;
             
-            // LocalStorage me save karein
-            localStorage.setItem('winwave_balance', currentBalance);
-            localStorage.setItem('winwave_active_plan', planId);
+            // Deposit balance local storage me update karein
+            localStorage.setItem('winwave_deposit_balance', depositBalance);
             
-            // Screen par update karein
-            document.getElementById('userBalance').innerText = 'Rs. ' + currentBalance.toLocaleString();
+            // Naya plan active plans list mein daal kar save karein
+            currentActivePlans.push(planId);
+            localStorage.setItem('winwave_active_plans', JSON.stringify(currentActivePlans));
             
-            alert(`Mubarak ho! Aapne Plan ${planId} kamyabi se khareed liya hai.`);
+            // Screen par naya Deposit Balance show karein
+            document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+            
+            alert(`Mubarak ho! Aapne Deposit Amount se Plan ${planId} kamyabi se khareed liya hai.`);
 
-            // Button ko green tick se change karein
             showActivePlanTick(planId);
         } else {
-            // Agar balance na-kafi hai
-            alert(`Plan ${planId} khareedne ke liye aapka balance na-kafi hai. (Price: Rs. ${price})\nBaraye meharbani pehle Wallet se deposit karein.`);
+            alert(`Plan ${planId} khareedne ke liye aapka Deposit Balance na-kafi hai. (Price: Rs. ${price})\nNote: Plan sirf deposit ki hui amount se buy kiya ja sakta hai.`);
         }
     };
 });
