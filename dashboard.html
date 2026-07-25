@@ -253,7 +253,7 @@ header .dp {
     <!-- BALANCE -->
     <div class="balance-box">
         <h3>Your Balance</h3>
-        <h2 id="userBalance">Rs. 0</h2>
+        <h2 id="userBalance">Rs. 5000</h2>
     </div>
 
     <!-- LIVE WITHDRAWAL SLIDER (200 CARDS) -->
@@ -328,8 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- PLAN BUYING LOGIC ---
     
-    // Balance 0 set hai, agar aap test karna chahein to yahan 0 ki jagah 5000 likh kar try karein.
-    let currentBalance = localStorage.getItem('winwave_balance') ? parseInt(localStorage.getItem('winwave_balance')) : 0; 
+    // Yahan default balance 5000 set kar diya gaya hai
+    let currentBalance = localStorage.getItem('winwave_balance') ? parseInt(localStorage.getItem('winwave_balance')) : 5000; 
     
     // Page load hotay hi balance show karein
     document.getElementById('userBalance').innerText = 'Rs. ' + currentBalance.toLocaleString();
