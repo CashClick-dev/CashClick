@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earn Ads - Winwave</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    color: white;
+    margin: 0;
+    padding-top: 70px;
+    padding-bottom: 90px; 
+}
+
+/* FIXED HEADER */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #020617;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+header .logo { color: #38bdf8; font-size: 24px; font-weight: bold; }
+header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8; color: #020617; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; border: 2px solid #0ea5e9; }
+
+/* CONTAINER */
+.container { padding: 20px; max-width: 1000px; margin: 0 auto; }
+
+/* ACTIVE PLAN BANNER */
+.active-plan-banner {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid #22c55e;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 30px;
+    display: none; /* JS se show hoga */
+}
+.active-plan-banner h2 { color: #22c55e; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.active-plan-banner p { color: #94a3b8; margin: 0; }
+
+/* NO PLAN MESSAGE */
+.no-plan-msg {
+    text-align: center;
+    padding: 40px 20px;
+    background: #020617;
+    border-radius: 10px;
+    display: none; /* JS se show hoga */
+}
+.no-plan-msg h3 { color: #ef4444; }
+.no-plan-msg a { display: inline-block; margin-top: 15px; padding: 10px 20px; background: #38bdf8; color: black; text-decoration: none; font-weight: bold; border-radius: 5px; }
+
+/* ADS GRID */
+.ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+
+.ad-card {
+    background: #020617;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 20px 10px;
+    text-align: center;
+    transition: 0.3s;
+}
+.ad-card i { font-size: 30px; color: #38bdf8; margin-bottom: 10px; }
+.ad-card h4 { margin: 0 0 15px 0; font-size: 14px; }
+.ad-btn {
+    width: 100%; padding: 8px; border: none; background: #38bdf8; color: black; font-weight: bold; cursor: pointer; border-radius: 5px; font-size: 12px;
+}
+.ad-btn:hover { background: #0ea5e9; }
+.ad-btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
+.ad-btn.watched { background: #22c55e; color: white; border: none; }
+
+/* BALANCE DISPLAY */
+.current-balance { text-align: center; font-size: 18px; margin-bottom: 20px; color: #f8fafc; background: #020617; padding: 15px; border-radius: 10px; }
+.current-balance span { color: #22c55e; font-weight: bold; font-size: 22px; }
+
+/* BOTTOM NAVIGATION */
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #020617; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -4px 6px rgba(0,0,0,0.3); z-index: 1000; }
+.bottom-nav a { color: #94a3b8; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 12px; transition: 0.3s; }
+.bottom-nav a i { font-size: 20px; margin-bottom: 4px; }
+.bottom-nav a:hover, .bottom-nav a.active { color: #38bdf8; }
+
+@media (max-width: 600px) { header { padding: 15px 20px; } }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Winwave</div>
+    <div class="dp" title="Qasam Ali">QA</div>
+</header>
+
+<div class="container">
+    
+    <!-- Balance Show Hoga -->
+    <div class="current-balance" id="balanceDisplay">
+        Balance: <span id="balanceAmount">Rs. 0</span>
+    </div>
+
+    <!-- Agar Plan Active hai to ye show hoga -->
+    <div class="active-plan-banner" id="activePlanBanner">
+        <h2><i class="fa-solid fa-circle-check"></i> Plan <span id="planNameDisplay"></span> Active</h2>
+        <p>Aapke daily <span id="adsCountDisplay"></span> Ads available hain.</p>
+    </div>
+
+    <!-- Agar koi plan nahi hai to ye show hoga -->
+    <div class="no-plan-msg" id="noPlanMsg">
+        <h3>Aap ne abhi tak koi Plan buy nahi kiya!</h3>
+        <p>Ads dekhne ke liye pehle plan khareedein.</p>
+        <a href="index.html">Buy Plan Now</a>
+    </div>
+
+    <!-- Ads Yahan Generate Hongay -->
+    <div class="ads-grid" id="adsGrid"></div>
+
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+    <a href="index.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+    <a href="promotion.html">
+        <i class="fas fa-bullhorn"></i>
+        <span>Promotion</span>
+    </a>
+    <a href="earn.html" class="active">
+        <i class="fas fa-coins"></i>
+        <span>Earn</span>
+    </a>
+    <a href="wallet.html">
+        <i class="fas fa-wallet"></i>
+        <span>Wallet</span>
+    </a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Plans ki tafseel (Kitne plan par kitne ads)
+    const plansInfo = {
+        '1': 10,
+        '2': 20,
+        '3': 30,
+        '4': 40,
+        '5': 50
+    };
+
+    // Ek ad dekhne ka reward (Misal ke tor par 20 rupay)
+    const adReward = 20;
+
+    // LocalStorage se Data uthana
+    let currentBalance = localStorage.getItem('winwave_balance') ? parseInt(localStorage.getItem('winwave_balance')) : 0; 
+    let activePlan = localStorage.getItem('winwave_active_plan');
+    
+    // Daily Reset Logic (Agar agla din ho jaye to ads reset ho jayein)
+    let today = new Date().toDateString();
+    let savedDate = localStorage.getItem('winwave_ads_date');
+    if(savedDate !== today) {
+        localStorage.removeItem('winwave_watched_ads');
+        localStorage.setItem('winwave_ads_date', today);
+    }
+
+    let watchedAds = localStorage.getItem('winwave_watched_ads') ? JSON.parse(localStorage.getItem('winwave_watched_ads')) : [];
+
+    // Screen elements
+    const balanceDisplay = document.getElementById('balanceAmount');
+    const activePlanBanner = document.getElementById('activePlanBanner');
+    const noPlanMsg = document.getElementById('noPlanMsg');
+    const adsGrid = document.getElementById('adsGrid');
+
+    balanceDisplay.innerText = 'Rs. ' + currentBalance.toLocaleString();
+
+    if(activePlan && plansInfo[activePlan]) {
+        // Plan mojud hai to Banner show karo aur no-plan message hide karo
+        activePlanBanner.style.display = 'block';
+        document.getElementById('planNameDisplay').innerText = activePlan;
+        document.getElementById('planNameDisplay').innerText = activePlan;
+        
+        let totalAds = plansInfo[activePlan];
+        document.getElementById('adsCountDisplay').innerText = totalAds;
+
+        // Ads Generate karna
+        for(let i = 1; i <= totalAds; i++) {
+            let isWatched = watchedAds.includes(i);
+            
+            let card = document.createElement('div');
+            card.className = 'ad-card';
+            
+            card.innerHTML = `
+                <i class="fa-solid fa-play-circle"></i>
+                <h4>Task ${i}</h4>
+                <button class="ad-btn ${isWatched ? 'watched' : ''}" id="ad-btn-${i}" ${isWatched ? 'disabled' : ''} onclick="watchAd(${i})">
+                    ${isWatched ? '<i class="fa-solid fa-check"></i> Watched' : 'Watch Ad'}
+                </button>
+            `;
+            adsGrid.appendChild(card);
+        }
+    } else {
+        // Agar plan nahi hai
+        noPlanMsg.style.display = 'block';
+    }
+
+    // Ad Watch karne ka Function
+    window.watchAd = function(adId) {
+        let btn = document.getElementById(`ad-btn-${adId}`);
+        
+        // Button ko loading state me dalna
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+        btn.disabled = true;
+
+        // Fake 2 seconds ka delay ad dikhane ke liye
+        setTimeout(() => {
+            // Balance update karna
+            currentBalance += adReward;
+            localStorage.setItem('winwave_balance', currentBalance);
+            balanceDisplay.innerText = 'Rs. ' + currentBalance.toLocaleString();
+
+            // Ad ko watched me save karna
+            watchedAds.push(adId);
+            localStorage.setItem('winwave_watched_ads', JSON.stringify(watchedAds));
+
+            // Button ka style change karna
+            btn.classList.add('watched');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Watched';
+            
+        }, 2000); // 2000 ms = 2 seconds
+    };
+
+});
+</script>
+
+</body>
+</html>

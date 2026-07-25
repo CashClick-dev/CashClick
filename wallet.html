@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wallet - Winwave</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<!-- Added FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    color: white;
+    margin: 0;
+    padding-top: 70px; /* Offset for fixed header */
+    padding-bottom: 70px; /* Offset for fixed bottom nav */
+}
+
+/* FIXED HEADER */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #020617;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+header .logo {
+    color: #38bdf8;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+header .dp {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #38bdf8;
+    color: #020617;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid #0ea5e9;
+}
+
+/* WALLET CONTAINER */
+.wallet-container {
+    padding: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* BALANCE SECTION */
+.balance-card {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    padding: 30px 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.balance-card h3 { 
+    color: #e0f2fe; 
+    margin: 0 0 10px 0; 
+    font-size: 18px;
+}
+
+.balance-card h1 {
+    color: white;
+    margin: 0;
+    font-size: 36px;
+}
+
+/* ACTION BUTTONS */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.action-btn {
+    flex: 1;
+    background: #020617;
+    color: #38bdf8;
+    border: 1px solid #38bdf8;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+}
+
+.action-btn:hover {
+    background: #38bdf8;
+    color: #020617;
+}
+
+/* TRANSACTION HISTORY */
+.history-section {
+    background: #020617;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.history-section h2 {
+    color: #f8fafc;
+    margin-top: 0;
+    font-size: 20px;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 10px;
+}
+
+/* EMPTY STATE FOR FRESH USER */
+.empty-state {
+    text-align: center;
+    color: #94a3b8;
+    padding: 30px 0;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.empty-state i {
+    font-size: 30px;
+    color: #334155;
+}
+
+/* BOTTOM NAVIGATION */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #020617;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -4px 6px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+
+.bottom-nav a {
+    color: #94a3b8;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    transition: 0.3s;
+}
+
+.bottom-nav a i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.bottom-nav a:hover, .bottom-nav a.active {
+    color: #38bdf8;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 600px) {
+    header { padding: 15px 20px; }
+    .wallet-container { padding: 15px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Winwave</div>
+    <div class="dp" title="Qasam Ali">QA</div>
+</header>
+
+<div class="wallet-container">
+
+    <!-- BALANCE CARD -->
+    <div class="balance-card">
+        <h3>Available Balance</h3>
+        <!-- Balance updated to zero -->
+        <h1>Rs. 0</h1>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+        <button class="action-btn">
+            <i class="fas fa-arrow-down"></i> Deposit
+        </button>
+        <button class="action-btn">
+            <i class="fas fa-arrow-up"></i> Withdraw
+        </button>
+    </div>
+
+    <!-- TRANSACTION HISTORY -->
+    <div class="history-section">
+        <h2>Recent Transactions</h2>
+        
+        <!-- Empty State for Fresh User -->
+        <div class="empty-state">
+            <i class="fas fa-receipt"></i>
+            <p>No transactions yet.</p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+    <a href="index.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+    <a href="promotion.html">
+        <i class="fas fa-bullhorn"></i>
+        <span>Promotion</span>
+    </a>
+    <a href="earn.html">
+        <i class="fas fa-coins"></i>
+        <span>Earn</span>
+    </a>
+    <!-- Wallet link is active -->
+    <a href="wallet.html" class="active">
+        <i class="fas fa-wallet"></i>
+        <span>Wallet</span>
+    </a>
+</div>
+
+</body>
+</html>

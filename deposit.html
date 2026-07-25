@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deposit - Winwave</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<!-- Added FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+* { box-sizing: border-box; }
+body { 
+    font-family: 'Poppins', sans-serif; background: #0f172a; color: white; 
+    margin: 0; display: flex; flex-direction: column; align-items: center; 
+    min-height: 100vh; padding-top: 80px; padding-bottom: 70px; /* Offset for fixed bottom nav */
+}
+
+/* FIXED HEADER */
+header {
+    position: fixed; top: 0; left: 0; width: 100%;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 40px; background: #020617; z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+header .logo { color: #38bdf8; font-size: 24px; font-weight: bold; }
+header .dp {
+    width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
+    color: #020617; display: flex; justify-content: center; align-items: center;
+    font-weight: bold; font-size: 16px; cursor: pointer; border: 2px solid #0ea5e9;
+}
+
+.container { 
+    background: #020617; padding: 30px; border-radius: 10px; width: 90%; 
+    max-width: 500px; margin-top: 20px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+}
+.back-link { color: #38bdf8; text-decoration: none; font-size: 14px; font-weight: bold; display: block; margin-bottom: 20px; }
+
+h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #94a3b8; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.option-btn { background: #0f172a; border: 2px solid #1e293b; color: white; padding: 15px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; text-align: center; font-size: 14px;}
+.option-btn:hover { border-color: #38bdf8; }
+.option-btn.active { background: #38bdf8; color: black; border-color: #38bdf8; }
+input { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #1e293b; border-radius: 5px; outline: none; background: #0f172a; color: white; font-size: 16px; text-align: center; }
+input:focus { border-color: #38bdf8; }
+.btn { width: 100%; padding: 12px; background: #38bdf8; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; color: black; transition: 0.3s; }
+.btn:hover { background: #0ea5e9; }
+.btn:disabled { background: #475569; cursor: not-allowed; }
+#step2 { display: none; }
+.status-msg { text-align: center; font-weight: bold; margin-top: 15px; display: none; padding: 12px; border-radius: 5px; font-size: 14px; }
+.loading { color: #facc15; background: rgba(250, 204, 21, 0.1); border: 1px solid #facc15;}
+.success { color: #34d399; background: rgba(52, 211, 153, 0.1); border: 1px solid #34d399;}
+.error { color: #f87171; background: rgba(248, 113, 113, 0.1); border: 1px solid #f87171;}
+.loader { border: 4px solid #1e293b; border-top: 4px solid #38bdf8; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* BOTTOM NAVIGATION */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #020617;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -4px 6px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+
+.bottom-nav a {
+    color: #94a3b8;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    transition: 0.3s;
+}
+
+.bottom-nav a i {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.bottom-nav a:hover, .bottom-nav a.active {
+    color: #38bdf8;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 600px) {
+    header { padding: 15px 20px; }
+    .container { padding: 20px; width: 95%; }
+    .grid-2 { grid-template-columns: 1fr; gap: 10px; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Winwave</div>
+    <div class="dp" title="Qasam Ali">QA</div>
+</header>
+
+<div class="container">
+    <a href="wallet.html" class="back-link">← Back to Wallet</a>
+    
+    <div id="step1">
+        <h3>Select Payment Method</h3>
+        <div class="grid-2">
+            <div class="option-btn method-btn" onclick="selectMethod(this, 'easypaisa')">Easypaisa</div>
+            <div class="option-btn method-btn" onclick="selectMethod(this, 'jazzcash')">JazzCash</div>
+        </div>
+
+        <h3>Select Amount (Rs.)</h3>
+        <div class="grid-3">
+            <div class="option-btn amount-btn" onclick="selectAmount(this, 500)">500</div>
+            <div class="option-btn amount-btn" onclick="selectAmount(this, 1000)">1000</div>
+            <div class="option-btn amount-btn" onclick="selectAmount(this, 1500)">1500</div>
+            <div class="option-btn amount-btn" onclick="selectAmount(this, 2000)">2000</div>
+            <div class="option-btn amount-btn" onclick="selectAmount(this, 2500)">2500</div>
+        </div>
+
+        <button class="btn" onclick="goToStep2()">Next Step</button>
+    </div>
+
+    <div id="step2">
+        <h3 id="paymentDetailsHeading">Pay Rs. 0</h3>
+        <p style="text-align: center; font-size: 14px; color: #94a3b8;">Enter mobile number to receive payment PIN prompt.</p>
+        
+        <input type="number" id="accountNumber" placeholder="03XXXXXXXXX">
+        
+        <button class="btn" id="payBtn" onclick="initiatePayment()">Send Payment Request</button>
+        <button class="btn" id="backBtn" style="background: transparent; color: #94a3b8; margin-top: 10px;" onclick="goBack()">Go Back</button>
+
+        <div id="statusMessage" class="status-msg"></div>
+    </div>
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+    <a href="index.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+    <a href="promotion.html">
+        <i class="fas fa-bullhorn"></i>
+        <span>Promotion</span>
+    </a>
+    <a href="earn.html">
+        <i class="fas fa-coins"></i>
+        <span>Earn</span>
+    </a>
+    <a href="wallet.html" class="active">
+        <i class="fas fa-wallet"></i>
+        <span>Wallet</span>
+    </a>
+</div>
+
+<script>
+    let selectedMethod = ""; let selectedAmount = 0; let checkInterval;
+    function selectMethod(element, method) { document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); selectedMethod = method; }
+    function selectAmount(element, amount) { document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); selectedAmount = amount; }
+    function goToStep2() { if (!selectedMethod || !selectedAmount) { alert("Please select both a method and an amount."); return; } document.getElementById('step1').style.display = 'none'; document.getElementById('step2').style.display = 'block'; document.getElementById('paymentDetailsHeading').innerText = `Pay Rs. ${selectedAmount} via ${selectedMethod.toUpperCase()}`; }
+    function goBack() { document.getElementById('step2').style.display = 'none'; document.getElementById('step1').style.display = 'block'; resetUI(); }
+    function resetUI() { clearInterval(checkInterval); const payBtn = document.getElementById('payBtn'); const statusMsg = document.getElementById('statusMessage'); payBtn.disabled = false; payBtn.innerText = "Send Payment Request"; statusMsg.style.display = "none"; statusMsg.className = "status-msg"; }
+    async function initiatePayment() {
+        const accNumber = document.getElementById('accountNumber').value;
+        if (accNumber.length !== 11) { alert("Please enter a valid 11-digit mobile number."); return; }
+        const payBtn = document.getElementById('payBtn'); const statusMsg = document.getElementById('statusMessage');
+        payBtn.disabled = true; document.getElementById('backBtn').style.display = 'none'; payBtn.innerHTML = `<span class="loader"></span> Initiating...`;
+        try {
+            const transactionId = "TXN_" + Math.floor(Math.random() * 100000); 
+            statusMsg.style.display = "block"; statusMsg.className = "status-msg loading"; statusMsg.innerText = "Please check your phone and enter your PIN to approve the payment."; payBtn.innerText = "Awaiting PIN Entry...";
+            checkPaymentStatus(transactionId);
+        } catch (error) {
+            statusMsg.style.display = "block"; statusMsg.className = "status-msg error"; statusMsg.innerText = "Error connecting to server. Try again."; payBtn.disabled = false; payBtn.innerText = "Retry Payment Request"; document.getElementById('backBtn').style.display = 'block';
+        }
+    }
+    function checkPaymentStatus(transactionId) {
+        let attempts = 0; const statusMsg = document.getElementById('statusMessage'); const payBtn = document.getElementById('payBtn');
+        checkInterval = setInterval(async () => {
+            attempts++;
+            if (attempts > 12) { clearInterval(checkInterval); statusMsg.className = "status-msg error"; statusMsg.innerText = "Payment timeout. You took too long to enter the PIN."; payBtn.disabled = false; payBtn.innerText = "Try Again"; document.getElementById('backBtn').style.display = 'block'; return; }
+            try {
+                const data = { status: attempts === 4 ? "completed" : "pending" }; 
+                if (data.status === "completed") {
+                    clearInterval(checkInterval); statusMsg.className = "status-msg success"; statusMsg.innerText = `Payment Successful! Rs. ${selectedAmount} has been added.`; payBtn.innerText = "Payment Received";
+                    setTimeout(() => { window.location.href = "wallet.html"; }, 2000);
+                } else if (data.status === "failed") {
+                    clearInterval(checkInterval); statusMsg.className = "status-msg error"; statusMsg.innerText = "Payment was declined or cancelled."; payBtn.disabled = false; payBtn.innerText = "Try Again"; document.getElementById('backBtn').style.display = 'block';
+                }
+            } catch (error) { console.error("Error checking status", error); }
+        }, 5000); 
+    }
+</script>
+
+</body>
+</html>
