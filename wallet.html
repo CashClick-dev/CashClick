@@ -206,10 +206,10 @@ header .dp {
 
     <!-- ACTION BUTTONS -->
     <div class="action-buttons">
-        <button class="action-btn">
+        <button class="action-btn" onclick="goToDeposit()">
             <i class="fas fa-arrow-down"></i> Deposit
         </button>
-        <button class="action-btn">
+        <button class="action-btn" onclick="goToWithdraw()">
             <i class="fas fa-arrow-up"></i> Withdraw
         </button>
     </div>
@@ -249,5 +249,13 @@ header .dp {
     </a>
 </div>
 
+<script>
+function goToDeposit() {
+    window.location.href = "deposit.html";
+}
+function goToWithdraw() {
+    window.location.href = "withdraw.html";
+}
+</script>
 </body>
 </html>
