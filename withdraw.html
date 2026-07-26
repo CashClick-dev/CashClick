@@ -307,7 +307,26 @@ input:focus {
     </a>
 </div>
 
-<script>
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+        authDomain: "cashwin-2cfdb.firebaseapp.com",
+        projectId: "cashwin-2cfdb",
+        storageBucket: "cashwin-2cfdb.firebasestorage.app",
+        messagingSenderId: "42491408938",
+        appId: "1:42491408938:web:719a556f8901e19b35c953",
+        measurementId: "G-SVBJQDMX79"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
     let selectedMethod = "";
     
     // Naye balances read karna
@@ -350,7 +369,6 @@ input:focus {
         // CONDITION: Agar user ke paas 5 valid members nahi hain to error aayega
         if (validInvites < 5) {
             let needed = 5 - validInvites;
-            // Aap chaho to browser ka native alert bhi use kar sakte ho jaise: alert("Withdrawal Locked...");
             return showError(`Withdrawal Locked! You need ${needed} more valid invite(s) to withdraw. (Members must deposit & buy a plan).`);
         }
 
@@ -435,6 +453,11 @@ input:focus {
         statusMsg.className = "status-msg success";
         statusMsg.innerText = message;
     }
+
+    // Connect functions to window object for HTML onclick to work
+    window.selectMethod = selectMethod;
+    window.switchView = switchView;
+    window.submitWithdrawal = submitWithdrawal;
 </script>
 
 </body>
