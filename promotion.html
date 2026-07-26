@@ -274,7 +274,7 @@ header .dp {
         </div>
         
         <div class="referral-link-container">
-            <input type="text" value="" id="refLink" readonly>
+            <input type="text" value="Loading link..." id="refLink" readonly>
             <button onclick="copyLink()">Copy</button>
         </div>
 
@@ -339,6 +339,8 @@ header .dp {
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    // Firebase Auth import kiya hai yahan
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
@@ -352,6 +354,7 @@ header .dp {
 
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
+    const auth = getAuth(app); // Auth initialize kar diya
 
     function copyLink() {
         var copyText = document.getElementById("refLink");
@@ -374,33 +377,30 @@ header .dp {
         }
     }
 
+    // Set Initial Avatar based on localStorage
     document.addEventListener('DOMContentLoaded', () => {
         let userName = localStorage.getItem('winwave_username') || 'Guest';
         updateAvatar(userName);
+    });
 
-        // --- REAL REFERRAL LINK LOGIC ---
+    // --- REAL FIREBASE UID REFERRAL LINK LOGIC ---
+    // Jab user ka Firebase Auth state change hoga (login hoga), tab link update hoga
+    onAuthStateChanged(auth, (user) => {
+        const refLinkInput = document.getElementById('refLink');
         
-        // 1. Check karte hain agar is user ka pehle se koi unique code save hai
-        let userUniqueCode = localStorage.getItem('winwave_ref_code');
-
-        // 2. Agar code nahi hai, toh hum ek naya aur pakka unique code banayenge
-        if (!userUniqueCode) {
-            // Username ke pehle 4 letters (e.g., jutt)
-            let cleanName = userName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 4);
-            // Aur 4 random numbers (e.g., 4829) milayenge taa ke 100% unique ho
-            let randomNum = Math.floor(1000 + Math.random() * 9000);
+        if (user) {
+            // User login hai, uski original Firebase UID nikal li
+            const uid = user.uid;
             
-            userUniqueCode = cleanName + randomNum; // Result: jutt4829
-            
-            // Is code ko save kar lenge taake page refresh hone pe link change na ho
-            localStorage.setItem('winwave_ref_code', userUniqueCode);
-        }
-
-        // 3. Link mein ?ref= parameter laga denge taake dusra page isko read kar sake
-        let refLinkInput = document.getElementById('refLink');
-        if (refLinkInput) {
-            // Register page ka URL jahan user account banayega
-            refLinkInput.value = "https://winwave.com/register.html?ref=" + userUniqueCode;
+            // Custom domain aur UID laga kar link generate kar diya
+            if (refLinkInput) {
+                refLinkInput.value = "https://hakamherbal.com/register.html?ref=" + uid;
+            }
+        } else {
+            // Agar user login nahi hai
+            if (refLinkInput) {
+                refLinkInput.value = "Please login to view link";
+            }
         }
     });
 
