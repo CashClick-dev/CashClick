@@ -191,8 +191,18 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // ⬇️ USKE BAAD baaki functions
     let isLogin = false;
+    
+    // --- REFERRAL LINK SE UID NIKALNE KA LOGIC ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralUid = urlParams.get('ref') || ""; // Agar link me UID hui tou pakar lega warna khali rahega
+
+    // Agar URL me referral code mojood hai, tou page khulte hi khud Register wala page khol dega
+    window.onload = function() {
+        if (referralUid) {
+            openAuthPage('register');
+        }
+    };
 
     // Show Home Page
     function showHomePage() {
@@ -252,7 +262,7 @@
         }
     }
 
-    // STEP 2: Register User Function
+    // STEP 2: Register User Function (UPDATED WITH REFERRAL)
     function registerUser() {
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
@@ -262,15 +272,19 @@
                 const user = userCredential.user;
                 const name = document.getElementById("nameField").value;
                 
-                // DB me save
+                // DB me save (Sath me referral code bhi save kar raha hai)
                 db.collection("users").doc(user.uid).set({
                     name: name,
                     email: email,
                     deposit: 0,
-                    earned: 0
+                    earned: 0,
+                    referredBy: referralUid // 🔥 Yahan par invite karne wale ki UID save ho jayegi!
                 });
 
-                alert("Account Created!");
+                // Name localstorage me save kar lein taake andar use ho sake
+                localStorage.setItem('winwave_username', name);
+
+                alert("Account Created Successfully!");
                 window.location.href = "dashboard.html";
             })
             .catch(err => alert(err.message));
@@ -291,17 +305,11 @@
 
     // Function called after successful login/register
     function loginSuccess() {
-        // Hide Header Buttons
         document.getElementById("topNavButtons").style.display = "none";
-        
-        // Show User DP
         document.getElementById("userProfilePic").style.display = "flex";
-        
-        // Redirect to Dashboard (As per original script)
-        // window.location.href = "dashboard.html";
     }
 
-    // STEP 4 & 5: Auto login check and Profile DP update
+    // STEP 4 & 5: Auto login check
     auth.onAuthStateChanged(user => {
         if (user) {
             window.location.href = "dashboard.html";
