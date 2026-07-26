@@ -275,7 +275,7 @@ header .dp {
         </div>
         
         <div class="referral-link-container">
-            <input type="text" value="https://winwave.com/ref/qasamali" id="refLink" readonly>
+            <input type="text" value="https://winwave.com/ref/" id="refLink" readonly>
             <button onclick="copyLink()">Copy</button>
         </div>
 
@@ -383,10 +383,19 @@ header .dp {
         }
     }
 
-    // Load User Name from Local Storage for Header DP
+    // Load User Name from Local Storage for Header DP and Referral Link
     document.addEventListener('DOMContentLoaded', () => {
-        let userName = localStorage.getItem('winwave_username') || 'Guest User';
+        let userName = localStorage.getItem('winwave_username') || 'Guest';
         updateAvatar(userName);
+
+        // --- NEW LOGIC FOR DYNAMIC REFERRAL LINK ---
+        // Spaces ko remove karke aur lowercase banake unique code generate karega
+        let refCode = userName.toLowerCase().replace(/\s+/g, '');
+        let refLinkInput = document.getElementById('refLink');
+        
+        if (refLinkInput) {
+            refLinkInput.value = "https://winwave.com/ref/" + refCode;
+        }
     });
 
     // Make copyLink accessible globally for the onclick attribute
