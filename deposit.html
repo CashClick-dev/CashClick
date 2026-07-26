@@ -162,6 +162,25 @@ input:focus { border-color: #38bdf8; }
     </a>
 </div>
 
+<!-- Firebase SDK Initialization -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+    authDomain: "cashwin-2cfdb.firebaseapp.com",
+    projectId: "cashwin-2cfdb",
+    storageBucket: "cashwin-2cfdb.firebasestorage.app",
+    messagingSenderId: "42491408938",
+    appId: "1:42491408938:web:719a556f8901e19b35c953",
+    measurementId: "G-SVBJQDMX79"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
 <script>
     let selectedMethod = ""; let selectedAmount = 0; let checkInterval;
     function selectMethod(element, method) { document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); selectedMethod = method; }
