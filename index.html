@@ -7,6 +7,11 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
+    <!-- STEP 1: Firebase Scripts (compat added for v10 support) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: #0f172a; color: white; padding-top: 80px; min-height: 100vh; }
@@ -31,7 +36,7 @@
         /* DP (Hidden initially) */
         header .dp {
             width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
-            color: #020617; display: flex; justify-content: center; align-items: center;
+            color: #020617; justify-content: center; align-items: center;
             font-weight: bold; font-size: 16px; cursor: pointer; border: 2px solid #0ea5e9;
             display: none; /* DP Hide by default */
         }
@@ -171,6 +176,22 @@
 </div>
 
 <script>
+    // ✅ SABSE PEHLE FIREBASE
+    const firebaseConfig = {
+      apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+      authDomain: "cashwin-2cfdb.firebaseapp.com",
+      projectId: "cashwin-2cfdb",
+      storageBucket: "cashwin-2cfdb.firebasestorage.app",
+      messagingSenderId: "42491408938",
+      appId: "1:42491408938:web:719a556f8901e19b35c953",
+      measurementId: "G-SVBJQDMX79"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ⬇️ USKE BAAD baaki functions
     let isLogin = false;
 
     // Show Home Page
@@ -221,29 +242,80 @@
         }
 
         if (!isLogin) {
-            // Register Logic
+            // Register Logic Validation
             if (!name || !confirmPassword) { alert("Please complete all fields"); return; }
             if (password !== confirmPassword) { alert("Passwords do not match"); return; }
-            alert("Registered Successfully! (Firebase yahan add hoga)");
-            loginSuccess();
+            registerUser();
         } else {
             // Login Logic
-            alert("Logged in Successfully! (Firebase yahan add hoga)");
-            loginSuccess();
+            loginUser();
         }
+    }
+
+    // STEP 2: Register User Function
+    function registerUser() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                const name = document.getElementById("nameField").value;
+                
+                // DB me save
+                db.collection("users").doc(user.uid).set({
+                    name: name,
+                    email: email,
+                    deposit: 0,
+                    earned: 0
+                });
+
+                alert("Account Created!");
+                window.location.href = "wallet.html";
+            })
+            .catch(err => alert(err.message));
+    }
+
+    // STEP 3: Login User Function
+    function loginUser() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+                alert("Login Success");
+                window.location.href = "wallet.html";
+            })
+            .catch(err => alert(err.message));
     }
 
     // Function called after successful login/register
     function loginSuccess() {
-    // Hide Header Buttons
-    document.getElementById("topNavButtons").style.display = "none";
-    
-    // Show User DP
-    document.getElementById("userProfilePic").style.display = "flex";
-    
-    // Redirect to Dashboard
-    window.location.href = "dashboard.html";
-}
+        // Hide Header Buttons
+        document.getElementById("topNavButtons").style.display = "none";
+        
+        // Show User DP
+        document.getElementById("userProfilePic").style.display = "flex";
+        
+        // Redirect to Dashboard (As per original script)
+        // window.location.href = "dashboard.html";
+    }
+
+    // STEP 4 & 5: Auto login check and Profile DP update
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            window.location.href = "wallet.html";
+
+            document.getElementById("topNavButtons").style.display = "none";
+            document.getElementById("userProfilePic").style.display = "flex";
+
+            const email = user.email;
+            const initials = email.substring(0,2).toUpperCase();
+
+            document.getElementById("userProfilePic").innerText = initials;
+        }
+    });
+
 </script>
 
 </body>
