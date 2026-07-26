@@ -20,7 +20,7 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    padding-bottom: 70px; /* Offset for fixed bottom nav */
+    padding-bottom: 70px;
 }
 
 header {
@@ -315,6 +315,9 @@ input:focus {
     let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
     let availableBalance = depositBalance + earnBalance; 
 
+    // Valid Invites read karna (Default 0 hai test karne ke liye)
+    let validInvites = localStorage.getItem('winwave_valid_invites') ? parseInt(localStorage.getItem('winwave_valid_invites')) : 0;
+
     // Page load hone par balance dikhana
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
@@ -344,6 +347,13 @@ input:focus {
         const statusMsg = document.getElementById('statusMessage');
         const submitBtn = document.getElementById('submitBtn');
 
+        // CONDITION: Agar user ke paas 5 valid members nahi hain to error aayega
+        if (validInvites < 5) {
+            let needed = 5 - validInvites;
+            // Aap chaho to browser ka native alert bhi use kar sakte ho jaise: alert("Withdrawal Locked...");
+            return showError(`Withdrawal Locked! You need ${needed} more valid invite(s) to withdraw. (Members must deposit & buy a plan).`);
+        }
+
         if (!selectedMethod) return showError("Please select a withdrawal method.");
         if (!accName) return showError("Please enter your account title.");
         if (accNumber.length !== 11) return showError("Please enter a valid 11-digit mobile number.");
@@ -355,7 +365,7 @@ input:focus {
         statusMsg.style.display = "none";
 
         setTimeout(() => {
-            // Withdrawal ki deduction logic (Pehle Earn balance se katay ga)
+            // Withdrawal ki deduction logic
             if (amount <= earnBalance) {
                 earnBalance -= amount;
             } else {
