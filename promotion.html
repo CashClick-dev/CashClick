@@ -261,7 +261,7 @@ header .dp {
 
 <header>
     <div class="logo">Winwave</div>
-    <div class="dp" title="Qasam Ali">QA</div>
+    <div class="dp" id="headerDp" title="User">U</div>
 </header>
 
 <div class="dashboard">
@@ -340,7 +340,27 @@ header .dp {
     </a>
 </div>
 
-<script>
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+        authDomain: "cashwin-2cfdb.firebaseapp.com",
+        projectId: "cashwin-2cfdb",
+        storageBucket: "cashwin-2cfdb.firebasestorage.app",
+        messagingSenderId: "42491408938",
+        appId: "1:42491408938:web:719a556f8901e19b35c953",
+        measurementId: "G-SVBJQDMX79"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // --- FUNCTION TO COPY LINK ---
     function copyLink() {
         var copyText = document.getElementById("refLink");
         copyText.select();
@@ -348,6 +368,29 @@ header .dp {
         navigator.clipboard.writeText(copyText.value);
         alert("Referral link copied: " + copyText.value);
     }
+
+    // --- FUNCTION TO UPDATE DP (Header) ---
+    function updateAvatar(name) {
+        let nameParts = name.trim().split(' ');
+        let initials = nameParts[0].charAt(0).toUpperCase();
+        if (nameParts.length > 1) {
+            initials += nameParts[1].charAt(0).toUpperCase();
+        }
+        let dpElement = document.getElementById('headerDp');
+        if (dpElement) {
+            dpElement.innerText = initials;
+            dpElement.title = name;
+        }
+    }
+
+    // Load User Name from Local Storage for Header DP
+    document.addEventListener('DOMContentLoaded', () => {
+        let userName = localStorage.getItem('winwave_username') || 'Guest User';
+        updateAvatar(userName);
+    });
+
+    // Make copyLink accessible globally for the onclick attribute
+    window.copyLink = copyLink;
 </script>
 
 </body>
