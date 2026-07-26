@@ -306,8 +306,8 @@ header .dp {
         let userName = localStorage.getItem('winwave_username') || 'Guest User';
         updateAvatar(userName);
 
-        // 1. Load Balances
-        let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 5000;
+        // 1. Load Balances (Changed default deposit balance from 5000 to 0)
+        let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 0;
         let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
         
         let totalBalance = depositBalance + earnBalance;
