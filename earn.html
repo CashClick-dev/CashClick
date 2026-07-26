@@ -169,121 +169,123 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
     </a>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // Plans ki tafseel (Kitne plan par kitne ads)
-    const plansInfo = {
-        '1': 10,
-        '2': 20,
-        '3': 30,
-        '4': 40,
-        '5': 50
-    };
+<!-- Type module zaroori hai Firebase imports ke liye -->
+<script type="module">
+  // Import Firebase modules via CDN for plain HTML
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
-    // Ek ad dekhne ka reward
-    const adReward = 20;
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+    authDomain: "cashwin-2cfdb.firebaseapp.com",
+    projectId: "cashwin-2cfdb",
+    storageBucket: "cashwin-2cfdb.firebasestorage.app",
+    messagingSenderId: "42491408938",
+    appId: "1:42491408938:web:719a556f8901e19b35c953",
+    measurementId: "G-SVBJQDMX79"
+  };
 
-    // LocalStorage se Earn Balance uthana (Deposit Balance nahi)
-    let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0; 
-    
-    // Multiple active plans ko array ki shakal me uthana
-    let activePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
-    
-    // Daily Reset Logic
-    let today = new Date().toDateString();
-    let savedDate = localStorage.getItem('winwave_ads_date');
-    if(savedDate !== today) {
-        localStorage.removeItem('winwave_watched_ads');
-        localStorage.setItem('winwave_ads_date', today);
-    }
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 
-    let watchedAds = localStorage.getItem('winwave_watched_ads') ? JSON.parse(localStorage.getItem('winwave_watched_ads')) : [];
+  // Baaki pehle wala code shuru
+  document.addEventListener('DOMContentLoaded', () => {
+      
+      const plansInfo = {
+          '1': 10,
+          '2': 20,
+          '3': 30,
+          '4': 40,
+          '5': 50
+      };
 
-    // Screen elements
-    const balanceDisplay = document.getElementById('earnBalanceAmount');
-    const noPlanMsg = document.getElementById('noPlanMsg');
-    const allPlansContainer = document.getElementById('allPlansContainer');
+      const adReward = 20;
 
-    // Display Initial Balance
-    balanceDisplay.innerText = 'Rs. ' + earnBalance.toLocaleString();
+      let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0; 
+      
+      let activePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
+      
+      let today = new Date().toDateString();
+      let savedDate = localStorage.getItem('winwave_ads_date');
+      if(savedDate !== today) {
+          localStorage.removeItem('winwave_watched_ads');
+          localStorage.setItem('winwave_ads_date', today);
+      }
 
-    // Agar ek bhi plan active hai
-    if(activePlans.length > 0) {
-        
-        // Har plan k liye loop chalao
-        activePlans.forEach(planId => {
-            if(plansInfo[planId]) {
-                let totalAds = plansInfo[planId];
+      let watchedAds = localStorage.getItem('winwave_watched_ads') ? JSON.parse(localStorage.getItem('winwave_watched_ads')) : [];
 
-                // Plan ka Box/Section banana
-                let planSection = document.createElement('div');
-                planSection.className = 'plan-section';
-                
-                let planHeaderHTML = `
-                    <div class="plan-header">
-                        <h2><i class="fa-solid fa-circle-check"></i> Plan ${planId} Active</h2>
-                        <p>Available Ads: <strong>${totalAds}</strong></p>
-                    </div>
-                    <div class="ads-grid" id="ads-grid-${planId}"></div>
-                `;
-                planSection.innerHTML = planHeaderHTML;
-                allPlansContainer.appendChild(planSection);
+      const balanceDisplay = document.getElementById('earnBalanceAmount');
+      const noPlanMsg = document.getElementById('noPlanMsg');
+      const allPlansContainer = document.getElementById('allPlansContainer');
 
-                let currentAdsGrid = document.getElementById(`ads-grid-${planId}`);
+      balanceDisplay.innerText = 'Rs. ' + earnBalance.toLocaleString();
 
-                // Us plan k ads generate karna
-                for(let i = 1; i <= totalAds; i++) {
-                    let uniqueAdId = `plan${planId}-ad${i}`; // Ex: plan1-ad1, plan2-ad1 taake mix na hon
-                    let isWatched = watchedAds.includes(uniqueAdId);
-                    
-                    let card = document.createElement('div');
-                    card.className = 'ad-card';
-                    
-                    card.innerHTML = `
-                        <i class="fa-solid fa-play-circle"></i>
-                        <h4>Task ${i}</h4>
-                        <button class="ad-btn ${isWatched ? 'watched' : ''}" id="btn-${uniqueAdId}" ${isWatched ? 'disabled' : ''} onclick="watchAd('${uniqueAdId}')">
-                            ${isWatched ? '<i class="fa-solid fa-check"></i> Watched' : 'Watch Ad'}
-                        </button>
-                    `;
-                    currentAdsGrid.appendChild(card);
-                }
-            }
-        });
+      if(activePlans.length > 0) {
+          activePlans.forEach(planId => {
+              if(plansInfo[planId]) {
+                  let totalAds = plansInfo[planId];
 
-    } else {
-        // Agar koi plan hi nahi hai
-        noPlanMsg.style.display = 'block';
-    }
+                  let planSection = document.createElement('div');
+                  planSection.className = 'plan-section';
+                  
+                  let planHeaderHTML = `
+                      <div class="plan-header">
+                          <h2><i class="fa-solid fa-circle-check"></i> Plan ${planId} Active</h2>
+                          <p>Available Ads: <strong>${totalAds}</strong></p>
+                      </div>
+                      <div class="ads-grid" id="ads-grid-${planId}"></div>
+                  `;
+                  planSection.innerHTML = planHeaderHTML;
+                  allPlansContainer.appendChild(planSection);
 
-    // Ad Watch karne ka Function
-    window.watchAd = function(uniqueAdId) {
-        let btn = document.getElementById(`btn-${uniqueAdId}`);
-        
-        // Button ko loading state me dalna
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
-        btn.disabled = true;
+                  let currentAdsGrid = document.getElementById(`ads-grid-${planId}`);
 
-        // Fake 2 seconds ka delay ad dikhane ke liye
-        setTimeout(() => {
-            // Earn Balance update karna
-            earnBalance += adReward;
-            localStorage.setItem('winwave_earn_balance', earnBalance);
-            balanceDisplay.innerText = 'Rs. ' + earnBalance.toLocaleString();
+                  for(let i = 1; i <= totalAds; i++) {
+                      let uniqueAdId = `plan${planId}-ad${i}`; 
+                      let isWatched = watchedAds.includes(uniqueAdId);
+                      
+                      let card = document.createElement('div');
+                      card.className = 'ad-card';
+                      
+                      card.innerHTML = `
+                          <i class="fa-solid fa-play-circle"></i>
+                          <h4>Task ${i}</h4>
+                          <button class="ad-btn ${isWatched ? 'watched' : ''}" id="btn-${uniqueAdId}" ${isWatched ? 'disabled' : ''} onclick="watchAd('${uniqueAdId}')">
+                              ${isWatched ? '<i class="fa-solid fa-check"></i> Watched' : 'Watch Ad'}
+                          </button>
+                      `;
+                      currentAdsGrid.appendChild(card);
+                  }
+              }
+          });
 
-            // Ad ko watched me save karna
-            watchedAds.push(uniqueAdId);
-            localStorage.setItem('winwave_watched_ads', JSON.stringify(watchedAds));
+      } else {
+          noPlanMsg.style.display = 'block';
+      }
 
-            // Button ka style change karna
-            btn.classList.add('watched');
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> Watched';
-            
-        }, 2000); // 2000 ms = 2 seconds
-    };
+      window.watchAd = function(uniqueAdId) {
+          let btn = document.getElementById(`btn-${uniqueAdId}`);
+          
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+          btn.disabled = true;
 
-});
+          setTimeout(() => {
+              earnBalance += adReward;
+              localStorage.setItem('winwave_earn_balance', earnBalance);
+              balanceDisplay.innerText = 'Rs. ' + earnBalance.toLocaleString();
+
+              watchedAds.push(uniqueAdId);
+              localStorage.setItem('winwave_watched_ads', JSON.stringify(watchedAds));
+
+              btn.classList.add('watched');
+              btn.innerHTML = '<i class="fa-solid fa-check"></i> Watched';
+              
+          }, 2000); 
+      };
+
+  });
 </script>
 
 </body>
