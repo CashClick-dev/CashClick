@@ -206,7 +206,7 @@ header .dp {
 
 <header>
     <div class="logo">Winwave</div>
-    <div class="dp" title="Qasam Ali" onclick="window.location.href='profile.html'">QA</div>
+    <div class="dp" id="headerDp" title="User" onclick="window.location.href='profile.html'">U</div>
 </header>
 
 <div class="wallet-container">
@@ -267,26 +267,68 @@ header .dp {
     </a>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Load Balances
-    let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 5000;
-    let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+        authDomain: "cashwin-2cfdb.firebaseapp.com",
+        projectId: "cashwin-2cfdb",
+        storageBucket: "cashwin-2cfdb.firebasestorage.app",
+        messagingSenderId: "42491408938",
+        appId: "1:42491408938:web:719a556f8901e19b35c953",
+        measurementId: "G-SVBJQDMX79"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // --- FUNCTION TO UPDATE DP (Header) ---
+    function updateAvatar(name) {
+        let nameParts = name.trim().split(' ');
+        let initials = nameParts[0].charAt(0).toUpperCase();
+        if (nameParts.length > 1) {
+            initials += nameParts[1].charAt(0).toUpperCase();
+        }
+        let dpElement = document.getElementById('headerDp');
+        if (dpElement) {
+            dpElement.innerText = initials;
+            dpElement.title = name;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Load User Name for DP
+        let userName = localStorage.getItem('winwave_username') || 'Guest User';
+        updateAvatar(userName);
+
+        // 1. Load Balances
+        let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 5000;
+        let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
+        
+        let totalBalance = depositBalance + earnBalance;
+
+        // 2. Update UI
+        document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
+        document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+        document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+    });
+
+    function goToDeposit() {
+        window.location.href = "deposit.html";
+    }
     
-    let totalBalance = depositBalance + earnBalance;
+    function goToWithdraw() {
+        window.location.href = "withdraw.html";
+    }
 
-    // 2. Update UI
-    document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
-    document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-    document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
-});
-
-function goToDeposit() {
-    window.location.href = "deposit.html";
-}
-function goToWithdraw() {
-    window.location.href = "withdraw.html";
-}
+    // Make functions globally accessible for HTML onclick attributes
+    window.goToDeposit = goToDeposit;
+    window.goToWithdraw = goToWithdraw;
 </script>
 </body>
 </html>
