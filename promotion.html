@@ -269,13 +269,12 @@ header .dp {
         <h2>Invite & Earn</h2>
         <p>Share your referral link with friends. Earn bonuses when they join Winwave and complete tasks!</p>
         
-        <!-- NEW MISSION ALERT -->
         <div class="mission-alert">
             <i class="fas fa-gift"></i> <strong>Mission:</strong> Invite 1 member who makes a deposit and get <strong>Rs. 100</strong> instantly!
         </div>
         
         <div class="referral-link-container">
-            <input type="text" value="https://winwave.com/ref/" id="refLink" readonly>
+            <input type="text" value="" id="refLink" readonly>
             <button onclick="copyLink()">Copy</button>
         </div>
 
@@ -290,7 +289,6 @@ header .dp {
             </div>
         </div>
 
-        <!-- REFERRALS LIST SECTION -->
         <div class="referrals-list">
             <h3>My Referrals</h3>
             <table class="referral-table">
@@ -301,7 +299,6 @@ header .dp {
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- ZERO DATA FOR FRESH USER -->
                     <tr>
                         <td colspan="2" class="empty-state">No referrals yet. Start inviting!</td>
                     </tr>
@@ -320,7 +317,6 @@ header .dp {
     </div>
 </div>
 
-<!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
     <a href="index.html">
         <i class="fas fa-home"></i>
@@ -341,11 +337,9 @@ header .dp {
 </div>
 
 <script type="module">
-    // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
-    // Your web app's Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
         authDomain: "cashwin-2cfdb.firebaseapp.com",
@@ -356,20 +350,17 @@ header .dp {
         measurementId: "G-SVBJQDMX79"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
 
-    // --- FUNCTION TO COPY LINK ---
     function copyLink() {
         var copyText = document.getElementById("refLink");
         copyText.select();
-        copyText.setSelectionRange(0, 99999); /* For mobile devices */
+        copyText.setSelectionRange(0, 99999); 
         navigator.clipboard.writeText(copyText.value);
         alert("Referral link copied: " + copyText.value);
     }
 
-    // --- FUNCTION TO UPDATE DP (Header) ---
     function updateAvatar(name) {
         let nameParts = name.trim().split(' ');
         let initials = nameParts[0].charAt(0).toUpperCase();
@@ -383,22 +374,36 @@ header .dp {
         }
     }
 
-    // Load User Name from Local Storage for Header DP and Referral Link
     document.addEventListener('DOMContentLoaded', () => {
         let userName = localStorage.getItem('winwave_username') || 'Guest';
         updateAvatar(userName);
 
-        // --- NEW LOGIC FOR DYNAMIC REFERRAL LINK ---
-        // Spaces ko remove karke aur lowercase banake unique code generate karega
-        let refCode = userName.toLowerCase().replace(/\s+/g, '');
-        let refLinkInput = document.getElementById('refLink');
+        // --- REAL REFERRAL LINK LOGIC ---
         
+        // 1. Check karte hain agar is user ka pehle se koi unique code save hai
+        let userUniqueCode = localStorage.getItem('winwave_ref_code');
+
+        // 2. Agar code nahi hai, toh hum ek naya aur pakka unique code banayenge
+        if (!userUniqueCode) {
+            // Username ke pehle 4 letters (e.g., jutt)
+            let cleanName = userName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 4);
+            // Aur 4 random numbers (e.g., 4829) milayenge taa ke 100% unique ho
+            let randomNum = Math.floor(1000 + Math.random() * 9000);
+            
+            userUniqueCode = cleanName + randomNum; // Result: jutt4829
+            
+            // Is code ko save kar lenge taake page refresh hone pe link change na ho
+            localStorage.setItem('winwave_ref_code', userUniqueCode);
+        }
+
+        // 3. Link mein ?ref= parameter laga denge taake dusra page isko read kar sake
+        let refLinkInput = document.getElementById('refLink');
         if (refLinkInput) {
-            refLinkInput.value = "https://winwave.com/ref/" + refCode;
+            // Register page ka URL jahan user account banayega
+            refLinkInput.value = "https://winwave.com/register.html?ref=" + userUniqueCode;
         }
     });
 
-    // Make copyLink accessible globally for the onclick attribute
     window.copyLink = copyLink;
 </script>
 
