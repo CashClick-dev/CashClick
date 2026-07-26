@@ -257,9 +257,8 @@ header .dp {
     header { padding: 15px 20px; }
     .dashboard { padding: 15px; }
     .plan { max-width: 100%; }
-    /* Yahan se .balances-wrapper ka column hata diya hai taake mobile pe bhi aamne samne rahein */
-    .balance-box h3 { font-size: 12px; } /* Mobile pe headings aur chhoti ki hain */
-    .balance-box h2 { font-size: 16px; } /* Mobile pe amount text size adjust kia hai */
+    .balance-box h3 { font-size: 12px; }
+    .balance-box h2 { font-size: 16px; }
 }
 </style>
 </head>
@@ -277,7 +276,8 @@ header .dp {
     <div class="balances-wrapper">
         <div class="balance-box">
             <h3>Deposit Balance</h3>
-            <h2 id="depositBalanceDisplay">Rs. 5000</h2>
+            <!-- Idhar by default 0 set kar diya hai -->
+            <h2 id="depositBalanceDisplay">Rs. 0</h2>
         </div>
         
         <div class="balance-box earn-box">
@@ -327,6 +327,27 @@ header .dp {
     </a>
 </div>
 
+<!-- Firebase SDK Initialization -->
+<script type="module">
+  // Plain HTML mein Firebase ko chalanay ke liye module imports CDN ke through kiye gaye hain
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+    authDomain: "cashwin-2cfdb.firebaseapp.com",
+    projectId: "cashwin-2cfdb",
+    storageBucket: "cashwin-2cfdb.firebasestorage.app",
+    messagingSenderId: "42491408938",
+    appId: "1:42491408938:web:719a556f8901e19b35c953",
+    measurementId: "G-SVBJQDMX79"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // --- WITHDRAWAL SLIDER LOGIC ---
@@ -358,8 +379,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- PLAN BUYING & BALANCE LOGIC ---
     
-    // Deposit aur Earn balance dono localStorage se read kiye hain
-    let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 5000; 
+    // Yahan JavaScript mein default value 5000 ki jagah 0 kar di hai
+    let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 0; 
     let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0; 
     
     // Page load hotay hi dono balances show karein
