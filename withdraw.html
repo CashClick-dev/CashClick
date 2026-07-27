@@ -311,6 +311,8 @@ input:focus {
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -326,21 +328,97 @@ input:focus {
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
     let selectedMethod = "";
     
-    // Naye balances read karna
-    let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 5000;
-    let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
-    let availableBalance = depositBalance + earnBalance; 
+    // Global variables
+    let depositBalance = 0;
+    let earnBalance = 0;
+    let availableBalance = 0;
+    let validInvites = 0;
+    let userRef;
 
-    // Valid Invites read karna (Default 0 hai test karne ke liye)
-    let validInvites = localStorage.getItem('winwave_valid_invites') ? parseInt(localStorage.getItem('winwave_valid_invites')) : 0;
+    // Page load hone par user data load karna
+    onAuthStateChanged(auth, async (user) => {
 
-    // Page load hone par balance dikhana
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
+        if (!user) {
+            alert("Please login first");
+            window.location.href = "login.html";
+            return;
+        }
+
+        const uid = user.uid;
+
+        userRef = doc(db, "users", uid);
+        const snap = await getDoc(userRef);
+
+        if (!snap.exists()) return;
+
+        const data = snap.data();
+
+        depositBalance = data.deposit || 0;
+        earnBalance = data.earnBalance || 0;
+
+        availableBalance = depositBalance + earnBalance;
+
+        // referrals count (valid invites)
+        validInvites = data.validReferrals || 0;
+
+        document.getElementById('displayBalance').innerText = 
+            `Rs. ${availableBalance.toLocaleString()}`;
     });
+
+    async function loadWithdrawalHistory() {
+        const historyList = document.getElementById('historyList');
+        historyList.innerHTML = "<p style='text-align:center; color:#94a3b8;'>Loading...</p>";
+
+        try {
+            const snap = await getDoc(userRef);
+            if (!snap.exists()) {
+                historyList.innerHTML = "<p style='text-align:center; color:#94a3b8;'>No history found.</p>";
+                return;
+            }
+
+            const data = snap.data();
+            const withdrawals = data.withdrawals || [];
+
+            if (withdrawals.length === 0) {
+                historyList.innerHTML = "<p style='text-align:center; color:#94a3b8;'>No withdrawal records.</p>";
+                return;
+            }
+
+            historyList.innerHTML = ""; // Clear loading message
+
+            [...withdrawals].reverse().forEach(w => {
+
+                let maskedAccount = "XXXX";
+                if (w.account && w.account.length >= 11) {
+                    maskedAccount = w.account.substring(0, 4) + "XXXX" + w.account.substring(8);
+                }
+
+                const newCard = `
+                    <div class="history-card">
+                        <div class="history-flex">
+                            <span class="history-amount">Rs. ${w.amount ? w.amount.toLocaleString() : 0}</span>
+                            <span class="badge ${w.status || 'pending'}">${w.status || 'pending'}</span>
+                        </div>
+                        <div class="history-flex">
+                            <span class="history-method">${w.method || 'N/A'} - ${maskedAccount}</span>
+                        </div>
+                        <span class="history-date">${w.date ? new Date(w.date).toDateString() : 'N/A'}</span>
+                    </div>
+                `;
+
+                historyList.insertAdjacentHTML('beforeend', newCard);
+            });
+
+        } catch (err) {
+            console.log(err);
+            historyList.innerHTML = "<p style='text-align:center; color:#f87171;'>Failed to load history.</p>";
+        }
+    }
 
     function selectMethod(element, method) {
         document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active'));
@@ -352,6 +430,9 @@ input:focus {
         if (view === 'history') {
             document.getElementById('formView').style.display = 'none';
             document.getElementById('historyView').style.display = 'block';
+
+            loadWithdrawalHistory();
+
         } else {
             document.getElementById('historyView').style.display = 'none';
             document.getElementById('formView').style.display = 'block';
@@ -360,13 +441,15 @@ input:focus {
     }
 
     function submitWithdrawal() {
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn.disabled) return;
+
         const accName = document.getElementById('accountName').value.trim();
         const accNumber = document.getElementById('accountNumber').value.trim();
         const amount = parseInt(document.getElementById('withdrawAmount').value);
         const statusMsg = document.getElementById('statusMessage');
-        const submitBtn = document.getElementById('submitBtn');
 
-        // CONDITION: Agar user ke paas 5 valid members nahi hain to error aayega
+        // CONDITION: 5 valid invites required
         if (validInvites < 5) {
             let needed = 5 - validInvites;
             return showError(`Withdrawal Locked! You need ${needed} more valid invite(s) to withdraw. (Members must deposit & buy a plan).`);
@@ -382,8 +465,8 @@ input:focus {
         submitBtn.innerText = "Submitting...";
         statusMsg.style.display = "none";
 
-        setTimeout(() => {
-            // Withdrawal ki deduction logic
+        setTimeout(async () => {
+
             if (amount <= earnBalance) {
                 earnBalance -= amount;
             } else {
@@ -393,22 +476,41 @@ input:focus {
             }
 
             availableBalance = depositBalance + earnBalance;
-            
-            // Naya balance LocalStorage mein save karna
-            localStorage.setItem('winwave_earn_balance', earnBalance);
-            localStorage.setItem('winwave_deposit_balance', depositBalance);
 
-            // Screen par balance update karna
-            document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
+            try {
 
-            showSuccess(`Request Submitted Successfully!\nYour withdrawal of Rs. ${amount.toLocaleString()} is currently Pending.`);
-            
+                await updateDoc(userRef, {
+                    earnBalance: earnBalance,
+                    deposit: depositBalance,
+                    withdrawals: arrayUnion({
+                        amount: amount,
+                        method: selectedMethod,
+                        account: accNumber,
+                        status: "pending",
+                        date: new Date().toISOString()
+                    })
+                });
+
+            } catch (err) {
+                showError("Error saving withdrawal");
+                
+                submitBtn.innerText = "Submit Request";
+                submitBtn.disabled = false;
+                
+                return;
+            }
+
+            document.getElementById('displayBalance').innerText = 
+                `Rs. ${availableBalance.toLocaleString()}`;
+
+            showSuccess(`Request Submitted! Rs. ${amount.toLocaleString()} pending`);
+
             addRecordToHistory(amount, selectedMethod, accNumber);
 
             document.getElementById('accountName').value = "";
             document.getElementById('accountNumber').value = "";
             document.getElementById('withdrawAmount').value = "";
-            
+
             submitBtn.innerText = "Submit Request";
             submitBtn.disabled = false;
 
@@ -422,7 +524,10 @@ input:focus {
         const options = { day: 'numeric', month: 'short', year: 'numeric' };
         const formattedDate = dateObj.toLocaleDateString('en-GB', options); 
         
-        const maskedAccount = account.substring(0, 4) + "XXXX" + account.substring(8);
+        let maskedAccount = "XXXX";
+        if (account && account.length >= 11) {
+            maskedAccount = account.substring(0, 4) + "XXXX" + account.substring(8);
+        }
 
         const newCard = `
             <div class="history-card">
@@ -437,7 +542,13 @@ input:focus {
             </div>
         `;
 
-        historyList.insertAdjacentHTML('afterbegin', newCard);
+        if (historyList) {
+            // Remove "No record" message if present
+            if (historyList.children.length === 1 && historyList.children[0].tagName === 'P') {
+                historyList.innerHTML = "";
+            }
+            historyList.insertAdjacentHTML('afterbegin', newCard);
+        }
     }
 
     function showError(message) {
