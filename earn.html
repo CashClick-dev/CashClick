@@ -174,6 +174,8 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
   // Import Firebase modules via CDN for plain HTML
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
@@ -189,101 +191,121 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
   // Baaki pehle wala code shuru
   document.addEventListener('DOMContentLoaded', () => {
       
-      const plansInfo = {
-          '1': 10,
-          '2': 20,
-          '3': 30,
-          '4': 40,
-          '5': 50
-      };
+      onAuthStateChanged(auth, async (user) => {
 
-      const adReward = 20;
+          if (!user) {
+              alert("Please login first");
+              window.location.href = "login.html";
+              return;
+          }
 
-      let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0; 
-      
-      let activePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
-      
-      let today = new Date().toDateString();
-      let savedDate = localStorage.getItem('winwave_ads_date');
-      if(savedDate !== today) {
-          localStorage.removeItem('winwave_watched_ads');
-          localStorage.setItem('winwave_ads_date', today);
-      }
+          const uid = user.uid;
 
-      let watchedAds = localStorage.getItem('winwave_watched_ads') ? JSON.parse(localStorage.getItem('winwave_watched_ads')) : [];
+          const userRef = doc(db, "users", uid);
+          const snap = await getDoc(userRef);
 
-      const balanceDisplay = document.getElementById('earnBalanceAmount');
-      const noPlanMsg = document.getElementById('noPlanMsg');
-      const allPlansContainer = document.getElementById('allPlansContainer');
+          if (!snap.exists()) return;
 
-      balanceDisplay.innerText = 'Rs. ' + earnBalance.toLocaleString();
+          const data = snap.data();
 
-      if(activePlans.length > 0) {
+          let earnBalance = data.earnBalance || 0;
+          let activePlans = data.activePlans || [];
+          let watchedAds = data.watchedAds || [];
+
+          const balanceDisplay = document.getElementById('earnBalanceAmount');
+          const noPlanMsg = document.getElementById('noPlanMsg');
+          const allPlansContainer = document.getElementById('allPlansContainer');
+
+          balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
+
+          const plansInfo = {
+              '1': 10,
+              '2': 20,
+              '3': 30,
+              '4': 40,
+              '5': 50
+          };
+
+          const adReward = 20;
+
+          if (activePlans.length === 0) {
+              noPlanMsg.style.display = 'block';
+              return;
+          }
+
           activePlans.forEach(planId => {
-              if(plansInfo[planId]) {
-                  let totalAds = plansInfo[planId];
 
-                  let planSection = document.createElement('div');
-                  planSection.className = 'plan-section';
-                  
-                  let planHeaderHTML = `
-                      <div class="plan-header">
-                          <h2><i class="fa-solid fa-circle-check"></i> Plan ${planId} Active</h2>
-                          <p>Available Ads: <strong>${totalAds}</strong></p>
-                      </div>
-                      <div class="ads-grid" id="ads-grid-${planId}"></div>
+              let totalAds = plansInfo[planId];
+
+              let planSection = document.createElement('div');
+              planSection.className = 'plan-section';
+
+              planSection.innerHTML = `
+                  <div class="plan-header">
+                      <h2>Plan ${planId} Active</h2>
+                      <p>Available Ads: ${totalAds}</p>
+                  </div>
+                  <div class="ads-grid" id="ads-${planId}"></div>
+              `;
+
+              allPlansContainer.appendChild(planSection);
+
+              let grid = document.getElementById(`ads-${planId}`);
+
+              for (let i = 1; i <= totalAds; i++) {
+
+                  let adId = `plan${planId}-ad${i}`;
+                  let isWatched = watchedAds.includes(adId);
+
+                  let card = document.createElement('div');
+                  card.className = 'ad-card';
+
+                  card.innerHTML = `
+                      <h4>Task ${i}</h4>
+                      <button class="ad-btn ${isWatched ? 'watched' : ''}" id="btn-${adId}" ${isWatched ? 'disabled' : ''}>
+                          ${isWatched ? 'Watched' : 'Watch Ad'}
+                      </button>
                   `;
-                  planSection.innerHTML = planHeaderHTML;
-                  allPlansContainer.appendChild(planSection);
 
-                  let currentAdsGrid = document.getElementById(`ads-grid-${planId}`);
+                  grid.appendChild(card);
 
-                  for(let i = 1; i <= totalAds; i++) {
-                      let uniqueAdId = `plan${planId}-ad${i}`; 
-                      let isWatched = watchedAds.includes(uniqueAdId);
-                      
-                      let card = document.createElement('div');
-                      card.className = 'ad-card';
-                      
-                      card.innerHTML = `
-                          <i class="fa-solid fa-play-circle"></i>
-                          <h4>Task ${i}</h4>
-                          <button class="ad-btn ${isWatched ? 'watched' : ''}" id="btn-${uniqueAdId}" ${isWatched ? 'disabled' : ''} onclick="watchAd('${uniqueAdId}')">
-                              ${isWatched ? '<i class="fa-solid fa-check"></i> Watched' : 'Watch Ad'}
-                          </button>
-                      `;
-                      currentAdsGrid.appendChild(card);
-                  }
+                  let btn = document.getElementById(`btn-${adId}`);
+
+                  btn.onclick = async () => {
+                      if (watchedAds.includes(adId)) return;
+
+                      btn.innerText = "Loading...";
+                      btn.disabled = true;
+
+                      setTimeout(async () => {
+
+                          earnBalance += adReward;
+                          watchedAds.push(adId);
+
+                          await updateDoc(userRef, {
+                              earnBalance: earnBalance,
+                              watchedAds: watchedAds
+                          });
+
+                          balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
+
+                          btn.innerText = "Watched";
+                          btn.classList.add('watched');
+
+                      }, 2000);
+
+                  };
               }
+
           });
 
-      } else {
-          noPlanMsg.style.display = 'block';
-      }
-
-      window.watchAd = function(uniqueAdId) {
-          let btn = document.getElementById(`btn-${uniqueAdId}`);
-          
-          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
-          btn.disabled = true;
-
-          setTimeout(() => {
-              earnBalance += adReward;
-              localStorage.setItem('winwave_earn_balance', earnBalance);
-              balanceDisplay.innerText = 'Rs. ' + earnBalance.toLocaleString();
-
-              watchedAds.push(uniqueAdId);
-              localStorage.setItem('winwave_watched_ads', JSON.stringify(watchedAds));
-
-              btn.classList.add('watched');
-              btn.innerHTML = '<i class="fa-solid fa-check"></i> Watched';
-              
-          }, 2000); 
-      };
+      });
 
   });
 </script>
