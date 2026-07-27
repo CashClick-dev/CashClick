@@ -270,7 +270,7 @@ header .dp {
         <p>Share your referral link with friends. Earn bonuses when they join Winwave and complete tasks!</p>
         
         <div class="mission-alert">
-            <i class="fas fa-gift"></i> <strong>Mission:</strong> Invite 1 member who makes a deposit and get <strong>Rs. 100</strong> instantly!
+            <i class="fas fa-gift"></i> <strong>Mission:</strong> Invite 1 member who makes a deposit and get <strong>Rs. 50</strong> first deposit bonus!
         </div>
         
         <div class="referral-link-container">
@@ -280,11 +280,11 @@ header .dp {
 
         <div class="stats-container">
             <div class="stat-box">
-                <h3>0</h3>
+                <h3 id="totalReferrals">0</h3>
                 <span>Total Referrals</span>
             </div>
             <div class="stat-box">
-                <h3>Rs. 0</h3>
+                <h3 id="referralEarnings">Rs. 0</h3>
                 <span>Referral Earnings</span>
             </div>
         </div>
@@ -298,7 +298,7 @@ header .dp {
                         <th>Deposit Amount</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="referralTableBody">
                     <tr>
                         <td colspan="2" class="empty-state">No referrals yet. Start inviting!</td>
                     </tr>
@@ -339,8 +339,8 @@ header .dp {
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-    // Firebase Auth import kiya hai yahan
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
@@ -354,7 +354,8 @@ header .dp {
 
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
-    const auth = getAuth(app); // Auth initialize kar diya
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
     function copyLink() {
         var copyText = document.getElementById("refLink");
@@ -384,23 +385,60 @@ header .dp {
     });
 
     // --- REAL FIREBASE UID REFERRAL LINK LOGIC ---
-    // Jab user ka Firebase Auth state change hoga (login hoga), tab link update hoga
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
         const refLinkInput = document.getElementById('refLink');
-        
-        if (user) {
-            // User login hai, uski original Firebase UID nikal li
-            const uid = user.uid;
-            
-            // Custom domain aur UID laga kar link generate kar diya
-            if (refLinkInput) {
-                refLinkInput.value = "https://hakamherbal.com/index.html?ref=" + uid;
+
+        if (!user) {
+            if (refLinkInput) refLinkInput.value = "Please login to view link";
+            return;
+        }
+
+        const uid = user.uid;
+
+        if (refLinkInput) {
+            refLinkInput.value = window.location.origin + "/index.html?ref=" + uid;
+        }
+
+        const displayName = user.displayName || localStorage.getItem('winwave_username') || (user.email ? user.email.split('@')[0] : 'User');
+        updateAvatar(displayName);
+
+        const userRef = doc(db, "users", uid);
+        const snap = await getDoc(userRef);
+
+        if (snap.exists()) {
+            const data = snap.data();
+            const referralsQuery = query(collection(db, "users"), where("referredBy", "==", uid));
+            const referralsSnap = await getDocs(referralsQuery);
+
+            const totalReferrals = referralsSnap.size;
+            let referralEarnings = 0;
+            const tbody = document.getElementById("referralTableBody");
+            tbody.innerHTML = "";
+
+            if (totalReferrals === 0) {
+                tbody.innerHTML = `<tr><td colspan="2" class="empty-state">No referrals yet. Start inviting!</td></tr>`;
+            } else {
+                referralsSnap.forEach((refDoc) => {
+                    const refData = refDoc.data();
+                    const deposit = refData.firstDeposit || refData.deposit || 0;
+
+                    // Sirf pehle deposit par hi ek dafa Rs. 50 bonus count hoga
+                    if (deposit > 0) {
+                        referralEarnings += 50;
+                    }
+
+                    // Table mein invited member aur unka deposit show hoga
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${refDoc.id}</td>
+                        <td>Rs. ${deposit.toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
             }
-        } else {
-            // Agar user login nahi hai
-            if (refLinkInput) {
-                refLinkInput.value = "Please login to view link";
-            }
+
+            document.getElementById("totalReferrals").innerText = totalReferrals;
+            document.getElementById("referralEarnings").innerText = "Rs. " + referralEarnings.toLocaleString();
         }
     });
 
