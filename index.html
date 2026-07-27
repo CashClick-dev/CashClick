@@ -246,12 +246,10 @@
                 deposit: 0,
                 earned: 0,
                 createdAt: new Date(),
-                referredBy: referralUid || null
+                referredBy: referralUid ? referralUid : null
             });
 
             localStorage.setItem('winwave_username', name);
-
-            alert("Account Created Successfully!");
             window.location.href = "dashboard.html";
 
         } catch (err) {
@@ -283,13 +281,22 @@
             return;
         }
 
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters");
+            return;
+        }
+
         if (!isLogin) {
+            if (!name.trim()) {
+                alert("Name required");
+                return;
+            }
             if (!name || !confirmPassword) {
                 alert("Complete all fields");
                 return;
             }
             if (password !== confirmPassword) {
-                alert("Passwords not match");
+                alert("Passwords do not match");
                 return;
             }
             registerUser();
@@ -299,7 +306,7 @@
     }
 
     onAuthStateChanged(auth, (user) => {
-        if (user) {
+        if (user && window.location.pathname.includes("index.html")) {
             window.location.href = "dashboard.html";
         }
     });
