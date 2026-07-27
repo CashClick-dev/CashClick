@@ -329,9 +329,10 @@ header .dp {
 
 <!-- Firebase SDK Initialization -->
 <script type="module">
-  // Plain HTML mein Firebase ko chalanay ke liye module imports CDN ke through kiye gaye hain
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
@@ -343,9 +344,17 @@ header .dp {
     measurementId: "G-SVBJQDMX79"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.auth = auth;
+  window.db = db;
+  window.docRef = doc;
+  window.getDocRef = getDoc;
+  window.updateDocRef = updateDoc;
+  window.onAuthStateChanged = onAuthStateChanged;
 </script>
 
 <script>
@@ -378,14 +387,34 @@ document.addEventListener('DOMContentLoaded', () => {
     track.innerHTML = cardsHTML + cardsHTML;
 
     // --- PLAN BUYING & BALANCE LOGIC ---
-    
-    // Yahan JavaScript mein default value 5000 ki jagah 0 kar di hai
-    let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 0; 
-    let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0; 
-    
-    // Page load hotay hi dono balances show karein
-    document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-    document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+    let depositBalance = 0;
+    let earnBalance = 0;
+    let activePlans = [];
+
+    window.onAuthStateChanged(window.auth, async (user) => {
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        const userRef = window.docRef(window.db, "users", user.uid);
+        const snap = await window.getDocRef(userRef);
+
+        if (snap.exists()) {
+            const data = snap.data();
+
+            depositBalance = data.deposit || 0;
+            earnBalance = data.earned || 0;
+            activePlans = data.activePlans || [];
+
+            document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+            document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+
+            activePlans.forEach(planId => {
+                showActivePlanTick(planId);
+            });
+        }
+    });
 
     // Button ko Green Tick se replace karne ka function
     function showActivePlanTick(planId) {
@@ -395,41 +424,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Page refresh honay par check karein ke kon kon se plans active hain
-    let activePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
-    activePlans.forEach(planId => {
-        showActivePlanTick(planId);
-    });
-
     // Plan Buy karne ka function
-    window.buyPlan = function(planId, price) {
-        let currentActivePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
-        
-        if (currentActivePlans.includes(planId)) {
+    window.buyPlan = async function(planId, price) {
+        const user = window.auth.currentUser;
+
+        if (!user) {
+            alert("Please login first.");
+            return;
+        }
+
+        const userRef = window.docRef(window.db, "users", user.uid);
+        const snap = await window.getDocRef(userRef);
+
+        if (!snap.exists()) {
+            alert("User data not found.");
+            return;
+        }
+
+        const data = snap.data();
+        let currentDeposit = data.deposit || 0;
+        let currentPlans = data.activePlans || [];
+
+        if (currentPlans.includes(planId)) {
             alert(`Aapke paas pehle se Plan ${planId} active hai!`);
             return;
         }
 
-        // Check karein ke sirf DEPOSIT balance se buy ho raha hai
-        if (depositBalance >= price) {
-            depositBalance -= price;
-            
-            // Deposit balance local storage me update karein
-            localStorage.setItem('winwave_deposit_balance', depositBalance);
-            
-            // Naya plan active plans list mein daal kar save karein
-            currentActivePlans.push(planId);
-            localStorage.setItem('winwave_active_plans', JSON.stringify(currentActivePlans));
-            
-            // Screen par naya Deposit Balance show karein
-            document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-            
-            alert(`Mubarak ho! Aapne Deposit Amount se Plan ${planId} kamyabi se khareed liya hai.`);
-
-            showActivePlanTick(planId);
-        } else {
-            alert(`Plan ${planId} khareedne ke liye aapka Deposit Balance na-kafi hai. (Price: Rs. ${price})\nNote: Plan sirf deposit ki hui amount se buy kiya ja sakta hai.`);
+        if (currentDeposit < price) {
+            alert(`Plan ${planId} khareedne ke liye Deposit Balance na-kafi hai. Price: Rs. ${price}`);
+            return;
         }
+
+        currentDeposit -= price;
+        currentPlans.push(planId);
+
+        await window.updateDocRef(userRef, {
+            deposit: currentDeposit,
+            activePlans: currentPlans
+        });
+
+        depositBalance = currentDeposit;
+        activePlans = currentPlans;
+
+        document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+        showActivePlanTick(planId);
+
+        alert(`Mubarak ho! Aapne Plan ${planId} khareed liya hai.`);
     };
 });
 </script>
