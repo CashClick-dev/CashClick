@@ -270,6 +270,8 @@ header .dp {
 <script type="module">
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
     // Your web app's Firebase configuration
@@ -286,6 +288,8 @@ header .dp {
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
     // --- FUNCTION TO UPDATE DP (Header) ---
     function updateAvatar(name) {
@@ -302,20 +306,44 @@ header .dp {
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Load User Name for DP
-        let userName = localStorage.getItem('winwave_username') || 'Guest User';
-        updateAvatar(userName);
-
-        // 1. Load Balances (Changed default deposit balance from 5000 to 0)
-        let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 0;
-        let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
         
-        let totalBalance = depositBalance + earnBalance;
+        onAuthStateChanged(auth, async (user) => {
 
-        // 2. Update UI
-        document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
-        document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-        document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+            if (!user) {
+                alert("Please login first");
+                window.location.href = "login.html";
+                return;
+            }
+
+            const uid = user.uid;
+            const userRef = doc(db, "users", uid);
+
+            try {
+                const snap = await getDoc(userRef);
+
+                if (!snap.exists()) return;
+
+                const data = snap.data();
+
+                let name = data.name || "User";
+                updateAvatar(name);
+
+                let depositBalance = data.deposit || 0;
+                let earnBalance = data.earnBalance || 0;
+
+                let totalBalance = depositBalance + earnBalance;
+
+                document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
+                document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+                document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+
+            } catch (err) {
+                alert("Error loading wallet");
+                console.log(err);
+            }
+
+        });
+
     });
 
     function goToDeposit() {
