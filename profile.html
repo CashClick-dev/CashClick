@@ -503,12 +503,11 @@ header .dp {
 </div>
 
 <script type="module">
-  // Import Firebase modules
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
     authDomain: "cashwin-2cfdb.firebaseapp.com",
@@ -519,14 +518,13 @@ header .dp {
     measurementId: "G-SVBJQDMX79"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-  const auth = getAuth(app); // Initialize Firebase Auth
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  // --- FUNCTIONS FOR AVATAR & USER DATA ---
   function updateAvatar(name) {
-      if(!name) return;
+      if (!name) return;
       let nameParts = name.trim().split(' ');
       let initials = nameParts[0].charAt(0).toUpperCase();
       if (nameParts.length > 1) {
@@ -538,44 +536,33 @@ header .dp {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-      // Listen for Firebase Auth state changes
-      onAuthStateChanged(auth, (user) => {
-          if (user) {
-              // User is signed in. Fetch Name and UID.
-              // If displayName isn't set, fallback to localStorage or email prefix
-              let displayName = user.displayName || localStorage.getItem('winwave_username') || user.email.split('@')[0] || 'User';
-              let uid = user.uid;
+      onAuthStateChanged(auth, async (user) => {
+          if (!user) {
+              window.location.href = "index.html";
+              return;
+          }
 
-              document.getElementById('profileName').innerText = displayName;
-              document.getElementById('profileUid').innerText = 'UID: ' + uid;
-              document.getElementById('editNameInput').value = displayName;
-              
-              updateAvatar(displayName);
-          } else {
-              // User is not signed in
-              document.getElementById('profileName').innerText = "Guest User";
-              document.getElementById('profileUid').innerText = 'UID: Not Logged In';
-              updateAvatar("Guest User");
+          const displayName = user.displayName || localStorage.getItem('winwave_username') || (user.email ? user.email.split('@')[0] : 'User');
+          document.getElementById('profileName').innerText = displayName;
+          document.getElementById('profileUid').innerText = 'UID: ' + user.uid;
+          document.getElementById('editNameInput').value = displayName;
+          updateAvatar(displayName);
+
+          const userRef = doc(db, "users", user.uid);
+          const snap = await getDoc(userRef);
+
+          if (snap.exists()) {
+              const data = snap.data();
+
+              document.getElementById('profileDeposit').innerText = 'Rs. ' + (data.deposit || 0).toLocaleString();
+              document.getElementById('profileEarn').innerText = 'Rs. ' + (data.earned || 0).toLocaleString();
+
+              const plans = data.activePlans || [];
+              document.getElementById('profilePlan').innerText = plans.length > 0 ? plans.join(', ') : 'None';
           }
       });
-
-      // Load Balances (Default changed to 0)
-      let depositBalance = localStorage.getItem('winwave_deposit_balance') ? parseInt(localStorage.getItem('winwave_deposit_balance')) : 0;
-      let earnBalance = localStorage.getItem('winwave_earn_balance') ? parseInt(localStorage.getItem('winwave_earn_balance')) : 0;
-      
-      document.getElementById('profileDeposit').innerText = 'Rs. ' + depositBalance.toLocaleString();
-      document.getElementById('profileEarn').innerText = 'Rs. ' + earnBalance.toLocaleString();
-
-      let activePlans = JSON.parse(localStorage.getItem('winwave_active_plans')) || [];
-      
-      if (activePlans.length > 0) {
-          document.getElementById('profilePlan').innerText = activePlans.join(', ');
-      } else {
-          document.getElementById('profilePlan').innerText = 'None';
-      }
   });
 
-  // --- MODAL FUNCTIONS ---
   function openModal(modalId) {
       document.getElementById(modalId).style.display = 'flex';
   }
@@ -584,75 +571,89 @@ header .dp {
       document.getElementById(modalId).style.display = 'none';
   }
 
-  // 1. Save Profile Function
-  function saveProfile() {
-      let newName = document.getElementById('editNameInput').value;
-      if (newName.trim() === "") {
+  async function saveProfile() {
+      const newName = document.getElementById('editNameInput').value.trim();
+      if (!newName) {
           alert("Name cannot be empty!");
           return;
       }
-      
+
+      const user = auth.currentUser;
+      if (!user) {
+          alert("Please login again.");
+          return;
+      }
+
+      await updateDoc(doc(db, "users", user.uid), {
+          name: newName
+      });
+      await updateProfile(user, { displayName: newName });
+
       localStorage.setItem('winwave_username', newName);
-      
       document.getElementById('profileName').innerText = newName;
       updateAvatar(newName);
-      
+
       alert("Profile updated successfully!");
       closeModal('editProfileModal');
   }
 
-  // 2. Save Password Function
-  function savePassword() {
-      let current = document.getElementById('currentPass').value;
-      let newP = document.getElementById('newPass').value;
-      let confirmP = document.getElementById('confirmPass').value;
+  async function savePassword() {
+      const user = auth.currentUser;
+      if (!user) {
+          alert("Please login again.");
+          return;
+      }
 
-      if (current === "" || newP === "" || confirmP === "") {
+      const current = document.getElementById('currentPass').value;
+      const newP = document.getElementById('newPass').value;
+      const confirmP = document.getElementById('confirmPass').value;
+
+      if (!current || !newP || !confirmP) {
           alert("Please fill all fields!");
           return;
       }
+
       if (newP !== confirmP) {
           alert("New password and Confirm password do not match!");
           return;
       }
 
-      alert("Password changed successfully!");
-      
-      document.getElementById('currentPass').value = "";
-      document.getElementById('newPass').value = "";
-      document.getElementById('confirmPass').value = "";
-      
-      closeModal('changePasswordModal');
+      try {
+          const credential = EmailAuthProvider.credential(user.email, current);
+          await reauthenticateWithCredential(user, credential);
+          await updatePassword(user, newP);
+
+          alert("Password changed successfully!");
+          document.getElementById('currentPass').value = "";
+          document.getElementById('newPass').value = "";
+          document.getElementById('confirmPass').value = "";
+          closeModal('changePasswordModal');
+      } catch (error) {
+          alert(error.message);
+      }
   }
 
-  // 3. Support Message Function
   function sendSupportMessage() {
       let msg = document.getElementById('supportMsg').value;
       if (msg.trim() === "") {
           alert("Please write a message first.");
           return;
       }
-      
+
       alert("Ticket submitted successfully! Support team will contact you soon.");
-      document.getElementById('supportMsg').value = ""; 
+      document.getElementById('supportMsg').value = "";
       closeModal('supportModal');
   }
 
-  // --- LOGOUT FUNCTION (Integrated with Firebase) ---
-  function logout() {
+  async function logout() {
       let confirmLogout = confirm("Are you sure you want to logout?");
-      if(confirmLogout) {
-          signOut(auth).then(() => {
-              alert("Logged out successfully!");
-              window.location.href = "index.html"; // Assuming index.html is the login/signup page
-          }).catch((error) => {
-              console.error("Logout Error", error);
-              alert("An error occurred while logging out.");
-          });
+      if (confirmLogout) {
+          await signOut(auth);
+          alert("Logged out successfully!");
+          window.location.href = "index.html";
       }
   }
 
-  // Make functions globally accessible for HTML onclick attributes
   window.openModal = openModal;
   window.closeModal = closeModal;
   window.saveProfile = saveProfile;
