@@ -44,8 +44,16 @@ h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #94a3b8; }
 .option-btn { background: #0f172a; border: 2px solid #1e293b; color: white; padding: 15px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; text-align: center; font-size: 14px;}
 .option-btn:hover { border-color: #38bdf8; }
 .option-btn.active { background: #38bdf8; color: black; border-color: #38bdf8; }
-input { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #1e293b; border-radius: 5px; outline: none; background: #0f172a; color: white; font-size: 16px; text-align: center; }
-input:focus { border-color: #38bdf8; }
+input[type="text"] { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #1e293b; border-radius: 5px; outline: none; background: #0f172a; color: white; font-size: 16px; text-align: center; }
+input[type="text"]:focus { border-color: #38bdf8; }
+
+/* File Input Style */
+input[type="file"] {
+    width: 100%; padding: 10px; margin: 10px 0 20px 0; border: 1px dashed #1e293b; 
+    border-radius: 5px; background: #0f172a; color: #94a3b8; font-size: 14px; cursor: pointer;
+}
+input[type="file"]:focus { border-color: #38bdf8; }
+
 .btn { width: 100%; padding: 12px; background: #38bdf8; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; color: black; transition: 0.3s; }
 .btn:hover { background: #0ea5e9; }
 .btn:disabled { background: #475569; cursor: not-allowed; }
@@ -131,13 +139,24 @@ input:focus { border-color: #38bdf8; }
 
     <div id="step2">
         <h3 id="paymentDetailsHeading">Pay Rs. 0</h3>
-        <p style="text-align: center; font-size: 14px; color: #94a3b8;">Enter mobile number to receive payment PIN prompt.</p>
-        
-        <input type="number" id="accountNumber" placeholder="03XXXXXXXXX">
-        
-        <button class="btn" id="payBtn" onclick="initiatePayment()">Send Payment Request</button>
+        <p style="text-align:center; font-size:14px; color:#94a3b8;">
+            QR code scan karke payment karo. Payment ke baad transaction ID bhejo.
+        </p>
+    
+        <div style="text-align:center; margin:20px 0;">
+            <img src="qr-code.png" alt="Payment QR" style="width:220px; max-width:100%; border-radius:12px; border:1px solid #1e293b; background:#fff; padding:10px;">
+        </div>
+    
+        <label style="display:block; text-align:left; color:#94a3b8; font-size:14px; margin-bottom:5px;">Transaction ID</label>
+        <input type="text" id="txnId" placeholder="Enter transaction ID">
+    
+        <!-- Screenshot Upload Field Added Here -->
+        <label style="display:block; text-align:left; color:#94a3b8; font-size:14px; margin-bottom:5px;">Payment Screenshot</label>
+        <input type="file" id="paymentScreenshot" accept="image/*">
+    
+        <button class="btn" id="payBtn" onclick="submitDepositRequest()">Submit Deposit Request</button>
         <button class="btn" id="backBtn" style="background: transparent; color: #94a3b8; margin-top: 10px;" onclick="goBack()">Go Back</button>
-
+    
         <div id="statusMessage" class="status-msg"></div>
     </div>
 </div>
@@ -166,6 +185,8 @@ input:focus { border-color: #38bdf8; }
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
@@ -179,43 +200,124 @@ input:focus { border-color: #38bdf8; }
 
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  let currentUser = null;
+  onAuthStateChanged(auth, (user) => {
+      if (!user) {
+          alert("Login required");
+          window.location.href = "index.html";
+          return;
+      }
+      currentUser = user;
+  });
+
+  async function submitDepositRequest() {
+      const amount = window.selectedAmount;
+      const method = window.selectedMethod;
+      const txnId = document.getElementById('txnId').value.trim();
+      const payBtn = document.getElementById('payBtn');
+      const statusMsg = document.getElementById('statusMessage');
+  
+      function showError(msg) {
+          statusMsg.style.display = "block";
+          statusMsg.className = "status-msg error";
+          statusMsg.innerText = msg;
+      }
+  
+      if (!currentUser) {
+          alert("User not loaded yet.");
+          return;
+      }
+  
+      if (!amount || amount < 500) {
+          showError("Amount select karo.");
+          return;
+      }
+  
+      if (!txnId) {
+          showError("Transaction ID enter karo.");
+          return;
+      }
+  
+      payBtn.disabled = true;
+      payBtn.innerText = "Submitting...";
+      statusMsg.style.display = "block";
+      statusMsg.className = "status-msg loading";
+      statusMsg.innerText = "Deposit request save ho rahi hai...";
+  
+      try {
+          await addDoc(collection(db, "depositRequests"), {
+              uid: currentUser.uid,
+              name: currentUser.displayName || currentUser.email || "User",
+              amount: amount,
+              txnId: txnId,
+              method: method,
+              status: "pending",
+              createdAt: new Date().toISOString()
+          });
+  
+          statusMsg.className = "status-msg success";
+          statusMsg.innerText = "Request submitted. Admin verification ke baad balance add hoga.";
+          payBtn.innerText = "Submitted";
+  
+          setTimeout(() => {
+              window.location.href = "wallet.html";
+          }, 2000);
+  
+      } catch (err) {
+          console.error(err);
+          showError("Request save nahi hui.");
+          payBtn.disabled = false;
+          payBtn.innerText = "Submit Deposit Request";
+      }
+  }
+  
+  window.submitDepositRequest = submitDepositRequest;
 </script>
 
 <script>
-    let selectedMethod = ""; let selectedAmount = 0; let checkInterval;
-    function selectMethod(element, method) { document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); selectedMethod = method; }
-    function selectAmount(element, amount) { document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active')); element.classList.add('active'); selectedAmount = amount; }
-    function goToStep2() { if (!selectedMethod || !selectedAmount) { alert("Please select both a method and an amount."); return; } document.getElementById('step1').style.display = 'none'; document.getElementById('step2').style.display = 'block'; document.getElementById('paymentDetailsHeading').innerText = `Pay Rs. ${selectedAmount} via ${selectedMethod.toUpperCase()}`; }
-    function goBack() { document.getElementById('step2').style.display = 'none'; document.getElementById('step1').style.display = 'block'; resetUI(); }
-    function resetUI() { clearInterval(checkInterval); const payBtn = document.getElementById('payBtn'); const statusMsg = document.getElementById('statusMessage'); payBtn.disabled = false; payBtn.innerText = "Send Payment Request"; statusMsg.style.display = "none"; statusMsg.className = "status-msg"; }
-    async function initiatePayment() {
-        const accNumber = document.getElementById('accountNumber').value;
-        if (accNumber.length !== 11) { alert("Please enter a valid 11-digit mobile number."); return; }
-        const payBtn = document.getElementById('payBtn'); const statusMsg = document.getElementById('statusMessage');
-        payBtn.disabled = true; document.getElementById('backBtn').style.display = 'none'; payBtn.innerHTML = `<span class="loader"></span> Initiating...`;
-        try {
-            const transactionId = "TXN_" + Math.floor(Math.random() * 100000); 
-            statusMsg.style.display = "block"; statusMsg.className = "status-msg loading"; statusMsg.innerText = "Please check your phone and enter your PIN to approve the payment."; payBtn.innerText = "Awaiting PIN Entry...";
-            checkPaymentStatus(transactionId);
-        } catch (error) {
-            statusMsg.style.display = "block"; statusMsg.className = "status-msg error"; statusMsg.innerText = "Error connecting to server. Try again."; payBtn.disabled = false; payBtn.innerText = "Retry Payment Request"; document.getElementById('backBtn').style.display = 'block';
-        }
+    var selectedMethod = ""; 
+    var selectedAmount = 0; 
+    
+    function selectMethod(element, method) { 
+        document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active')); 
+        element.classList.add('active'); 
+        window.selectedMethod = method; 
     }
-    function checkPaymentStatus(transactionId) {
-        let attempts = 0; const statusMsg = document.getElementById('statusMessage'); const payBtn = document.getElementById('payBtn');
-        checkInterval = setInterval(async () => {
-            attempts++;
-            if (attempts > 12) { clearInterval(checkInterval); statusMsg.className = "status-msg error"; statusMsg.innerText = "Payment timeout. You took too long to enter the PIN."; payBtn.disabled = false; payBtn.innerText = "Try Again"; document.getElementById('backBtn').style.display = 'block'; return; }
-            try {
-                const data = { status: attempts === 4 ? "completed" : "pending" }; 
-                if (data.status === "completed") {
-                    clearInterval(checkInterval); statusMsg.className = "status-msg success"; statusMsg.innerText = `Payment Successful! Rs. ${selectedAmount} has been added.`; payBtn.innerText = "Payment Received";
-                    setTimeout(() => { window.location.href = "wallet.html"; }, 2000);
-                } else if (data.status === "failed") {
-                    clearInterval(checkInterval); statusMsg.className = "status-msg error"; statusMsg.innerText = "Payment was declined or cancelled."; payBtn.disabled = false; payBtn.innerText = "Try Again"; document.getElementById('backBtn').style.display = 'block';
-                }
-            } catch (error) { console.error("Error checking status", error); }
-        }, 5000); 
+    
+    function selectAmount(element, amount) { 
+        document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active')); 
+        element.classList.add('active'); 
+        window.selectedAmount = amount; 
+    }
+    
+    function goToStep2() { 
+        if (!window.selectedMethod || !window.selectedAmount) { 
+            alert("Please select both a method and an amount."); 
+            return; 
+        } 
+        document.getElementById('step1').style.display = 'none'; 
+        document.getElementById('step2').style.display = 'block'; 
+        document.getElementById('paymentDetailsHeading').innerText = `Pay Rs. ${window.selectedAmount} via ${window.selectedMethod.toUpperCase()}`; 
+    }
+    
+    function goBack() { 
+        document.getElementById('step2').style.display = 'none'; 
+        document.getElementById('step1').style.display = 'block'; 
+        resetUI(); 
+    }
+    
+    function resetUI() { 
+        const payBtn = document.getElementById('payBtn'); 
+        const statusMsg = document.getElementById('statusMessage'); 
+        payBtn.disabled = false; 
+        payBtn.innerText = "Submit Deposit Request"; 
+        statusMsg.style.display = "none"; 
+        statusMsg.className = "status-msg"; 
+        document.getElementById('txnId').value = "";
+        document.getElementById('paymentScreenshot').value = ""; // Clear screenshot field
     }
 </script>
 
