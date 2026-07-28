@@ -204,9 +204,9 @@ input[type="file"]:focus { border-color: #38bdf8; }
   const auth = getAuth(app);
   const db = getFirestore(app);
   let currentUser = null;
+
   onAuthStateChanged(auth, (user) => {
       if (!user) {
-          alert("Login required");
           window.location.href = "index.html";
           return;
       }
@@ -214,8 +214,8 @@ input[type="file"]:focus { border-color: #38bdf8; }
   });
 
   async function submitDepositRequest() {
-      const amount = window.selectedAmount;
-      const method = window.selectedMethod;
+      const selectedAmount = window.selectedAmount;
+      const selectedMethod = window.selectedMethod;
       const txnId = document.getElementById('txnId').value.trim();
       const payBtn = document.getElementById('payBtn');
       const statusMsg = document.getElementById('statusMessage');
@@ -231,7 +231,7 @@ input[type="file"]:focus { border-color: #38bdf8; }
           return;
       }
   
-      if (!amount || amount < 500) {
+      if (!selectedAmount || selectedAmount < 500) {
           showError("Amount select karo.");
           return;
       }
@@ -251,9 +251,10 @@ input[type="file"]:focus { border-color: #38bdf8; }
           await addDoc(collection(db, "depositRequests"), {
               uid: currentUser.uid,
               name: currentUser.displayName || currentUser.email || "User",
-              amount: amount,
-              txnId: txnId,
-              method: method,
+              amount: selectedAmount,
+              txnId: document.getElementById("txnId").value.trim(),
+              method: selectedMethod,
+              screenshotUrl: "",   // agar upload later karna ho
               status: "pending",
               createdAt: new Date().toISOString()
           });
