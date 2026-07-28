@@ -312,7 +312,7 @@ input:focus {
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, arrayUnion, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -328,8 +328,11 @@ input:focus {
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
+    
+    // Updated imports/variables as requested
     const auth = getAuth(app);
     const db = getFirestore(app);
+    let currentUser = null;
 
     let selectedMethod = "";
     
@@ -344,10 +347,11 @@ input:focus {
     onAuthStateChanged(auth, async (user) => {
 
         if (!user) {
-            alert("Please login first");
-            window.location.href = "login.html";
+            window.location.href = "index.html";
             return;
         }
+        
+        currentUser = user;
 
         const uid = user.uid;
 
@@ -467,28 +471,19 @@ input:focus {
 
         setTimeout(async () => {
 
-            if (amount <= earnBalance) {
-                earnBalance -= amount;
-            } else {
-                let remaining = amount - earnBalance;
-                earnBalance = 0;
-                depositBalance -= remaining;
-            }
-
-            availableBalance = depositBalance + earnBalance;
+            // Balance deduction code removed as requested
 
             try {
 
-                await updateDoc(userRef, {
-                    earnBalance: earnBalance,
-                    deposit: depositBalance,
-                    withdrawals: arrayUnion({
-                        amount: amount,
-                        method: selectedMethod,
-                        account: accNumber,
-                        status: "pending",
-                        date: new Date().toISOString()
-                    })
+                // Updated saving logic to withdrawRequests collection as requested
+                await addDoc(collection(db, "withdrawRequests"), {
+                    uid: currentUser.uid,
+                    name: document.getElementById("accountName").value.trim(),
+                    amount: amount,
+                    method: selectedMethod,
+                    account: accNumber,
+                    status: "pending",
+                    createdAt: new Date().toISOString()
                 });
 
             } catch (err) {
@@ -499,9 +494,6 @@ input:focus {
                 
                 return;
             }
-
-            document.getElementById('displayBalance').innerText = 
-                `Rs. ${availableBalance.toLocaleString()}`;
 
             showSuccess(`Request Submitted! Rs. ${amount.toLocaleString()} pending`);
 
