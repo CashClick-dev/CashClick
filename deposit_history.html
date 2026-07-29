@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deposit History - Winwave</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+* { box-sizing: border-box; }
+body { 
+    font-family: 'Poppins', sans-serif; background: #0f172a; color: white; 
+    margin: 0; display: flex; flex-direction: column; align-items: center; 
+    min-height: 100vh; padding-top: 80px; padding-bottom: 70px; 
+}
+
+/* FIXED HEADER */
+header {
+    position: fixed; top: 0; left: 0; width: 100%;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 40px; background: #020617; z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+header .logo { color: #38bdf8; font-size: 24px; font-weight: bold; }
+header .dp {
+    width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
+    color: #020617; display: flex; justify-content: center; align-items: center;
+    font-weight: bold; font-size: 16px; cursor: pointer; border: 2px solid #0ea5e9;
+}
+
+.container { 
+    background: #020617; padding: 30px; border-radius: 10px; width: 90%; 
+    max-width: 500px; margin-top: 20px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); 
+}
+.back-link { color: #38bdf8; text-decoration: none; font-size: 14px; font-weight: bold; display: block; margin-bottom: 20px; }
+
+h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #94a3b8; }
+
+/* History Card Styles */
+.history-card {
+    background: #0f172a; border: 1px solid #1e293b; padding: 15px;
+    border-radius: 8px; margin-bottom: 15px; display: flex;
+    justify-content: space-between; align-items: center;
+    transition: 0.3s;
+}
+.history-card:hover { border-color: #38bdf8; }
+.details { display: flex; flex-direction: column; }
+.details h4 { margin: 0 0 5px 0; color: #38bdf8; font-size: 16px; }
+.details p { margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.5; }
+
+.status { 
+    padding: 6px 12px; border-radius: 5px; font-size: 12px; 
+    font-weight: bold; text-transform: uppercase; text-align: center;
+}
+.status.pending { background: rgba(250, 204, 21, 0.1); color: #facc15; border: 1px solid #facc15; }
+.status.approved { background: rgba(52, 211, 153, 0.1); color: #34d399; border: 1px solid #34d399; }
+.status.rejected { background: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid #f87171; }
+
+.no-history { text-align: center; color: #94a3b8; margin-top: 30px; font-size: 14px; }
+.loader-text { text-align: center; color: #38bdf8; font-size: 14px; margin-top: 20px; font-weight: bold;}
+
+/* BOTTOM NAVIGATION */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; width: 100%; background: #020617;
+    display: flex; justify-content: space-around; padding: 10px 0;
+    box-shadow: 0 -4px 6px rgba(0,0,0,0.3); z-index: 1000;
+}
+
+.bottom-nav a {
+    color: #94a3b8; text-decoration: none; display: flex;
+    flex-direction: column; align-items: center; font-size: 12px; transition: 0.3s;
+}
+
+.bottom-nav a i { font-size: 20px; margin-bottom: 4px; }
+.bottom-nav a:hover, .bottom-nav a.active { color: #38bdf8; }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 600px) {
+    header { padding: 15px 20px; }
+    .container { padding: 20px; width: 95%; }
+    .history-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .status { width: 100%; text-align: center; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Winwave</div>
+    <div class="dp" title="Qasam Ali">QA</div>
+</header>
+
+<div class="container">
+    <a href="deposit.html" class="back-link">← Back to Deposit</a>
+    <h3>Deposit History</h3>
+    
+    <div id="historyContainer">
+        <div class="loader-text"><i class="fas fa-spinner fa-spin"></i> Loading your history...</div>
+    </div>
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+    <a href="index.html">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+    <a href="promotion.html">
+        <i class="fas fa-bullhorn"></i>
+        <span>Promotion</span>
+    </a>
+    <a href="earn.html">
+        <i class="fas fa-coins"></i>
+        <span>Earn</span>
+    </a>
+    <a href="wallet.html" class="active">
+        <i class="fas fa-wallet"></i>
+        <span>Wallet</span>
+    </a>
+</div>
+
+<!-- Firebase SDK Initialization -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+    authDomain: "cashwin-2cfdb.firebaseapp.com",
+    projectId: "cashwin-2cfdb",
+    storageBucket: "cashwin-2cfdb.firebasestorage.app",
+    messagingSenderId: "42491408938",
+    appId: "1:42491408938:web:719a556f8901e19b35c953"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  onAuthStateChanged(auth, (user) => {
+      if (!user) {
+          window.location.href = "index.html"; // Agar login nahi toh home pe bhejo
+          return;
+      }
+      fetchDepositHistory(user.uid);
+  });
+
+  async function fetchDepositHistory(uid) {
+      const container = document.getElementById("historyContainer");
+      
+      try {
+          // Sirf is specific user ki requests get karein
+          const q = query(collection(db, "depositRequests"), where("uid", "==", uid));
+          const querySnapshot = await getDocs(q);
+          
+          if (querySnapshot.empty) {
+              container.innerHTML = `<div class="no-history"><i class="fas fa-box-open fa-2x" style="margin-bottom:10px;"></i><br>Abhi tak koi deposit request nahi ki gai.</div>`;
+              return;
+          }
+
+          let historyData = [];
+          querySnapshot.forEach((doc) => {
+              historyData.push(doc.data());
+          });
+
+          // Latest pehle show karne ke liye sort karein
+          historyData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+          let htmlContent = "";
+          
+          historyData.forEach((item) => {
+              // Status Styling
+              let statusClass = "pending";
+              let displayStatus = "Pending";
+              
+              if (item.status.toLowerCase() === "approved" || item.status.toLowerCase() === "success") {
+                  statusClass = "approved";
+                  displayStatus = "Approved";
+              } else if (item.status.toLowerCase() === "rejected" || item.status.toLowerCase() === "failed") {
+                  statusClass = "rejected";
+                  displayStatus = "Rejected";
+              }
+
+              // Date Formatting
+              const dateObj = new Date(item.createdAt);
+              const formattedDate = dateObj.toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
+              const formattedTime = dateObj.toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' });
+
+              htmlContent += `
+              <div class="history-card">
+                  <div class="details">
+                      <h4>Rs. ${item.amount} via ${item.method.toUpperCase()}</h4>
+                      <p>Txn ID: ${item.txnId}</p>
+                      <p><i class="far fa-clock"></i> ${formattedDate}, ${formattedTime}</p>
+                  </div>
+                  <div class="status ${statusClass}">${displayStatus}</div>
+              </div>`;
+          });
+
+          container.innerHTML = htmlContent;
+
+      } catch (error) {
+          console.error("Error fetching history: ", error);
+          container.innerHTML = `<div class="no-history" style="color:#f87171;"><i class="fas fa-exclamation-triangle"></i> Data load hone mein masla aa raha hai.</div>`;
+      }
+  }
+</script>
+
+</body>
+</html>
