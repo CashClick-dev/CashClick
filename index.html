@@ -250,7 +250,7 @@
             });
 
             localStorage.setItem('winwave_username', name);
-            window.location.href = "dashboard.html";
+            window.location.replace("dashboard.html");
 
         } catch (err) {
             alert(err.message);
@@ -263,8 +263,7 @@
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            alert("Login Success");
-            window.location.href = "dashboard.html";
+            window.location.replace("dashboard.html");
         } catch (err) {
             alert(err.message);
         }
@@ -305,9 +304,14 @@
         }
     }
 
+    // Yahan auto-login check update kiya gaya hai
     onAuthStateChanged(auth, (user) => {
-        if (user && window.location.pathname.includes("index.html")) {
-            window.location.href = "dashboard.html";
+        if (user) {
+            const path = window.location.pathname;
+            // Sirf tab redirect karega jab path index.html ho ya root (/) ho
+            if (path.includes("index.html") || path === "/" || path === "") {
+                window.location.replace("dashboard.html");
+            }
         }
     });
 
