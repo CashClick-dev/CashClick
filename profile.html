@@ -505,7 +505,7 @@ header .dp {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-  import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -521,6 +521,12 @@ header .dp {
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
+  
+  // Persistence set ki gayi hai taake session sahi tarike se handle ho
+  setPersistence(auth, browserLocalPersistence).catch((error) => {
+      console.error("Persistence error: ", error);
+  });
+
   const db = getFirestore(app);
 
   function updateAvatar(name) {
@@ -648,14 +654,19 @@ header .dp {
   async function logout() {
       let confirmLogout = confirm("Are you sure you want to logout?");
       if (confirmLogout) {
-          await signOut(auth);
-          
-          // Data ko remove karne wali lines yahan add ki gayi hain
-          localStorage.clear();
-          sessionStorage.clear();
-          
-          alert("Logged out successfully!");
-          window.location.href = "index.html";
+          try {
+              // 1. Clear local/session storage first
+              localStorage.clear();
+              sessionStorage.clear();
+              
+              // 2. Sign out from Firebase
+              await signOut(auth);
+              
+              // Note: onAuthStateChanged will automatically redirect to index.html when user becomes null
+          } catch (error) {
+              console.error("Logout Error: ", error);
+              alert("Logout failed: " + error.message);
+          }
       }
   }
 
