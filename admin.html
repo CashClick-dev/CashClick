@@ -247,7 +247,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, limit, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, query, where, orderBy, limit, updateDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
@@ -338,6 +338,19 @@
       renderTable();
     }
 
+    // Naya function jo instantly counts update karta hai bina loadData kiye
+    function updateDashboardCounts() {
+      const pendingDeposits = depositRequests.filter(r => (r.status || 'pending') === 'pending').length;
+      const approvedDeposits = depositRequests.filter(r => (r.status || '').toLowerCase() === 'approved').length;
+      const pendingWithdrawals = withdrawalRequests.filter(r => (r.status || 'pending') === 'pending').length;
+      const rejectedCount = [...depositRequests, ...withdrawalRequests].filter(r => (r.status || '').toLowerCase() === 'rejected').length;
+
+      document.getElementById('pendingDepositsCount').innerText = pendingDeposits;
+      document.getElementById('approvedDepositsCount').innerText = approvedDeposits;
+      document.getElementById('pendingWithdrawalsCount').innerText = pendingWithdrawals;
+      document.getElementById('rejectedCount').innerText = rejectedCount;
+    }
+
     async function loadData() {
       const [depSnap, wdSnap, usersSnap] = await Promise.all([
         getDocs(query(collection(db, 'depositRequests'), orderBy('createdAt', 'desc'))),
@@ -348,16 +361,7 @@
       depositRequests = depSnap.docs.map(d => ({ id: d.id, ...d.data(), kind: 'deposit' }));
       withdrawalRequests = wdSnap.docs.map(d => ({ id: d.id, ...d.data(), kind: 'withdrawal' }));
 
-      const pendingDeposits = depositRequests.filter(r => (r.status || 'pending') === 'pending').length;
-      const approvedDeposits = depositRequests.filter(r => (r.status || '').toLowerCase() === 'approved').length;
-      const pendingWithdrawals = withdrawalRequests.filter(r => (r.status || 'pending') === 'pending').length;
-      const rejectedCount = [...depositRequests, ...withdrawalRequests].filter(r => (r.status || '').toLowerCase() === 'rejected').length;
-
-      document.getElementById('pendingDepositsCount').innerText = pendingDeposits;
-      document.getElementById('approvedDepositsCount').innerText = approvedDeposits;
-      document.getElementById('pendingWithdrawalsCount').innerText = pendingWithdrawals;
-      document.getElementById('rejectedCount').innerText = rejectedCount;
-
+      updateDashboardCounts();
       return { usersSnap };
     }
 
@@ -484,34 +488,80 @@
     }
 
     async function updateDepositBalanceForUser(uid, amount) {
+      if (!uid) return;
       const userRef = doc(db, 'users', uid);
-      await updateDoc(userRef, { deposit: increment(Number(amount || 0)) });
+      await setDoc(userRef, { deposit: increment(Number(amount || 0)) }, { merge: true });
     }
 
+    // APP INSTANT UPDATE (No Delay)
     async function approveRequest(kind, id) {
-      const req = (kind === 'withdrawal' ? withdrawalRequests : depositRequests).find(r => r.id === id);
+      const list = kind === 'withdrawal' ? withdrawalRequests : depositRequests;
+      const req = list.find(r => r.id === id);
       if (!req) return;
 
-      if (kind === 'deposit') {
-        await updateDepositBalanceForUser(req.uid, req.amount);
-        await updateDoc(doc(db, 'depositRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
-      } else {
-        await updateDoc(doc(db, 'withdrawRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
+      // 1. FORAN UI UPDATE KAREIN BINA DELAY KE
+      req.status = 'approved';
+      updateDashboardCounts();
+      renderTable();
+      
+      // Agar detail tab me selected tha to reset karein
+      if (selectedRequest && selectedRequest.id === id) {
+        selectedRequest = null;
+        document.getElementById('detailsArea').innerHTML = `
+          <div class="details-card"><h4>Request Info</h4><p>Select a request to see details.</p></div>
+          <div class="details-card"><h4>Proof & Notes</h4><p>Transaction info and screenshot preview will appear here.</p></div>
+        `;
+        disableDetailButtons();
       }
 
-      await refreshData();
-      if (selectedRequest && selectedRequest.id === id) selectedRequest = null;
+      // 2. BACKGROUND ME DATABASE UPDATE CHALNE DEIN
+      try {
+        if (kind === 'deposit') {
+          await updateDepositBalanceForUser(req.uid, req.amount);
+          await updateDoc(doc(db, 'depositRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
+        } else {
+          await updateDoc(doc(db, 'withdrawRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
+        }
+      } catch (error) {
+        console.error("Firebase Update Error:", error);
+        alert("Database update fail ho gaya, page refresh ho raha hai.");
+        await refreshData();
+      }
     }
 
+    // INSTANT REJECT UPDATE (No Delay)
     async function rejectRequest(kind, id) {
-      if (kind === 'deposit') {
-        await updateDoc(doc(db, 'depositRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
-      } else {
-        await updateDoc(doc(db, 'withdrawRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
+      const list = kind === 'withdrawal' ? withdrawalRequests : depositRequests;
+      const req = list.find(r => r.id === id);
+      if (!req) return;
+
+      // 1. FORAN UI UPDATE KAREIN BINA DELAY KE
+      req.status = 'rejected';
+      updateDashboardCounts();
+      renderTable();
+      
+      // Agar detail tab me selected tha to reset karein
+      if (selectedRequest && selectedRequest.id === id) {
+        selectedRequest = null;
+        document.getElementById('detailsArea').innerHTML = `
+          <div class="details-card"><h4>Request Info</h4><p>Select a request to see details.</p></div>
+          <div class="details-card"><h4>Proof & Notes</h4><p>Transaction info and screenshot preview will appear here.</p></div>
+        `;
+        disableDetailButtons();
       }
 
-      await refreshData();
-      if (selectedRequest && selectedRequest.id === id) selectedRequest = null;
+      // 2. BACKGROUND ME DATABASE UPDATE CHALNE DEIN
+      try {
+        if (kind === 'deposit') {
+          await updateDoc(doc(db, 'depositRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
+        } else {
+          await updateDoc(doc(db, 'withdrawRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
+        }
+      } catch (error) {
+        console.error("Firebase Update Error:", error);
+        alert("Database update fail ho gaya, page refresh ho raha hai.");
+        await refreshData();
+      }
     }
 
     async function approveSelected() {
