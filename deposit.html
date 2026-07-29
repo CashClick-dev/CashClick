@@ -135,6 +135,8 @@ input[type="file"]:focus { border-color: #38bdf8; }
         </div>
 
         <button class="btn" onclick="goToStep2()">Next Step</button>
+        <!-- Naya Deposit History Button -->
+        <button class="btn" style="margin-top: 15px; background: transparent; border: 2px solid #38bdf8; color: #38bdf8;" onclick="window.location.href='deposit_history.html'">Deposit History</button>
     </div>
 
     <div id="step2">
@@ -291,8 +293,9 @@ input[type="file"]:focus { border-color: #38bdf8; }
           statusMsg.innerText = "Request submitted. Admin verification ke baad balance add hoga.";
           payBtn.innerText = "Submitted";
   
+          // Redirecting to deposit_history.html instead of wallet.html
           setTimeout(() => {
-              window.location.href = "wallet.html";
+              window.location.href = "deposit_history.html";
           }, 2000);
   
       } catch (err) {
