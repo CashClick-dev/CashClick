@@ -359,7 +359,7 @@ header .dp {
 <body>
 
 <header>
-    <a href="dashboard.html" class="logo">
+    <a href="dashboard" class="logo">
         <img src="logo.png" alt="Logo">
     </a>
     <div class="dp" id="headerDp" title="User">U</div>
@@ -419,19 +419,19 @@ header .dp {
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <a href="dashboard.html">
+    <a href="dashboard">
         <i class="fas fa-home"></i>
         <span>Home</span>
     </a>
-    <a href="promotion.html">
+    <a href="promotion">
         <i class="fas fa-bullhorn"></i>
         <span>Promotion</span>
     </a>
-    <a href="earn.html">
+    <a href="earn">
         <i class="fas fa-coins"></i>
         <span>Earn</span>
     </a>
-    <a href="wallet.html">
+    <a href="wallet">
         <i class="fas fa-wallet"></i>
         <span>Wallet</span>
     </a>
@@ -523,7 +523,6 @@ header .dp {
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
   
-  // Persistence set ki gayi hai taake session sahi tarike se handle ho
   setPersistence(auth, browserLocalPersistence).catch((error) => {
       console.error("Persistence error: ", error);
   });
@@ -545,7 +544,7 @@ header .dp {
   document.addEventListener('DOMContentLoaded', () => {
       onAuthStateChanged(auth, async (user) => {
           if (!user) {
-              window.location.href = "index.html";
+              window.location.href = "index";
               return;
           }
 
@@ -562,7 +561,6 @@ header .dp {
               const data = snap.data();
 
               document.getElementById('profileDeposit').innerText = 'Rs. ' + (data.deposit || 0).toLocaleString();
-              // FIXED: Changed data.earned to data.earnBalance
               document.getElementById('profileEarn').innerText = 'Rs. ' + (data.earnBalance || 0).toLocaleString();
 
               const plans = data.activePlans || [];
@@ -657,14 +655,10 @@ header .dp {
       let confirmLogout = confirm("Are you sure you want to logout?");
       if (confirmLogout) {
           try {
-              // 1. Clear local/session storage first
               localStorage.clear();
               sessionStorage.clear();
               
-              // 2. Sign out from Firebase
               await signOut(auth);
-              
-              // Note: onAuthStateChanged will automatically redirect to index.html when user becomes null
           } catch (error) {
               console.error("Logout Error: ", error);
               alert("Logout failed: " + error.message);
