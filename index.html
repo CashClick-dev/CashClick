@@ -1,348 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Winwave - Watch Ads & Earn Money</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winwave - Watch Ads & Earn Money</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: #0f172a; color: white; padding-top: 80px; min-height: 100vh; }
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #0f172a; color: white; padding-top: 80px; min-height: 100vh; }
 
-        /* FIXED HEADER */
-        header {
-            position: fixed; top: 0; left: 0; width: 100%;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 40px; background: #020617; z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
+        /* FIXED HEADER */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 40px; background: #020617; z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
 
-        header .logo { display: flex; align-items: center; cursor: pointer; }
-        header .logo img {
-            max-height: 40px;
-            width: auto;
-        }
-        
-        /* HEADER BUTTONS */
-        .header-btns { display: flex; gap: 10px; }
-        .btn-sm { padding: 8px 15px; border: none; background: #38bdf8; color: black; font-weight: bold; font-size: 14px; cursor: pointer; border-radius: 5px; transition: 0.3s; }
-        .btn-sm:hover { background: #0ea5e9; }
-        .btn-sm-outline { background: transparent; border: 2px solid #38bdf8; color: #38bdf8; }
-        .btn-sm-outline:hover { background: #38bdf8; color: black; }
+        header .logo { display: flex; align-items: center; cursor: pointer; }
+        header .logo img {
+            max-height: 40px;
+            width: auto;
+        }
+        
+        /* HEADER BUTTONS */
+        .header-btns { display: flex; gap: 10px; }
+        .btn-sm { padding: 8px 15px; border: none; background: #38bdf8; color: black; font-weight: bold; font-size: 14px; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+        .btn-sm:hover { background: #0ea5e9; }
+        .btn-sm-outline { background: transparent; border: 2px solid #38bdf8; color: #38bdf8; }
+        .btn-sm-outline:hover { background: #38bdf8; color: black; }
 
-        /* DP (Hidden initially) */
-        header .dp {
-            width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
-            color: #020617; justify-content: center; align-items: center;
-            font-weight: bold; font-size: 16px; cursor: pointer; border: 2px solid #0ea5e9;
-            display: none; /* DP Hide by default */
-        }
+        /* DP (Hidden initially) */
+        header .dp {
+            width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
+            color: #020617; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 16px; cursor: pointer; border: 2px solid #0ea5e9;
+            display: none; /* DP Hide by default */
+        }
 
-        /* HOME SECTION */
-        .hero { min-height: 80vh; display: flex; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; }
-        .hero h2 { font-size: 3rem; }
-        .hero p { margin-top: 15px; font-size: 1.2rem; color: #94a3b8; max-width: 600px; margin-left: auto; margin-right: auto; }
-        .hero-buttons { margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 12px 30px; border: none; background: #38bdf8; color: black; font-weight: bold; font-size: 16px; cursor: pointer; border-radius: 5px; transition: 0.3s; text-decoration: none; display: inline-block; }
-        .btn:hover { background: #0ea5e9; }
-        .btn-outline { background: transparent; border: 2px solid #38bdf8; color: #38bdf8; }
-        .btn-outline:hover { background: #38bdf8; color: black; }
+        /* HOME SECTION */
+        .hero { min-height: 80vh; display: flex; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; }
+        .hero h2 { font-size: 3rem; }
+        .hero p { margin-top: 15px; font-size: 1.2rem; color: #94a3b8; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .hero-buttons { margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 12px 30px; border: none; background: #38bdf8; color: black; font-weight: bold; font-size: 16px; cursor: pointer; border-radius: 5px; transition: 0.3s; text-decoration: none; display: inline-block; }
+        .btn:hover { background: #0ea5e9; }
+        .btn-outline { background: transparent; border: 2px solid #38bdf8; color: #38bdf8; }
+        .btn-outline:hover { background: #38bdf8; color: black; }
 
-        .features { padding: 60px 20px; text-align: center; max-width: 1000px; margin: 0 auto; }
-        .features h2 { margin-bottom: 30px; font-size: 2rem; }
-        .feature-box { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .card { background: #020617; padding: 25px 20px; width: 100%; max-width: 300px; border-radius: 10px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        .card:hover { transform: translateY(-5px); }
-        .card h3 { color: #38bdf8; margin-bottom: 10px; }
+        .features { padding: 60px 20px; text-align: center; max-width: 1000px; margin: 0 auto; }
+        .features h2 { margin-bottom: 30px; font-size: 2rem; }
+        .feature-box { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .card { background: #020617; padding: 25px 20px; width: 100%; max-width: 300px; border-radius: 10px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { color: #38bdf8; margin-bottom: 10px; }
 
-        footer { text-align: center; padding: 20px; background: #020617; margin-top: 40px; color: #64748b; }
+        footer { text-align: center; padding: 20px; background: #020617; margin-top: 40px; color: #64748b; }
 
-        /* AUTH SECTION */
-        .auth-container {
-            background: #020617; padding: 30px; border-radius: 10px; width: 100%;
-            max-width: 350px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 40px auto;
-        }
-        .auth-container h2 { text-align: center; margin-top: 0; margin-bottom: 20px; }
-        .auth-container input {
-            width: 100%; padding: 12px; margin: 8px 0; border: none;
-            border-radius: 5px; outline: none; background: #0f172a; color: white;
-        }
-        .input-group { position: relative; }
-        .eye {
-            position: absolute; right: 10px; top: 20px;
-            cursor: pointer; color: #94a3b8; font-size: 14px;
-        }
-        .auth-container button.submit-btn {
-            width: 100%; padding: 12px; background: #38bdf8; border: none; color: black;
-            border-radius: 5px; font-weight: bold; cursor: pointer;
-            margin-top: 15px; font-size: 16px; transition: 0.3s;
-        }
-        .auth-container button.submit-btn:hover { background: #0ea5e9; }
-        .toggle {
-            text-align: center; margin-top: 15px; cursor: pointer;
-            color: #38bdf8; font-size: 14px;
-        }
-        #nameField, #confirmField { display: block; }
+        /* AUTH SECTION */
+        .auth-container {
+            background: #020617; padding: 30px; border-radius: 10px; width: 100%;
+            max-width: 350px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin: 40px auto;
+        }
+        .auth-container h2 { text-align: center; margin-top: 0; margin-bottom: 20px; }
+        .auth-container input {
+            width: 100%; padding: 12px; margin: 8px 0; border: none;
+            border-radius: 5px; outline: none; background: #0f172a; color: white;
+        }
+        .input-group { position: relative; }
+        .eye {
+            position: absolute; right: 10px; top: 20px;
+            cursor: pointer; color: #94a3b8; font-size: 14px;
+        }
+        .auth-container button.submit-btn {
+            width: 100%; padding: 12px; background: #38bdf8; border: none; color: black;
+            border-radius: 5px; font-weight: bold; cursor: pointer;
+            margin-top: 15px; font-size: 16px; transition: 0.3s;
+        }
+        .auth-container button.submit-btn:hover { background: #0ea5e9; }
+        .toggle {
+            text-align: center; margin-top: 15px; cursor: pointer;
+            color: #38bdf8; font-size: 14px;
+        }
+        #nameField, #confirmField { display: block; }
 
-        /* MOBILE RESPONSIVE */
-        @media (max-width: 600px) {
-            header { padding: 15px 20px; }
-            .hero h2 { font-size: 2.2rem; }
-            .hero p { font-size: 1rem; }
-            .features h2 { font-size: 1.8rem; }
-            .card { max-width: 100%; }
-            .auth-container { width: 90%; }
-        }
-    </style>
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 600px) {
+            header { padding: 15px 20px; }
+            .hero h2 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            .features h2 { font-size: 1.8rem; }
+            .card { max-width: 100%; }
+            .auth-container { width: 90%; }
+        }
+    </style>
 </head>
 <body>
 
 <header>
-    <div class="logo" onclick="showHomePage()">
-        <img src="logo.png" alt="Logo">
-    </div>
-    
-    <!-- Top Header Buttons (Hidden after login) -->
-    <div class="header-btns" id="topNavButtons">
-        <button class="btn-sm btn-sm-outline" onclick="openAuthPage('login')">Login</button>
-        <button class="btn-sm" onclick="openAuthPage('register')">Register</button>
-    </div>
+    <div class="logo" onclick="showHomePage()">
+        <img src="logo.png" alt="Logo">
+    </div>
+    
+    <!-- Top Header Buttons (Hidden after login) -->
+    <div class="header-btns" id="topNavButtons">
+        <button class="btn-sm btn-sm-outline" onclick="openAuthPage('login')">Login</button>
+        <button class="btn-sm" onclick="openAuthPage('register')">Register</button>
+    </div>
 
-    <!-- User DP (Shown after login) -->
-    <div class="dp" id="userProfilePic" title="User DP">QA</div>
+    <!-- User DP (Shown after login) -->
+    <div class="dp" id="userProfilePic" title="User DP">QA</div>
 </header>
 
 <!-- HOME PAGE SECTION -->
 <div id="homeSection">
-    <section class="hero">
-        <div>
-            <h2>Watch Ads & Earn Money 💸</h2>
-            <p>Join now and start earning by watching simple ads daily.</p>
-            <div class="hero-buttons">
-                <button onclick="openAuthPage('register')" class="btn">Get Started / Register</button>
-                <button onclick="openAuthPage('login')" class="btn btn-outline">Login</button>
-            </div>
-        </div>
-    </section>
+    <section class="hero">
+        <div>
+            <h2>Watch Ads & Earn Money 💸</h2>
+            <p>Join now and start earning by watching simple ads daily.</p>
+            <div class="hero-buttons">
+                <button onclick="openAuthPage('register')" class="btn">Get Started / Register</button>
+                <button onclick="openAuthPage('login')" class="btn btn-outline">Login</button>
+            </div>
+        </div>
+    </section>
 
-    <section class="features">
-        <h2>Why Choose Us?</h2>
-        <div class="feature-box">
-            <div class="card">
-                <h3>Easy Earning</h3>
-                <p>Watch ads and earn money instantly.</p>
-            </div>
-            <div class="card">
-                <h3>Fast Withdrawals</h3>
-                <p>Withdraw via JazzCash & Easypaisa.</p>
-            </div>
-            <div class="card">
-                <h3>Referral Bonus</h3>
-                <p>Invite friends and earn more.</p>
-            </div>
-        </div>
-    </section>
+    <section class="features">
+        <h2>Why Choose Us?</h2>
+        <div class="feature-box">
+            <div class="card">
+                <h3>Easy Earning</h3>
+                <p>Watch ads and earn money instantly.</p>
+            </div>
+            <div class="card">
+                <h3>Fast Withdrawals</h3>
+                <p>Withdraw via JazzCash & Easypaisa.</p>
+            </div>
+            <div class="card">
+                <h3>Referral Bonus</h3>
+                <p>Invite friends and earn more.</p>
+            </div>
+        </div>
+    </section>
 
-    <footer>
-        <p>© 2026 Winwave. All rights reserved.</p>
-    </footer>
+    <footer>
+        <p>© 2026 Winwave. All rights reserved.</p>
+    </footer>
 </div>
 
 <!-- AUTH PAGE SECTION -->
 <div id="authSection" style="display: none;">
-    <div class="auth-container">
-        <h2 id="formTitle">Register</h2>
+    <div class="auth-container">
+        <h2 id="formTitle">Register</h2>
 
-        <input type="text" id="nameField" placeholder="Enter Name">
-        <input type="email" id="email" placeholder="Enter Email">
+        <input type="text" id="nameField" placeholder="Enter Name">
+        <input type="email" id="email" placeholder="Enter Email">
 
-        <div class="input-group">
-            <input type="password" id="password" placeholder="Enter Password">
-            <span class="eye" onclick="togglePassword('password')">👁</span>
-        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Enter Password">
+            <span class="eye" onclick="togglePassword('password')">👁</span>
+        </div>
 
-        <div class="input-group" id="confirmField">
-            <input type="password" id="confirmPassword" placeholder="Confirm Password">
-            <span class="eye" onclick="togglePassword('confirmPassword')">👁</span>
-        </div>
+        <div class="input-group" id="confirmField">
+            <input type="password" id="confirmPassword" placeholder="Confirm Password">
+            <span class="eye" onclick="togglePassword('confirmPassword')">👁</span>
+        </div>
 
-        <button class="submit-btn" onclick="handleAuth()">Submit</button>
+        <button class="submit-btn" onclick="handleAuth()">Submit</button>
 
-        <div class="toggle" onclick="toggleForm()">
-            Already have account? Login
-        </div>
-    </div>
+        <div class="toggle" onclick="toggleForm()">
+            Already have account? Login
+        </div>
+    </div>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
-      authDomain: "cashwin-2cfdb.firebaseapp.com",
-      projectId: "cashwin-2cfdb",
-      storageBucket: "cashwin-2cfdb.firebasestorage.app",
-      messagingSenderId: "42491408938",
-      appId: "1:42491408938:web:719a556f8901e19b35c953",
-      measurementId: "G-SVBJQDMX79"
-    };
+    const firebaseConfig = {
+      apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+      authDomain: "cashwin-2cfdb.firebaseapp.com",
+      projectId: "cashwin-2cfdb",
+      storageBucket: "cashwin-2cfdb.firebasestorage.app",
+      messagingSenderId: "42491408938",
+      appId: "1:42491408938:web:719a556f8901e19b35c953",
+      measurementId: "G-SVBJQDMX79"
+    };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    let isLogin = false;
-    let isProcessingAuth = false; // 🔥 YE LOCK HAI JO AUTO-REDIRECT KO ROKEGA
-    
-    // STEP 1: Save referral to localStorage if URL has ref
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get("ref");
-    if (ref) {
-        localStorage.setItem("referrer", ref);
-    }
+    let isLogin = false;
+    let isProcessingAuth = false; // 🔥 YE LOCK HAI JO AUTO-REDIRECT KO ROKEGA
+    
+    // STEP 1: Save referral to localStorage if URL has ref
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get("ref");
+    if (ref) {
+        localStorage.setItem("referrer", ref);
+    }
 
-    window.onload = function() {
-        if (ref) {
-            openAuthPage('register');
-        }
-    };
+    window.onload = function() {
+        if (ref) {
+            openAuthPage('register');
+        }
+    };
 
-    function showHomePage() {
-        document.getElementById("homeSection").style.display = "block";
-        document.getElementById("authSection").style.display = "none";
-    }
+    function showHomePage() {
+        document.getElementById("homeSection").style.display = "block";
+        document.getElementById("authSection").style.display = "none";
+    }
 
-    function openAuthPage(type) {
-        document.getElementById("homeSection").style.display = "none";
-        document.getElementById("authSection").style.display = "block";
-        
-        isLogin = (type === 'login');
-        updateAuthFormUI();
-    }
+    function openAuthPage(type) {
+        document.getElementById("homeSection").style.display = "none";
+        document.getElementById("authSection").style.display = "block";
+        
+        isLogin = (type === 'login');
+        updateAuthFormUI();
+    }
 
-    function toggleForm() {
-        isLogin = !isLogin;
-        updateAuthFormUI();
-    }
+    function toggleForm() {
+        isLogin = !isLogin;
+        updateAuthFormUI();
+    }
 
-    function updateAuthFormUI() {
-        document.getElementById("formTitle").innerText = isLogin ? "Login" : "Register";
-        document.getElementById("nameField").style.display = isLogin ? "none" : "block";
-        document.getElementById("confirmField").style.display = isLogin ? "none" : "block";
-        document.querySelector(".toggle").innerText = isLogin ? "Don't have account? Register" : "Already have account? Login";
-    }
+    function updateAuthFormUI() {
+        document.getElementById("formTitle").innerText = isLogin ? "Login" : "Register";
+        document.getElementById("nameField").style.display = isLogin ? "none" : "block";
+        document.getElementById("confirmField").style.display = isLogin ? "none" : "block";
+        document.querySelector(".toggle").innerText = isLogin ? "Don't have account? Register" : "Already have account? Login";
+    }
 
-    function togglePassword(id) {
-        const input = document.getElementById(id);
-        input.type = input.type === "password" ? "text" : "password";
-    }
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        input.type = input.type === "password" ? "text" : "password";
+    }
 
-    async function registerUser() {
-        isProcessingAuth = true; // 🔥 User create hone lag gaya hai, lock laga do
-        const name = document.getElementById("nameField").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+    async function registerUser() {
+        isProcessingAuth = true; // 🔥 User create hone lag gaya hai, lock laga do
+        const name = document.getElementById("nameField").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-        try {
-            const userCred = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCred.user;
+        try {
+            const userCred = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCred.user;
 
-            // STEP 2: Fetch referrer from localStorage
-            const referrer = localStorage.getItem("referrer");
+            // STEP 2: Fetch referrer from localStorage
+            const referrer = localStorage.getItem("referrer");
 
-            // STEP 3: Save to Firestore with referredBy
-            await setDoc(doc(db, "users", user.uid), {
-                name: name,
-                email: email,
-                deposit: 0,
-                earned: 0,
-                createdAt: new Date(),
-                referredBy: referrer || null  // IMPORTANT LINE
-            });
+            // STEP 3: Save to Firestore with referredBy
+            await setDoc(doc(db, "users", user.uid), {
+                name: name,
+                email: email,
+                deposit: 0,
+                earned: 0,
+                createdAt: new Date(),
+                referredBy: referrer || null  // IMPORTANT LINE
+            });
 
-            // STEP 4: Remove referrer from localStorage
-            localStorage.removeItem("referrer");
-            localStorage.setItem('winwave_username', name);
-            
-            // Ab data save ho gaya hai, isliye redirect kar do
-            window.location.replace("dashboard.html");
+            // STEP 4: Remove referrer from localStorage
+            localStorage.removeItem("referrer");
+            localStorage.setItem('winwave_username', name);
+            
+            // Ab data save ho gaya hai, isliye redirect kar do
+            window.location.replace("dashboard.html");
 
-        } catch (err) {
-            isProcessingAuth = false; // 🔥 Error aaya toh lock khol do
-            alert(err.message);
-        }
-    }
+        } catch (err) {
+            isProcessingAuth = false; // 🔥 Error aaya toh lock khol do
+            alert(err.message);
+        }
+    }
 
-    async function loginUser() {
-        isProcessingAuth = true; // 🔥 Login start hua, lock laga do
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+    async function loginUser() {
+        isProcessingAuth = true; // 🔥 Login start hua, lock laga do
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            window.location.replace("dashboard.html");
-        } catch (err) {
-            isProcessingAuth = false; // 🔥 Error aaya toh lock khol do
-            alert(err.message);
-        }
-    }
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.replace("dashboard.html");
+        } catch (err) {
+            isProcessingAuth = false; // 🔥 Error aaya toh lock khol do
+            alert(err.message);
+        }
+    }
 
-    function handleAuth() {
-        const name = document.getElementById("nameField").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
+    function handleAuth() {
+        const name = document.getElementById("nameField").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
 
-        if (!email || !password) {
-            alert("Fill required fields");
-            return;
-        }
+        if (!email || !password) {
+            alert("Fill required fields");
+            return;
+        }
 
-        if (password.length < 6) {
-            alert("Password must be at least 6 characters");
-            return;
-        }
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters");
+            return;
+        }
 
-        if (!isLogin) {
-            if (!name.trim()) {
-                alert("Name required");
-                return;
-            }
-            if (!name || !confirmPassword) {
-                alert("Complete all fields");
-                return;
-            }
-            if (password !== confirmPassword) {
-                alert("Passwords do not match");
-                return;
-            }
-            registerUser();
-        } else {
-            loginUser();
-        }
-    }
+        if (!isLogin) {
+            if (!name.trim()) {
+                alert("Name required");
+                return;
+            }
+            if (!name || !confirmPassword) {
+                alert("Complete all fields");
+                return;
+            }
+            if (password !== confirmPassword) {
+                alert("Passwords do not match");
+                return;
+            }
+            registerUser();
+        } else {
+            loginUser();
+        }
+    }
 
-    // Auto-login check
-    onAuthStateChanged(auth, (user) => {
-        // 🔥 Agar isProcessingAuth TRUE hai toh ye check kaam nahi karega, page nahi paltega!
-        if (user && !isProcessingAuth) {
-            const path = window.location.pathname;
-            if (path.includes("index.html") || path === "/" || path === "") {
-                window.location.replace("dashboard.html");
-            }
-        }
-    });
+    // Auto-login check
+    onAuthStateChanged(auth, (user) => {
+        // 🔥 Agar isProcessingAuth TRUE hai toh ye check kaam nahi karega, page nahi paltega!
+        if (user && !isProcessingAuth) {
+            const path = window.location.pathname;
+            // Safer check for redirect to avoid loops
+            if (path.endsWith("index.html") || path === "/" || path === "") {
+                window.location.replace("dashboard.html");
+            }
+        }
+    });
 
-    // Make UI functions globally available for inline onclick attributes
-    window.showHomePage = showHomePage;
-    window.openAuthPage = openAuthPage;
-    window.toggleForm = toggleForm;
-    window.togglePassword = togglePassword;
-    window.handleAuth = handleAuth;
+    // Make UI functions globally available for inline onclick attributes
+    window.showHomePage = showHomePage;
+    window.openAuthPage = openAuthPage;
+    window.toggleForm = toggleForm;
+    window.togglePassword = togglePassword;
+    window.handleAuth = handleAuth;
 </script>
 
 </body>
