@@ -289,7 +289,8 @@ header .dp {
     <div class="logo">
         <img src="logo.png" alt="Beast Rewards Logo">
     </div>
-    <div class="dp" title="Qasam Ali" onclick="window.location.href='profile.html'">QA</div>
+    <!-- Yahan profile.html ko profile kar diya hai -->
+    <div class="dp" title="Qasam Ali" onclick="window.location.href='profile'">QA</div>
 </header>
 
 <div class="dashboard">
@@ -331,19 +332,20 @@ header .dp {
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <a href="dashboard.html" class="active">
+    <!-- Niche wale tamaam links se .html hata diya hai -->
+    <a href="dashboard" class="active">
         <i class="fas fa-home"></i>
         <span>Home</span>
     </a>
-    <a href="promotion.html">
+    <a href="promotion">
         <i class="fas fa-bullhorn"></i>
         <span>Promotion</span>
     </a>
-    <a href="earn.html">
+    <a href="earn">
         <i class="fas fa-coins"></i>
         <span>Earn</span>
     </a>
-    <a href="wallet.html">
+    <a href="wallet">
         <i class="fas fa-wallet"></i>
         <span>Wallet</span>
     </a>
@@ -415,7 +417,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.onAuthStateChanged(window.auth, async (user) => {
         if (!user) {
-            window.location.href = "index.html";
+            // Yahan se bhi index.html ko sirf index kar diya hai
+            window.location.href = "index";
             return;
         }
 
