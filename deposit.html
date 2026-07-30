@@ -145,8 +145,7 @@ input[type="file"]:focus { border-color: #38bdf8; }
         </p>
     
         <div style="text-align:center; margin:20px 0;">
-            <!-- YAHAN MENE ID ADD KI HAI TA KE QR CODE CHANGE HO SAKE -->
-            <img id="qrImage" src="" alt="Payment QR" style="width:220px; max-width:100%; border-radius:12px; border:1px solid #1e293b; background:#fff; padding:10px;">
+            <img src="qr-code.png" alt="Payment QR" style="width:220px; max-width:100%; border-radius:12px; border:1px solid #1e293b; background:#fff; padding:10px;">
         </div>
     
         <label style="display:block; text-align:left; color:#94a3b8; font-size:14px; margin-bottom:5px;">Transaction ID</label>
@@ -318,18 +317,9 @@ input[type="file"]:focus { border-color: #38bdf8; }
             alert("Please select both a method and an amount."); 
             return; 
         } 
-        
         document.getElementById('step1').style.display = 'none'; 
         document.getElementById('step2').style.display = 'block'; 
         document.getElementById('paymentDetailsHeading').innerText = `Pay Rs. ${window.selectedAmount} via ${window.selectedMethod.toUpperCase()}`; 
-        
-        // --- YAHAN MENE NAYA CODE ADD KIYA HAI QR IMAGE CHANGE KARNE K LIYE ---
-        const qrImage = document.getElementById('qrImage');
-        if (window.selectedMethod === 'easypaisa') {
-            qrImage.src = 'easypaisa-qr.jpeg';
-        } else if (window.selectedMethod === 'jazzcash') {
-            qrImage.src = 'jazzcash-qr.jpeg';
-        }
     }
     
     function goBack() { 
