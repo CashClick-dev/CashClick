@@ -35,11 +35,10 @@ header {
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-header .logo {
-    color: #38bdf8;
-    font-size: 24px;
-    font-weight: bold;
-    text-decoration: none;
+header .logo { display: flex; align-items: center; text-decoration: none; }
+header .logo img {
+    max-height: 40px;
+    width: auto;
 }
 
 header .dp {
@@ -360,7 +359,9 @@ header .dp {
 <body>
 
 <header>
-    <a href="dashboard.html" class="logo">Winwave</a>
+    <a href="dashboard.html" class="logo">
+        <img src="logo.png" alt="Logo">
+    </a>
     <div class="dp" id="headerDp" title="User">U</div>
 </header>
 
