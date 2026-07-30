@@ -32,10 +32,10 @@ header {
     background: #020617;
 }
 
-header h2 {
-    color: #38bdf8;
-    margin: 0;
-    font-size: 24px;
+header .logo { display: flex; align-items: center; text-decoration: none; }
+header .logo img {
+    max-height: 40px;
+    width: auto;
 }
 
 nav a {
@@ -240,7 +240,9 @@ input:focus {
 <body>
 
 <header>
-    <h2>Winwave</h2>
+    <a href="dashboard.html" class="logo">
+        <img src="logo.png" alt="Logo">
+    </a>
     <nav>
         <a href="dashboard.html">← Back</a>
     </nav>
