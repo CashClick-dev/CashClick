@@ -98,6 +98,7 @@ header .dp {
     padding: 8px;
     border-radius: 8px;
     display: inline-flex;
+    flex-wrap: wrap; /* Taki mobile par agar jagah kam ho to line break ho jaye */
 }
 
 /* ACTION BUTTONS */
@@ -216,10 +217,11 @@ header .dp {
         <h3>Total Available Balance</h3>
         <h1 id="totalBalanceDisplay">Rs. 0</h1>
         
-        <!-- Deposit aur Earned ki alag tafseel -->
+        <!-- Deposit, Earned aur Referral Earn ki tafseel -->
         <div class="balance-breakdown">
             <div>Deposit: <strong id="depositBalanceDisplay">Rs. 0</strong></div>
             <div>Earned: <strong id="earnBalanceDisplay">Rs. 0</strong></div>
+            <div>Referral Earn: <strong id="referralEarnDisplay">Rs. 0</strong></div>
         </div>
     </div>
 
@@ -328,14 +330,19 @@ header .dp {
                 let name = data.name || "User";
                 updateAvatar(name);
 
+                // Fetching all balances from Firestore
                 let depositBalance = data.deposit || 0;
                 let earnBalance = data.earnBalance || 0;
+                let referralEarn = data.referralEarn || 0; // Added referral earn variable
 
-                let totalBalance = depositBalance + earnBalance;
+                // Adding all balances into Total Balance
+                let totalBalance = depositBalance + earnBalance + referralEarn;
 
+                // Updating HTML with commas (toLocaleString)
                 document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
                 document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
                 document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+                document.getElementById('referralEarnDisplay').innerText = 'Rs. ' + referralEarn.toLocaleString(); // Setting referral earn text
 
             } catch (err) {
                 alert("Error loading wallet");
