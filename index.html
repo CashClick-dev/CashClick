@@ -191,12 +191,15 @@
 
     let isLogin = false;
     
-    // Referral link tracking
+    // STEP 1: Save referral to localStorage if URL has ref
     const urlParams = new URLSearchParams(window.location.search);
-    const referralUid = urlParams.get('ref') || "";
+    const ref = urlParams.get("ref");
+    if (ref) {
+        localStorage.setItem("referrer", ref);
+    }
 
     window.onload = function() {
-        if (referralUid) {
+        if (ref) {
             openAuthPage('register');
         }
     };
@@ -240,14 +243,21 @@
             const userCred = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCred.user;
 
+            // STEP 2: Fetch referrer from localStorage
+            const referrer = localStorage.getItem("referrer");
+
+            // STEP 3: Save to Firestore with referredBy
             await setDoc(doc(db, "users", user.uid), {
                 name: name,
                 email: email,
                 deposit: 0,
                 earned: 0,
                 createdAt: new Date(),
-                referredBy: referralUid ? referralUid : null
+                referredBy: referrer || null   // IMPORTANT LINE
             });
+
+            // STEP 4: Remove referrer from localStorage
+            localStorage.removeItem("referrer");
 
             localStorage.setItem('winwave_username', name);
             window.location.replace("dashboard.html");
@@ -304,11 +314,10 @@
         }
     }
 
-    // Yahan auto-login check update kiya gaya hai
+    // Auto-login check
     onAuthStateChanged(auth, (user) => {
         if (user) {
             const path = window.location.pathname;
-            // Sirf tab redirect karega jab path index.html ho ya root (/) ho
             if (path.includes("index.html") || path === "/" || path === "") {
                 window.location.replace("dashboard.html");
             }
