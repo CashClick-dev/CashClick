@@ -86,7 +86,7 @@ header .dp {
     font-size: 36px;
 }
 
-/* BREAKDOWN TEXT (NEW) */
+/* BREAKDOWN TEXT */
 .balance-breakdown {
     display: flex;
     justify-content: center;
@@ -98,7 +98,7 @@ header .dp {
     padding: 8px;
     border-radius: 8px;
     display: inline-flex;
-    flex-wrap: wrap; /* Taki mobile par agar jagah kam ho to line break ho jaye */
+    flex-wrap: wrap;
 }
 
 /* ACTION BUTTONS */
@@ -251,7 +251,8 @@ header .dp {
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <a href="dashboard.html">
+    <!-- Updated link to index.html for home page consistency -->
+    <a href="index.html">
         <i class="fas fa-home"></i>
         <span>Home</span>
     </a>
@@ -270,10 +271,10 @@ header .dp {
 </div>
 
 <script type="module">
-    // Import Firebase modules
+    // Import Firebase modules (Added collection, query, where, getDocs for referral calculation)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
     // Your web app's Firebase configuration
@@ -330,19 +331,33 @@ header .dp {
                 let name = data.name || "User";
                 updateAvatar(name);
 
-                // Fetching all balances from Firestore
+                // Fetching static balances from Firestore
                 let depositBalance = data.deposit || 0;
                 let earnBalance = data.earnBalance || 0;
-                let referralEarn = data.referralEarn || 0; // Added referral earn variable
+                
+                // --- DYNAMIC REFERRAL EARNINGS CALCULATION (Same as promotion.html) ---
+                let referralEarnings = 0; 
+                const referralsQuery = query(collection(db, "users"), where("referredBy", "==", uid));
+                const referralsSnap = await getDocs(referralsQuery);
+                
+                referralsSnap.forEach((refDoc) => {
+                    const refData = refDoc.data();
+                    const deposit = refData.firstDeposit || refData.deposit || 0;
+                    
+                    // Har us user par Rs. 50 add hoga jisne deposit kiya hai
+                    if (deposit > 0) {
+                        referralEarnings += 50;
+                    }
+                });
 
                 // Adding all balances into Total Balance
-                let totalBalance = depositBalance + earnBalance + referralEarn;
+                let totalBalance = depositBalance + earnBalance + referralEarnings;
 
                 // Updating HTML with commas (toLocaleString)
                 document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
                 document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
                 document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
-                document.getElementById('referralEarnDisplay').innerText = 'Rs. ' + referralEarn.toLocaleString(); // Setting referral earn text
+                document.getElementById('referralEarnDisplay').innerText = 'Rs. ' + referralEarnings.toLocaleString(); 
 
             } catch (err) {
                 alert("Error loading wallet");
