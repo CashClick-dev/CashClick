@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = snap.data();
 
             depositBalance = data.deposit || 0;
-            earnBalance = data.earned || 0;
+            earnBalance = data.earnBalance || 0; // Fixed: Changed from data.earned to data.earnBalance
             activePlans = data.activePlans || [];
 
             document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
