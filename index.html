@@ -190,6 +190,7 @@
     const db = getFirestore(app);
 
     let isLogin = false;
+    let isProcessingAuth = false; // 🔥 YE LOCK HAI JO AUTO-REDIRECT KO ROKEGA
     
     // STEP 1: Save referral to localStorage if URL has ref
     const urlParams = new URLSearchParams(window.location.search);
@@ -235,6 +236,7 @@
     }
 
     async function registerUser() {
+        isProcessingAuth = true; // 🔥 User create hone lag gaya hai, lock laga do
         const name = document.getElementById("nameField").value;
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
@@ -258,16 +260,19 @@
 
             // STEP 4: Remove referrer from localStorage
             localStorage.removeItem("referrer");
-
             localStorage.setItem('winwave_username', name);
+            
+            // Ab data save ho gaya hai, isliye redirect kar do
             window.location.replace("dashboard.html");
 
         } catch (err) {
+            isProcessingAuth = false; // 🔥 Error aaya toh lock khol do
             alert(err.message);
         }
     }
 
     async function loginUser() {
+        isProcessingAuth = true; // 🔥 Login start hua, lock laga do
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
@@ -275,6 +280,7 @@
             await signInWithEmailAndPassword(auth, email, password);
             window.location.replace("dashboard.html");
         } catch (err) {
+            isProcessingAuth = false; // 🔥 Error aaya toh lock khol do
             alert(err.message);
         }
     }
@@ -316,7 +322,8 @@
 
     // Auto-login check
     onAuthStateChanged(auth, (user) => {
-        if (user) {
+        // 🔥 Agar isProcessingAuth TRUE hai toh ye check kaam nahi karega, page nahi paltega!
+        if (user && !isProcessingAuth) {
             const path = window.location.pathname;
             if (path.includes("index.html") || path === "/" || path === "") {
                 window.location.replace("dashboard.html");
