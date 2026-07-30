@@ -116,7 +116,7 @@ input[type="file"]:focus { border-color: #38bdf8; }
 </header>
 
 <div class="container">
-    <a href="wallet.html" class="back-link">← Back to Wallet</a>
+    <a href="wallet" class="back-link">← Back to Wallet</a>
     
     <div id="step1">
         <h3>Select Payment Method</h3>
@@ -135,7 +135,7 @@ input[type="file"]:focus { border-color: #38bdf8; }
         </div>
 
         <button class="btn" onclick="goToStep2()">Next Step</button>
-        <button class="btn" style="margin-top: 15px; background: transparent; border: 2px solid #38bdf8; color: #38bdf8;" onclick="window.location.href='deposit_history.html'">Deposit History</button>
+        <button class="btn" style="margin-top: 15px; background: transparent; border: 2px solid #38bdf8; color: #38bdf8;" onclick="window.location.href='deposit_history'">Deposit History</button>
     </div>
 
     <div id="step2">
@@ -162,10 +162,10 @@ input[type="file"]:focus { border-color: #38bdf8; }
 </div>
 
 <div class="bottom-nav">
-    <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
-    <a href="promotion.html"><i class="fas fa-bullhorn"></i><span>Promotion</span></a>
-    <a href="earn.html"><i class="fas fa-coins"></i><span>Earn</span></a>
-    <a href="wallet.html" class="active"><i class="fas fa-wallet"></i><span>Wallet</span></a>
+    <a href="index"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="promotion"><i class="fas fa-bullhorn"></i><span>Promotion</span></a>
+    <a href="earn"><i class="fas fa-coins"></i><span>Earn</span></a>
+    <a href="wallet" class="active"><i class="fas fa-wallet"></i><span>Wallet</span></a>
 </div>
 
 <!-- Firebase SDK Initialization -->
@@ -191,7 +191,7 @@ input[type="file"]:focus { border-color: #38bdf8; }
 
   onAuthStateChanged(auth, (user) => {
       if (!user) {
-          window.location.href = "index.html";
+          window.location.href = "index";
           return;
       }
       currentUser = user;
@@ -278,7 +278,7 @@ input[type="file"]:focus { border-color: #38bdf8; }
           });
   
           // Redirect to history automatically once safely saved
-          window.location.href = "deposit_history.html";
+          window.location.href = "deposit_history";
   
       } catch (err) {
           console.error(err);
