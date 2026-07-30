@@ -561,7 +561,8 @@ header .dp {
               const data = snap.data();
 
               document.getElementById('profileDeposit').innerText = 'Rs. ' + (data.deposit || 0).toLocaleString();
-              document.getElementById('profileEarn').innerText = 'Rs. ' + (data.earned || 0).toLocaleString();
+              // FIXED: Changed data.earned to data.earnBalance
+              document.getElementById('profileEarn').innerText = 'Rs. ' + (data.earnBalance || 0).toLocaleString();
 
               const plans = data.activePlans || [];
               document.getElementById('profilePlan').innerText = plans.length > 0 ? plans.join(', ') : 'None';
