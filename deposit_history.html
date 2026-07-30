@@ -102,7 +102,7 @@ h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #94a3b8; }
 </header>
 
 <div class="container">
-    <a href="deposit.html" class="back-link">← Back to Deposit</a>
+    <a href="deposit" class="back-link">← Back to Deposit</a>
     <h3>Deposit History</h3>
     
     <div id="historyContainer">
@@ -112,19 +112,19 @@ h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #94a3b8; }
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <a href="index.html">
+    <a href="index">
         <i class="fas fa-home"></i>
         <span>Home</span>
     </a>
-    <a href="promotion.html">
+    <a href="promotion">
         <i class="fas fa-bullhorn"></i>
         <span>Promotion</span>
     </a>
-    <a href="earn.html">
+    <a href="earn">
         <i class="fas fa-coins"></i>
         <span>Earn</span>
     </a>
-    <a href="wallet.html" class="active">
+    <a href="wallet" class="active">
         <i class="fas fa-wallet"></i>
         <span>Wallet</span>
     </a>
@@ -151,7 +151,7 @@ h3 { text-align: center; margin-top: 0; margin-bottom: 20px; color: #94a3b8; }
 
   onAuthStateChanged(auth, (user) => {
       if (!user) {
-          window.location.href = "index.html"; // Agar login nahi toh home pe bhejo
+          window.location.href = "index"; // Agar login nahi toh home pe bhejo
           return;
       }
       fetchDepositHistory(user.uid);
