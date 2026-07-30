@@ -19,7 +19,11 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        header .logo { color: #38bdf8; font-size: 24px; font-weight: bold; cursor: pointer; }
+        header .logo { display: flex; align-items: center; cursor: pointer; }
+        header .logo img {
+            max-height: 40px;
+            width: auto;
+        }
         
         /* HEADER BUTTONS */
         .header-btns { display: flex; gap: 10px; }
@@ -96,7 +100,9 @@
 <body>
 
 <header>
-    <div class="logo" onclick="showHomePage()">Winwave</div>
+    <div class="logo" onclick="showHomePage()">
+        <img src="logo.png" alt="Logo">
+    </div>
     
     <!-- Top Header Buttons (Hidden after login) -->
     <div class="header-btns" id="topNavButtons">
@@ -255,7 +261,7 @@
                 deposit: 0,
                 earned: 0,
                 createdAt: new Date(),
-                referredBy: referrer || null   // IMPORTANT LINE
+                referredBy: referrer || null  // IMPORTANT LINE
             });
 
             // STEP 4: Remove referrer from localStorage
