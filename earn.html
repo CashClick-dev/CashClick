@@ -41,7 +41,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 /* CONTAINER */
 .container { padding: 20px; max-width: 1000px; margin: 0 auto; }
 
-/* PLAN SECTION (Har plan ka alag box) */
+/* PLAN SECTION */
 .plan-section {
     background: #020617;
     border: 1px solid rgba(56, 189, 248, 0.2);
@@ -81,7 +81,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
     padding: 40px 20px;
     background: #020617;
     border-radius: 10px;
-    display: none; /* JS se show hoga */
+    display: none; 
     border: 1px solid rgba(239, 68, 68, 0.2);
 }
 .no-plan-msg h3 { color: #ef4444; }
@@ -117,6 +117,30 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 .bottom-nav a i { font-size: 20px; margin-bottom: 4px; }
 .bottom-nav a:hover, .bottom-nav a.active { color: #38bdf8; }
 
+/* --- NEW CSS FOR VIDEO MODAL --- */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95); z-index: 2000; justify-content: center; align-items: center;
+}
+.video-modal-content {
+    background: #020617; width: 90%; max-width: 600px; border: 1px solid #38bdf8; border-radius: 10px; padding: 20px; position: relative;
+}
+.close-modal {
+    position: absolute; top: 10px; right: 15px; color: #ef4444; font-size: 24px; font-weight: bold; cursor: pointer;
+}
+.timeline-container {
+    width: 100%; height: 8px; background: #1e293b; border-radius: 5px; overflow: hidden; margin-bottom: 15px; margin-top: 15px;
+}
+.timeline-bar {
+    width: 0%; height: 100%; background: #22c55e; transition: width 0.2s linear;
+}
+video {
+    border-radius: 8px; background: black; pointer-events: none; /* User isko click/pause na kar sake */
+}
+#videoStatusText {
+    text-align: center; font-size: 14px; margin-top: 15px; color: #94a3b8;
+}
+
 @media (max-width: 600px) { 
     header { padding: 15px 20px; } 
     .plan-header { flex-direction: column; gap: 10px; text-align: center; }
@@ -131,53 +155,52 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 </header>
 
 <div class="container">
-    
-    <!-- Balance Show Hoga (Sirf Earn Balance) -->
     <div class="current-balance" id="balanceDisplay">
         Your Earn Balance: <span id="earnBalanceAmount">Rs. 0</span>
     </div>
 
-    <!-- Agar koi plan nahi hai to ye show hoga -->
     <div class="no-plan-msg" id="noPlanMsg">
         <h3>Aap ne abhi tak koi Plan buy nahi kiya!</h3>
         <p>Ads dekhne ke liye pehle plan khareedein.</p>
         <a href="index.html">Buy Plan Now</a>
     </div>
 
-    <!-- Multiple Plans Yahan Generate Hongay -->
     <div id="allPlansContainer"></div>
-
 </div>
 
-<!-- BOTTOM NAVIGATION -->
+<!-- --- NEW VIDEO MODAL --- -->
+<div class="modal-overlay" id="videoModal">
+    <div class="video-modal-content">
+        <span class="close-modal" id="closeVideoModal">&times;</span>
+        <h4 style="margin:0; color:white;">Watch & Earn</h4>
+        
+        <div class="timeline-container">
+            <div class="timeline-bar" id="timelineBar"></div>
+        </div>
+        
+        <!-- controls na hone ki wajah se user skip nahi kar payega, playsinline zaruri hai mob browser ke liye -->
+        <video id="adVideoPlayer" width="100%" playsinline disablepictureinpicture controlslist="nodownload noplaybackrate">
+            <source src="" type="video/mp4">
+            Your browser does not support HTML video.
+        </video>
+        
+        <div id="videoStatusText">Please watch the full video without skipping to earn reward.</div>
+    </div>
+</div>
+
 <div class="bottom-nav">
-    <a href="index.html">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-    </a>
-    <a href="promotion.html">
-        <i class="fas fa-bullhorn"></i>
-        <span>Promotion</span>
-    </a>
-    <a href="earn.html" class="active">
-        <i class="fas fa-coins"></i>
-        <span>Earn</span>
-    </a>
-    <a href="wallet.html">
-        <i class="fas fa-wallet"></i>
-        <span>Wallet</span>
-    </a>
+    <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="promotion.html"><i class="fas fa-bullhorn"></i><span>Promotion</span></a>
+    <a href="earn.html" class="active"><i class="fas fa-coins"></i><span>Earn</span></a>
+    <a href="wallet.html"><i class="fas fa-wallet"></i><span>Wallet</span></a>
 </div>
 
-<!-- Type module zaroori hai Firebase imports ke liye -->
 <script type="module">
-  // Import Firebase modules via CDN for plain HTML
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
     authDomain: "cashwin-2cfdb.firebaseapp.com",
@@ -188,13 +211,18 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
     measurementId: "G-SVBJQDMX79"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // Baaki pehle wala code shuru
+  // --- VIDEO POOL ARRAY (1000 Videos yahan add karein) ---
+  const videoPool = [
+      "https://www.w3schools.com/html/mov_bbb.mp4", // Video 1 link
+      "https://www.w3schools.com/html/mov_bbb.mp4"  // Video 2 link
+      // yahan koma (,) laga kar mazeed 1000 link paste kar sakte hain
+  ];
+
   document.addEventListener('DOMContentLoaded', () => {
       
       onAuthStateChanged(auth, async (user) => {
@@ -206,14 +234,12 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           }
 
           const uid = user.uid;
-
           const userRef = doc(db, "users", uid);
           const snap = await getDoc(userRef);
 
           if (!snap.exists()) return;
 
           const data = snap.data();
-
           let earnBalance = data.earnBalance || 0;
           let activePlans = data.activePlans || [];
           let watchedAds = data.watchedAds || [];
@@ -224,14 +250,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 
           balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
 
-          const plansInfo = {
-              '1': 10,
-              '2': 20,
-              '3': 30,
-              '4': 40,
-              '5': 50
-          };
-
+          const plansInfo = { '1': 10, '2': 20, '3': 30, '4': 40, '5': 50 };
           const adReward = 20;
 
           if (activePlans.length === 0) {
@@ -239,27 +258,80 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
               return;
           }
 
+          // --- VIDEO PLAYER LOGIC ---
+          const videoModal = document.getElementById('videoModal');
+          const closeVideoModal = document.getElementById('closeVideoModal');
+          const adVideoPlayer = document.getElementById('adVideoPlayer');
+          const timelineBar = document.getElementById('timelineBar');
+          const videoStatusText = document.getElementById('videoStatusText');
+          
+          let currentAdBtn = null;
+          let currentAdId = null;
+          let rewardGiven = false;
+
+          // Agar user video darmyan mein cut kar de (Skip attempt)
+          closeVideoModal.onclick = () => {
+              adVideoPlayer.pause();
+              videoModal.style.display = 'none';
+              
+              if (!rewardGiven && currentAdBtn) {
+                  currentAdBtn.innerText = "Watch Ad";
+                  currentAdBtn.disabled = false;
+              }
+          };
+
+          // Timeline progress update karega automatically
+          adVideoPlayer.ontimeupdate = () => {
+              if (adVideoPlayer.duration) {
+                  const percentage = (adVideoPlayer.currentTime / adVideoPlayer.duration) * 100;
+                  timelineBar.style.width = percentage + "%";
+              }
+          };
+
+          // Jab video bilkul theek 100% pori chal jaye
+          adVideoPlayer.onended = async () => {
+              rewardGiven = true;
+              videoStatusText.style.color = "#22c55e";
+              videoStatusText.innerText = "Task Completed! Updating balance...";
+              
+              // Earning system update
+              earnBalance += adReward;
+              watchedAds.push(currentAdId);
+
+              await updateDoc(userRef, {
+                  earnBalance: earnBalance,
+                  watchedAds: watchedAds
+              });
+
+              balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
+              
+              currentAdBtn.innerText = "Watched";
+              currentAdBtn.classList.add('watched');
+
+              // Automatically popup band kardo
+              setTimeout(() => {
+                  videoModal.style.display = 'none';
+              }, 1500);
+          };
+          // --- END VIDEO PLAYER LOGIC ---
+
           activePlans.forEach(planId => {
-
               let totalAds = plansInfo[planId];
-
               let planSection = document.createElement('div');
               planSection.className = 'plan-section';
 
               planSection.innerHTML = `
                   <div class="plan-header">
                       <h2>Plan ${planId} Active</h2>
-                      <p>Available Ads: ${totalAds}</p>
+                      <p>Available Tasks: ${totalAds}</p>
                   </div>
                   <div class="ads-grid" id="ads-${planId}"></div>
               `;
 
               allPlansContainer.appendChild(planSection);
-
               let grid = document.getElementById(`ads-${planId}`);
 
               for (let i = 1; i <= totalAds; i++) {
-
                   let adId = `plan${planId}-ad${i}`;
                   let isWatched = watchedAds.includes(adId);
 
@@ -274,39 +346,45 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
                   `;
 
                   grid.appendChild(card);
-
                   let btn = document.getElementById(`btn-${adId}`);
 
+                  // Button par click ki logic
                   btn.onclick = async () => {
                       if (watchedAds.includes(adId)) return;
 
-                      btn.innerText = "Loading...";
+                      btn.innerText = "Playing...";
                       btn.disabled = true;
 
-                      setTimeout(async () => {
+                      // Modal reset variables
+                      currentAdBtn = btn;
+                      currentAdId = adId;
+                      rewardGiven = false;
+                      timelineBar.style.width = "0%";
+                      videoStatusText.style.color = "#94a3b8";
+                      videoStatusText.innerText = "Please watch the full video without skipping to earn reward.";
 
-                          earnBalance += adReward;
-                          watchedAds.push(adId);
+                      // Random video select karna videoPool se
+                      const randomVideoLink = videoPool[Math.floor(Math.random() * videoPool.length)];
+                      adVideoPlayer.src = randomVideoLink;
 
-                          await updateDoc(userRef, {
-                              earnBalance: earnBalance,
-                              watchedAds: watchedAds
-                          });
-
-                          balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
-
-                          btn.innerText = "Watched";
-                          btn.classList.add('watched');
-
-                      }, 2000);
-
+                      // Show Modal & Play Video
+                      videoModal.style.display = 'flex';
+                      
+                      try {
+                          await adVideoPlayer.play();
+                      } catch(e) {
+                          // Agar browser auto-play rokay toh
+                          videoStatusText.innerText = "Please tap anywhere on the video to start.";
+                          adVideoPlayer.style.pointerEvents = "auto";
+                          adVideoPlayer.onclick = () => {
+                              adVideoPlayer.play();
+                              adVideoPlayer.style.pointerEvents = "none";
+                          };
+                      }
                   };
               }
-
           });
-
       });
-
   });
 </script>
 
