@@ -251,7 +251,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
   const db = getFirestore(app);
 
   // =========================================================================
-  // YOUTUBE VIDEO IDs POOL (Aap ki di hui tamam videos)
+  // YOUTUBE VIDEO IDs POOL
   // =========================================================================
   const youtubeVideoPool = [
       "Df5Y-2ndQyU", "egvLKQe6I4I", "LgbyEFILLJI", "YA_kX8hu1gg", "XCGVurja73c", 
@@ -318,6 +318,25 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           let earnBalance = data.earnBalance || 0;
           let activePlans = data.activePlans || [];
           let watchedAds = data.watchedAds || [];
+
+          // =========================================================
+          // DAILY RESET LOGIC (Raat 12 baje ads reset karne ke liye)
+          // =========================================================
+          const today = new Date();
+          const options = { timeZone: 'Asia/Karachi', year: 'numeric', month: '2-digit', day: '2-digit' };
+          const todayStr = new Intl.DateTimeFormat('en-GB', options).format(today); // Returns DD/MM/YYYY
+          
+          let lastAdsResetDate = data.lastAdsResetDate || "";
+
+          // Agar database ki date aaj ki date se match nahi karti (Naya din shuru ho gaya hai)
+          if (lastAdsResetDate !== todayStr) {
+              watchedAds = []; // Ads array ko reset kar dein
+              await updateDoc(userRef, {
+                  watchedAds: [],
+                  lastAdsResetDate: todayStr
+              });
+          }
+          // =========================================================
 
           const balanceDisplay = document.getElementById('earnBalanceAmount');
           const noPlanMsg = document.getElementById('noPlanMsg');
