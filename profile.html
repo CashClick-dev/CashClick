@@ -409,11 +409,11 @@ header .dp {
     <div class="stats-box">
         <div class="stat-item">
             <h3 id="profileDeposit">Rs. 0</h3>
-            <p>Total Balance</p>
+            <p>Total Balance</p> <!-- Updated Label -->
         </div>
         <div class="stat-item" style="border-right: 1px solid #1e293b;">
             <h3 id="profileEarn">Rs. 0</h3>
-            <p>Daily Earned</p>
+            <p>Daily Earned Balance</p> <!-- Updated Label -->
         </div>
         <div class="stat-item">
             <h3 class="plan-text" id="profilePlan">None</h3>
@@ -512,6 +512,7 @@ header .dp {
         <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Reach out to us directly through any of our social channels below.</p>
         
         <div class="social-support">
+            <!-- Replace "#" with your actual links -->
             <a href="https://chat.whatsapp.com/CpHGV16HcbK7P32tq6vOqE?s=cl&p=a&ilr=0" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
             <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
             <a href="https://t.me/+oc5c5OTORh9lOTM0" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
@@ -538,9 +539,8 @@ header .dp {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-  // REMOVED setPersistence, browserLocalPersistence as Firebase Web uses Local by default. Setting it manually was crashing auth flow.
-  import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
@@ -555,6 +555,12 @@ header .dp {
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
+  
+  // Persistence set ki gayi hai taake session sahi tarike se handle ho
+  setPersistence(auth, browserLocalPersistence).catch((error) => {
+      console.error("Persistence error: ", error);
+  });
+
   const db = getFirestore(app);
 
   function updateAvatar(name) {
@@ -570,6 +576,17 @@ header .dp {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+      // Helper function for date check logic
+      function getFormattedDate(date) {
+          let d = new Date(date),
+              month = '' + (d.getMonth() + 1),
+              day = '' + d.getDate(),
+              year = d.getFullYear();
+          if (month.length < 2) month = '0' + month;
+          if (day.length < 2) day = '0' + day;
+          return [year, month, day].join('-');
+      }
+
       onAuthStateChanged(auth, async (user) => {
           if (!user) {
               window.location.href = "index.html";
@@ -588,59 +605,35 @@ header .dp {
           if (snap.exists()) {
               const data = snap.data();
 
-              // === MIDNIGHT ROLLOVER LOGIC START ===
-              let earnBalance = data.earnBalance || 0; // Today's pending earnings
-              let withdrawableEarnBalance = data.withdrawableEarnBalance || 0; // Previous days' earnings added to total
-              let lastRolloverDate = data.lastRolloverDate || "";
+              let totalBalance = data.deposit || 0;
+              let dailyEarnBalance = data.earnBalance || 0; 
+              let lastUpdate = data.lastUpdate || "";
+              let todayStr = getFormattedDate(new Date());
+              let needsUpdate = false;
 
-              const currentDate = new Date().toLocaleDateString("en-PK", { timeZone: "Asia/Karachi" });
-
-              if (lastRolloverDate !== currentDate) {
-                  if (earnBalance > 0) {
-                      withdrawableEarnBalance += earnBalance;
-                      earnBalance = 0; // Reset pending earnings for the new day
-                  }
-                  lastRolloverDate = currentDate;
-
-                  try {
-                      await updateDoc(userRef, {
-                          earnBalance: earnBalance,
-                          withdrawableEarnBalance: withdrawableEarnBalance,
-                          lastRolloverDate: lastRolloverDate
-                      });
-                  } catch (error) {
-                      console.error("Error during midnight rollover update:", error);
-                  }
-              }
-              // === MIDNIGHT ROLLOVER LOGIC END ===
-
-              // --- DYNAMIC REFERRAL EARNINGS CALCULATION (Wallet ki tarah) ---
-              let referralEarnings = 0; 
-              try {
-                  const referralsQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
-                  const referralsSnap = await getDocs(referralsQuery);
-                  
-                  referralsSnap.forEach((refDoc) => {
-                      const refData = refDoc.data();
-                      const deposit = refData.firstDeposit || refData.deposit || 0;
-                      if (deposit > 0) {
-                          referralEarnings += 50;
-                      }
-                  });
-              } catch (e) {
-                  console.error("Error fetching referrals: ", e);
+              // Raat 12 baje ke baad daily earn balance ko total me add krne ki logic (Dashboard wali same logic)
+              if (lastUpdate !== todayStr) {
+                  totalBalance += dailyEarnBalance;
+                  dailyEarnBalance = 0; // Naye din ke liye reset
+                  lastUpdate = todayStr;
+                  needsUpdate = true;
               }
 
-              // Total Balance Calculation
-              let depositBalance = data.deposit || 0;
-              let totalBalance = depositBalance + withdrawableEarnBalance + referralEarnings;
-
-              // Updating HTML displays
+              // UI Update karna
               document.getElementById('profileDeposit').innerText = 'Rs. ' + totalBalance.toLocaleString();
-              document.getElementById('profileEarn').innerText = 'Rs. ' + earnBalance.toLocaleString();
+              document.getElementById('profileEarn').innerText = 'Rs. ' + dailyEarnBalance.toLocaleString();
 
               const plans = data.activePlans || [];
               document.getElementById('profilePlan').innerText = plans.length > 0 ? plans.join(', ') : 'None';
+
+              // Agar date change hui hai tou Database me update karna
+              if (needsUpdate) {
+                  await updateDoc(userRef, {
+                      deposit: totalBalance,
+                      earnBalance: dailyEarnBalance,
+                      lastUpdate: lastUpdate
+                  });
+              }
           }
       });
   });
@@ -731,9 +724,14 @@ header .dp {
       let confirmLogout = confirm("Are you sure you want to logout?");
       if (confirmLogout) {
           try {
+              // 1. Clear local/session storage first
               localStorage.clear();
               sessionStorage.clear();
+              
+              // 2. Sign out from Firebase
               await signOut(auth);
+              
+              // Note: onAuthStateChanged will automatically redirect to index.html when user becomes null
           } catch (error) {
               console.error("Logout Error: ", error);
               alert("Logout failed: " + error.message);
