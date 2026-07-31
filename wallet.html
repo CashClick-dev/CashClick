@@ -101,6 +101,16 @@ header .dp {
     flex-wrap: wrap;
 }
 
+.pending-earn-notice {
+    margin-top: 15px;
+    font-size: 13px;
+    color: #bae6fd;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
 /* ACTION BUTTONS */
 .action-buttons {
     display: flex;
@@ -199,6 +209,7 @@ header .dp {
 @media (max-width: 600px) {
     header { padding: 15px 20px; }
     .wallet-container { padding: 15px; }
+    .balance-breakdown { font-size: 12px; gap: 10px; }
 }
 </style>
 </head>
@@ -223,7 +234,12 @@ header .dp {
         <div class="balance-breakdown">
             <div>Deposit: <strong id="depositBalanceDisplay">Rs. 0</strong></div>
             <div>Earned: <strong id="earnBalanceDisplay">Rs. 0</strong></div>
-            <div>Referral Earn: <strong id="referralEarnDisplay">Rs. 0</strong></div>
+            <div>Referral: <strong id="referralEarnDisplay">Rs. 0</strong></div>
+        </div>
+        
+        <!-- Pending Earn Note -->
+        <div class="pending-earn-notice">
+            <i class="fas fa-clock"></i> Pending Earn (Adds after 12 AM): <strong id="pendingEarnDisplay">Rs. 0</strong>
         </div>
     </div>
 
@@ -273,10 +289,10 @@ header .dp {
 </div>
 
 <script type="module">
-    // Import Firebase modules (Added collection, query, where, getDocs for referral calculation)
+    // Import Firebase modules (Added updateDoc for midnight rollover)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
     // Your web app's Firebase configuration
@@ -335,9 +351,38 @@ header .dp {
 
                 // Fetching static balances from Firestore
                 let depositBalance = data.deposit || 0;
-                let earnBalance = data.earnBalance || 0;
                 
-                // --- DYNAMIC REFERRAL EARNINGS CALCULATION (Same as promotion.html) ---
+                // === MIDNIGHT ROLLOVER LOGIC START ===
+                let earnBalance = data.earnBalance || 0; // Today's pending earnings
+                let withdrawableEarnBalance = data.withdrawableEarnBalance || 0; // Previous days' earnings added to total
+                let lastRolloverDate = data.lastRolloverDate || "";
+
+                // Get current date
+                const currentDate = new Date().toLocaleDateString("en-PK", { timeZone: "Asia/Karachi" });
+
+                // Check if midnight has passed (a new day has started)
+                if (lastRolloverDate !== currentDate) {
+                    if (earnBalance > 0) {
+                        // Move today's pending earnings to withdrawable earnings
+                        withdrawableEarnBalance += earnBalance;
+                        earnBalance = 0; // Reset pending earnings for the new day
+                    }
+                    lastRolloverDate = currentDate;
+
+                    // Update Firestore with the rolled-over balances
+                    try {
+                        await updateDoc(userRef, {
+                            earnBalance: earnBalance,
+                            withdrawableEarnBalance: withdrawableEarnBalance,
+                            lastRolloverDate: lastRolloverDate
+                        });
+                    } catch (error) {
+                        console.error("Error during midnight rollover update:", error);
+                    }
+                }
+                // === MIDNIGHT ROLLOVER LOGIC END ===
+
+                // --- DYNAMIC REFERRAL EARNINGS CALCULATION ---
                 let referralEarnings = 0; 
                 const referralsQuery = query(collection(db, "users"), where("referredBy", "==", uid));
                 const referralsSnap = await getDocs(referralsQuery);
@@ -346,20 +391,20 @@ header .dp {
                     const refData = refDoc.data();
                     const deposit = refData.firstDeposit || refData.deposit || 0;
                     
-                    // Har us user par Rs. 50 add hoga jisne deposit kiya hai
                     if (deposit > 0) {
                         referralEarnings += 50;
                     }
                 });
 
-                // Adding all balances into Total Balance
-                let totalBalance = depositBalance + earnBalance + referralEarnings;
+                // Total Balance only includes deposit, referral, and earnings from previous days (withdrawableEarnBalance)
+                let totalBalance = depositBalance + withdrawableEarnBalance + referralEarnings;
 
                 // Updating HTML with commas (toLocaleString)
                 document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
                 document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-                document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+                document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + withdrawableEarnBalance.toLocaleString();
                 document.getElementById('referralEarnDisplay').innerText = 'Rs. ' + referralEarnings.toLocaleString(); 
+                document.getElementById('pendingEarnDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString(); 
 
             } catch (err) {
                 alert("Error loading wallet");
