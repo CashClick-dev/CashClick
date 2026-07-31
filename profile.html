@@ -349,6 +349,37 @@ header .dp {
 .terms-text::-webkit-scrollbar { width: 5px; }
 .terms-text::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 10px; }
 
+
+/* SOCIAL SUPPORT ICONS CSS */
+.social-support {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.social-support a {
+    font-size: 45px;
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.social-support .fa-whatsapp {
+    color: #25D366;
+}
+
+.social-support .fa-facebook {
+    color: #1877F2;
+}
+
+.social-support .fa-telegram {
+    color: #0088cc;
+}
+
+.social-support a:hover {
+    transform: scale(1.15);
+}
+
 /* MOBILE RESPONSIVE */
 @media (max-width: 600px) {
     header { padding: 15px 20px; }
@@ -473,17 +504,19 @@ header .dp {
     </div>
 </div>
 
-<!-- 3. Customer Support Modal -->
+<!-- 3. Customer Support Modal (UPDATED) -->
 <div class="modal-overlay" id="supportModal">
-    <div class="modal-content">
+    <div class="modal-content" style="text-align: center;">
         <i class="fas fa-times close-modal" onclick="closeModal('supportModal')"></i>
         <h3>Customer Support</h3>
-        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Have an issue? Send us a message and we'll reply within 24 hours.</p>
-        <div class="input-group">
-            <label>Your Message</label>
-            <textarea id="supportMsg" rows="4" placeholder="Describe your problem..."></textarea>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Reach out to us directly through any of our social channels below.</p>
+        
+        <div class="social-support">
+            <!-- Replace "#" with your actual links -->
+            <a href="https://wa.me/920000000000" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://facebook.com/yourpage" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="https://t.me/yourtelegram" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
         </div>
-        <button class="btn-primary" onclick="sendSupportMessage()">Submit Ticket</button>
     </div>
 </div>
 
@@ -641,6 +674,7 @@ header .dp {
       }
   }
 
+  // Ab is function ki zarurat nahi kyunke form remove ho gaya hai, lekin code error free rakhne ke liye chhor dia hai.
   function sendSupportMessage() {
       let msg = document.getElementById('supportMsg').value;
       if (msg.trim() === "") {
