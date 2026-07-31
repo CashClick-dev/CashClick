@@ -297,14 +297,14 @@ header .dp {
     <!-- BALANCES WRAPPER (2 BOXES) -->
     <div class="balances-wrapper">
         <div class="balance-box">
-            <h3>Deposit Balance</h3>
+            <h3>Total Balance</h3>
             <!-- Idhar by default 0 set kar diya hai -->
-            <h2 id="depositBalanceDisplay">Rs. 0</h2>
+            <h2 id="totalBalanceDisplay">Rs. 0</h2>
         </div>
         
         <div class="balance-box earn-box">
-            <h3>Earn Balance</h3>
-            <h2 id="earnBalanceDisplay">Rs. 0</h2>
+            <h3>Daily Earn Balance</h3>
+            <h2 id="dailyEarnBalanceDisplay">Rs. 0</h2>
         </div>
     </div>
 
@@ -409,9 +409,20 @@ document.addEventListener('DOMContentLoaded', () => {
     track.innerHTML = cardsHTML + cardsHTML;
 
     // --- PLAN BUYING & BALANCE LOGIC ---
-    let depositBalance = 0;
-    let earnBalance = 0;
+    let totalBalance = 0;
+    let dailyEarnBalance = 0;
     let activePlans = [];
+
+    // Helper function to format date as YYYY-MM-DD
+    function getFormattedDate(date) {
+        let d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+        return [year, month, day].join('-');
+    }
 
     window.onAuthStateChanged(window.auth, async (user) => {
         if (!user) {
@@ -425,16 +436,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (snap.exists()) {
             const data = snap.data();
 
-            depositBalance = data.deposit || 0;
-            earnBalance = data.earnBalance || 0; // Fixed: Changed from data.earned to data.earnBalance
+            totalBalance = data.deposit || 0;
+            dailyEarnBalance = data.earnBalance || 0; 
             activePlans = data.activePlans || [];
 
-            document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-            document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+            let lastUpdate = data.lastUpdate || "";
+            let todayStr = getFormattedDate(new Date());
+            let needsUpdate = false;
+
+            // Raat 12 baje ke baad daily earn balance ko total me add krne ki logic
+            if (lastUpdate !== todayStr) {
+                totalBalance += dailyEarnBalance;
+                dailyEarnBalance = 0; // Reset for new day
+                lastUpdate = todayStr;
+                needsUpdate = true;
+            }
+
+            document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
+            document.getElementById('dailyEarnBalanceDisplay').innerText = 'Rs. ' + dailyEarnBalance.toLocaleString();
 
             activePlans.forEach(planId => {
                 showActivePlanTick(planId);
             });
+
+            // Agar naya din shuru hua hai tou Firebase me data update karein
+            if (needsUpdate) {
+                await window.updateDocRef(userRef, {
+                    deposit: totalBalance, // Using 'deposit' field as Total Balance
+                    earnBalance: dailyEarnBalance,
+                    lastUpdate: lastUpdate
+                });
+            }
         }
     });
 
@@ -473,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (currentDeposit < price) {
-            alert(`Plan ${planId} khareedne ke liye Deposit Balance na-kafi hai. Price: Rs. ${price}`);
+            alert(`Plan ${planId} khareedne ke liye Total Balance na-kafi hai. Price: Rs. ${price}`);
             return;
         }
 
@@ -485,10 +517,10 @@ document.addEventListener('DOMContentLoaded', () => {
             activePlans: currentPlans
         });
 
-        depositBalance = currentDeposit;
+        totalBalance = currentDeposit;
         activePlans = currentPlans;
 
-        document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+        document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
         showActivePlanTick(planId);
 
         alert(`Mubarak ho! Aapne Plan ${planId} khareed liya hai.`);
