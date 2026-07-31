@@ -13,272 +13,272 @@
 * { box-sizing: border-box; }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    background: #0f172a;
-    color: white;
-    margin: 0;
-    padding-top: 70px; /* Offset for fixed header */
-    padding-bottom: 70px; /* Offset for fixed bottom nav */
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    color: white;
+    margin: 0;
+    padding-top: 70px; /* Offset for fixed header */
+    padding-bottom: 70px; /* Offset for fixed bottom nav */
 }
 
 /* FIXED HEADER */
 header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    background: #020617;
-    z-index: 1000;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #020617;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 header .logo {
-    display: flex;
-    align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 header .logo img {
-    max-height: 40px;
-    width: auto;
+    max-height: 40px;
+    width: auto;
 }
 
 header .dp {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #38bdf8;
-    color: #020617;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
-    border: 2px solid #0ea5e9;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #38bdf8;
+    color: #020617;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    border: 2px solid #0ea5e9;
 }
 
 /* DASHBOARD */
 .dashboard {
-    padding: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 /* BALANCES WRAPPER */
 .balances-wrapper {
-    display: flex;
-    gap: 15px; /* Thora gap kam kiya taake choti screen pe achay lagein */
-    margin-bottom: 30px;
-    justify-content: center;
+    display: flex;
+    gap: 15px; /* Thora gap kam kiya taake choti screen pe achay lagein */
+    margin-bottom: 30px;
+    justify-content: center;
 }
 
 .balance-box {
-    background: #020617;
-    padding: 15px 10px;
-    border-radius: 10px;
-    text-align: center;
-    flex: 1; /* Dono boxes barabar jagah lenge, choti screen par bhi */
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background: #020617;
+    padding: 15px 10px;
+    border-radius: 10px;
+    text-align: center;
+    flex: 1; /* Dono boxes barabar jagah lenge, choti screen par bhi */
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.balance-box h3 { 
-    color: #94a3b8; 
-    margin-top: 0; 
-    font-size: 14px; /* Mobile pe fit aane k liye font size thora set kia */
+.balance-box h3 { 
+    color: #94a3b8; 
+    margin-top: 0; 
+    font-size: 14px; /* Mobile pe fit aane k liye font size thora set kia */
 }
 
 .balance-box h2 {
-    margin-bottom: 0;
-    font-size: 20px;
+    margin-bottom: 0;
+    font-size: 20px;
 }
 
 .earn-box h2 {
-    color: #22c55e; /* Earn balance green show hoga */
+    color: #22c55e; /* Earn balance green show hoga */
 }
 
 /* WITHDRAWAL SLIDER STYLES */
 .withdrawal-section {
-    margin-bottom: 35px;
-    overflow: hidden;
-    background: #020617;
-    border-radius: 12px;
-    padding: 15px 0;
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    margin-bottom: 35px;
+    overflow: hidden;
+    background: #020617;
+    border-radius: 12px;
+    padding: 15px 0;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
 }
 
 .withdrawal-title {
-    font-size: 14px;
-    color: #38bdf8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: bold;
+    font-size: 14px;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
 }
 
 .withdrawal-title i {
-    color: #22c55e;
+    color: #22c55e;
 }
 
 .slider-track-container {
-    display: flex;
-    overflow: hidden;
-    width: 100%;
-    user-select: none;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    user-select: none;
 }
 
 .slider-track {
-    display: flex;
-    gap: 15px;
-    width: max-content;
-    animation: scroll 500s linear infinite;
+    display: flex;
+    gap: 15px;
+    width: max-content;
+    animation: scroll 500s linear infinite;
 }
 
 .slider-track:hover {
-    animation-play-state: paused;
+    animation-play-state: paused;
 }
 
 @keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
 .w-card {
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    border-left: 4px solid #22c55e;
-    padding: 10px 16px;
-    border-radius: 8px;
-    min-width: 200px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-left: 4px solid #22c55e;
+    padding: 10px 16px;
+    border-radius: 8px;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .w-card .avatar-icon {
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
 }
 
 .w-details {
-    display: flex;
-    flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .w-name {
-    font-weight: 600;
-    font-size: 13px;
-    color: #f8fafc;
-    white-space: nowrap;
+    font-weight: 600;
+    font-size: 13px;
+    color: #f8fafc;
+    white-space: nowrap;
 }
 
 .w-amount {
-    font-size: 12px;
-    color: #22c55e;
-    font-weight: 700;
+    font-size: 12px;
+    color: #22c55e;
+    font-weight: 700;
 }
 
 /* PLANS */
 .plans {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
 }
 
 .plan {
-    background: #020617;
-    padding: 20px;
-    width: 100%;
-    max-width: 250px;
-    border-radius: 10px;
-    text-align: center;
-    transition: 0.3s;
+    background: #020617;
+    padding: 20px;
+    width: 100%;
+    max-width: 250px;
+    border-radius: 10px;
+    text-align: center;
+    transition: 0.3s;
 }
 
 .plan:hover { transform: translateY(-5px); }
 .plan h3 { color: #38bdf8; margin-top: 0; }
 
 .btn {
-    width: 100%; margin-top: 15px; padding: 10px 20px;
-    border: none; background: #38bdf8; color: black;
-    font-weight: bold; cursor: pointer; border-radius: 5px;
+    width: 100%; margin-top: 15px; padding: 10px 20px;
+    border: none; background: #38bdf8; color: black;
+    font-weight: bold; cursor: pointer; border-radius: 5px;
 }
 .btn:hover { background: #0ea5e9; }
 
 /* BOTTOM NAVIGATION */
 .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #020617;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0;
-    box-shadow: 0 -4px 6px rgba(0,0,0,0.3);
-    z-index: 1000;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #020617;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    box-shadow: 0 -4px 6px rgba(0,0,0,0.3);
+    z-index: 1000;
 }
 
 .bottom-nav a {
-    color: #94a3b8;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 12px;
-    transition: 0.3s;
+    color: #94a3b8;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    transition: 0.3s;
 }
 
 .bottom-nav a i {
-    font-size: 20px;
-    margin-bottom: 4px;
+    font-size: 20px;
+    margin-bottom: 4px;
 }
 
 .bottom-nav a:hover {
-    color: #38bdf8;
+    color: #38bdf8;
 }
 
 .bottom-nav a.active {
-    color: #38bdf8;
+    color: #38bdf8;
 }
 
 .bottom-nav a.active i {
-    background: #38bdf8;
-    color: #020617;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    background: #38bdf8;
+    color: #020617;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
 /* MOBILE RESPONSIVE */
 @media (max-width: 600px) {
-    header { padding: 15px 20px; }
-    .dashboard { padding: 15px; }
-    .plan { max-width: 100%; }
-    .balance-box h3 { font-size: 12px; }
-    .balance-box h2 { font-size: 16px; }
+    header { padding: 15px 20px; }
+    .dashboard { padding: 15px; }
+    .plan { max-width: 100%; }
+    .balance-box h3 { font-size: 12px; }
+    .balance-box h2 { font-size: 16px; }
 }
 </style>
 </head>
@@ -286,213 +286,213 @@ header .dp {
 <body>
 
 <header>
-    <div class="logo">
-        <img src="logo.png" alt="Beast Rewards Logo">
-    </div>
-    <div class="dp" title="Qasam Ali" onclick="window.location.href='profile.html'">QA</div>
+    <div class="logo">
+        <img src="logo.png" alt="Beast Rewards Logo">
+    </div>
+    <div class="dp" title="Qasam Ali" onclick="window.location.href='profile.html'">QA</div>
 </header>
 
 <div class="dashboard">
 
-    <!-- BALANCES WRAPPER (2 BOXES) -->
-    <div class="balances-wrapper">
-        <div class="balance-box">
-            <h3>Deposit Balance</h3>
-            <!-- Idhar by default 0 set kar diya hai -->
-            <h2 id="depositBalanceDisplay">Rs. 0</h2>
-        </div>
-        
-        <div class="balance-box earn-box">
-            <h3>Earn Balance</h3>
-            <h2 id="earnBalanceDisplay">Rs. 0</h2>
-        </div>
-    </div>
+    <!-- BALANCES WRAPPER (2 BOXES) -->
+    <div class="balances-wrapper">
+        <div class="balance-box">
+            <h3>Deposit Balance</h3>
+            <!-- Idhar by default 0 set kar diya hai -->
+            <h2 id="depositBalanceDisplay">Rs. 0</h2>
+        </div>
+        
+        <div class="balance-box earn-box">
+            <h3>Earn Balance</h3>
+            <h2 id="earnBalanceDisplay">Rs. 0</h2>
+        </div>
+    </div>
 
-    <!-- LIVE WITHDRAWAL SLIDER (200 CARDS) -->
-    <div class="withdrawal-section">
-        <div class="withdrawal-title">
-            <i class="fas fa-circle-check"></i> Live Successful Withdrawals
-        </div>
-        <div class="slider-track-container">
-            <div class="slider-track" id="withdrawalTrack"></div>
-        </div>
-    </div>
+    <!-- LIVE WITHDRAWAL SLIDER (200 CARDS) -->
+    <div class="withdrawal-section">
+        <div class="withdrawal-title">
+            <i class="fas fa-circle-check"></i> Live Successful Withdrawals
+        </div>
+        <div class="slider-track-container">
+            <div class="slider-track" id="withdrawalTrack"></div>
+        </div>
+    </div>
 
-    <!-- PLANS -->
-    <h2 style="text-align: center;">Choose Your Plan</h2>
-    <div class="plans">
-        <div class="plan"><h3>Plan 1</h3><p>10 Ads Daily</p><p>Price: Rs. 500</p><button id="btn-1" class="btn" onclick="buyPlan(1, 500)">Buy</button></div>
-        <div class="plan"><h3>Plan 2</h3><p>20 Ads Daily</p><p>Price: Rs. 1000</p><button id="btn-2" class="btn" onclick="buyPlan(2, 1000)">Buy</button></div>
-        <div class="plan"><h3>Plan 3</h3><p>30 Ads Daily</p><p>Price: Rs. 1500</p><button id="btn-3" class="btn" onclick="buyPlan(3, 1500)">Buy</button></div>
-        <div class="plan"><h3>Plan 4</h3><p>40 Ads Daily</p><p>Price: Rs. 2000</p><button id="btn-4" class="btn" onclick="buyPlan(4, 2000)">Buy</button></div>
-        <div class="plan"><h3>Plan 5</h3><p>50 Ads Daily</p><p>Price: Rs. 2500</p><button id="btn-5" class="btn" onclick="buyPlan(5, 2500)">Buy</button></div>
-    </div>
+    <!-- PLANS -->
+    <h2 style="text-align: center;">Choose Your Plan</h2>
+    <div class="plans">
+        <div class="plan"><h3>Plan 1</h3><p>10 Ads Daily</p><p>Price: Rs. 500</p><button id="btn-1" class="btn" onclick="buyPlan(1, 500)">Buy</button></div>
+        <div class="plan"><h3>Plan 2</h3><p>20 Ads Daily</p><p>Price: Rs. 1000</p><button id="btn-2" class="btn" onclick="buyPlan(2, 1000)">Buy</button></div>
+        <div class="plan"><h3>Plan 3</h3><p>30 Ads Daily</p><p>Price: Rs. 1500</p><button id="btn-3" class="btn" onclick="buyPlan(3, 1500)">Buy</button></div>
+        <div class="plan"><h3>Plan 4</h3><p>40 Ads Daily</p><p>Price: Rs. 2000</p><button id="btn-4" class="btn" onclick="buyPlan(4, 2000)">Buy</button></div>
+        <div class="plan"><h3>Plan 5</h3><p>50 Ads Daily</p><p>Price: Rs. 2500</p><button id="btn-5" class="btn" onclick="buyPlan(5, 2500)">Buy</button></div>
+    </div>
 </div>
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <a href="dashboard.html" class="active">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-    </a>
-    <a href="promotion.html">
-        <i class="fas fa-bullhorn"></i>
-        <span>Promotion</span>
-    </a>
-    <a href="earn.html">
-        <i class="fas fa-coins"></i>
-        <span>Earn</span>
-    </a>
-    <a href="wallet.html">
-        <i class="fas fa-wallet"></i>
-        <span>Wallet</span>
-    </a>
+    <a href="dashboard.html" class="active">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+    <a href="promotion.html">
+        <i class="fas fa-bullhorn"></i>
+        <span>Promotion</span>
+    </a>
+    <a href="earn.html">
+        <i class="fas fa-coins"></i>
+        <span>Earn</span>
+    </a>
+    <a href="wallet.html">
+        <i class="fas fa-wallet"></i>
+        <span>Wallet</span>
+    </a>
 </div>
 
 <!-- Firebase SDK Initialization -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
-    authDomain: "cashwin-2cfdb.firebaseapp.com",
-    projectId: "cashwin-2cfdb",
-    storageBucket: "cashwin-2cfdb.firebasestorage.app",
-    messagingSenderId: "42491408938",
-    appId: "1:42491408938:web:719a556f8901e19b35c953",
-    measurementId: "G-SVBJQDMX79"
-  };
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+    authDomain: "cashwin-2cfdb.firebaseapp.com",
+    projectId: "cashwin-2cfdb",
+    storageBucket: "cashwin-2cfdb.firebasestorage.app",
+    messagingSenderId: "42491408938",
+    appId: "1:42491408938:web:719a556f8901e19b35c953",
+    measurementId: "G-SVBJQDMX79"
+  };
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  window.auth = auth;
-  window.db = db;
-  window.docRef = doc;
-  window.getDocRef = getDoc;
-  window.updateDocRef = updateDoc;
-  window.onAuthStateChanged = onAuthStateChanged;
+  window.auth = auth;
+  window.db = db;
+  window.docRef = doc;
+  window.getDocRef = getDoc;
+  window.updateDocRef = updateDoc;
+  window.onAuthStateChanged = onAuthStateChanged;
 </script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- WITHDRAWAL SLIDER LOGIC ---
-    const firstNames = ["Muhammad", "Ali", "Ahmed", "Usman", "Hamza", "Bilal", "Zain", "Hassan", "Omer", "Fatima", "Aisha", "Sana", "Iqra", "Hira", "Tariq", "Kashif", "Asad", "Rehan", "Nabeel", "Faisal", "Shahid", "Saad", "Kamran", "Waqas", "Atif", "Arslan", "Danish", "Haris", "Imran", "Noman", "Zohaib", "Maryam", "Zubair", "Areeba", "Areeb"];
-    const lastNames = ["Khan", "Malik", "Sheikh", "Chaudhry", "Raza", "Syed", "Butt", "Abbasi", "Shah", "Iqbal", "Ghafoor", "Javed", "Siddiqui", "Bhatti", "Mirza", "Mughal", "Lodi", "Qureshi", "Akhtar", "Mehmood", "Bajwa", "Janjua", "Wattoo"];
+    // --- WITHDRAWAL SLIDER LOGIC ---
+    const firstNames = ["Muhammad", "Ali", "Ahmed", "Usman", "Hamza", "Bilal", "Zain", "Hassan", "Omer", "Fatima", "Aisha", "Sana", "Iqra", "Hira", "Tariq", "Kashif", "Asad", "Rehan", "Nabeel", "Faisal", "Shahid", "Saad", "Kamran", "Waqas", "Atif", "Arslan", "Danish", "Haris", "Imran", "Noman", "Zohaib", "Maryam", "Zubair", "Areeba", "Areeb"];
+    const lastNames = ["Khan", "Malik", "Sheikh", "Chaudhry", "Raza", "Syed", "Butt", "Abbasi", "Shah", "Iqbal", "Ghafoor", "Javed", "Siddiqui", "Bhatti", "Mirza", "Mughal", "Lodi", "Qureshi", "Akhtar", "Mehmood", "Bajwa", "Janjua", "Wattoo"];
 
-    const track = document.getElementById('withdrawalTrack');
-    let cardsHTML = '';
+    const track = document.getElementById('withdrawalTrack');
+    let cardsHTML = '';
 
-    for (let i = 0; i < 200; i++) {
-        const fname = firstNames[Math.floor(Math.random() * firstNames.length)];
-        const lname = lastNames[Math.floor(Math.random() * lastNames.length)];
-        const name = `${fname} ${lname}`;
-        
-        const amount = Math.floor(Math.random() * 43000) + 2100;
-        const formattedAmount = amount.toLocaleString();
+    for (let i = 0; i < 200; i++) {
+        const fname = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lname = lastNames[Math.floor(Math.random() * lastNames.length)];
+        const name = `${fname} ${lname}`;
+        
+        const amount = Math.floor(Math.random() * 43000) + 2100;
+        const formattedAmount = amount.toLocaleString();
 
-        cardsHTML += `
-            <div class="w-card">
-                <i class="fa-solid fa-user-check avatar-icon"></i>
-                <div class="w-details">
-                    <span class="w-name">${name}</span>
-                    <span class="w-amount">+ Rs. ${formattedAmount}</span>
-                </div>
-            </div>
-        `;
-    }
-    track.innerHTML = cardsHTML + cardsHTML;
+        cardsHTML += `
+            <div class="w-card">
+                <i class="fa-solid fa-user-check avatar-icon"></i>
+                <div class="w-details">
+                    <span class="w-name">${name}</span>
+                    <span class="w-amount">+ Rs. ${formattedAmount}</span>
+                </div>
+            </div>
+        `;
+    }
+    track.innerHTML = cardsHTML + cardsHTML;
 
-    // --- PLAN BUYING & BALANCE LOGIC ---
-    let depositBalance = 0;
-    let earnBalance = 0;
-    let activePlans = [];
+    // --- PLAN BUYING & BALANCE LOGIC ---
+    let depositBalance = 0;
+    let earnBalance = 0;
+    let activePlans = [];
 
-    window.onAuthStateChanged(window.auth, async (user) => {
-        if (!user) {
-            window.location.href = "index.html";
-            return;
-        }
+    window.onAuthStateChanged(window.auth, async (user) => {
+        if (!user) {
+            window.location.href = "index.html";
+            return;
+        }
 
-        const userRef = window.docRef(window.db, "users", user.uid);
-        const snap = await window.getDocRef(userRef);
+        const userRef = window.docRef(window.db, "users", user.uid);
+        const snap = await window.getDocRef(userRef);
 
-        if (snap.exists()) {
-            const data = snap.data();
+        if (snap.exists()) {
+            const data = snap.data();
 
-            depositBalance = data.deposit || 0;
-            earnBalance = data.earnBalance || 0; // Fixed: Changed from data.earned to data.earnBalance
-            activePlans = data.activePlans || [];
+            depositBalance = data.deposit || 0;
+            earnBalance = data.earnBalance || 0; // Fixed: Changed from data.earned to data.earnBalance
+            activePlans = data.activePlans || [];
 
-            document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-            document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
+            document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+            document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString();
 
-            activePlans.forEach(planId => {
-                showActivePlanTick(planId);
-            });
-        }
-    });
+            activePlans.forEach(planId => {
+                showActivePlanTick(planId);
+            });
+        }
+    });
 
-    // Button ko Green Tick se replace karne ka function
-    function showActivePlanTick(planId) {
-        const btn = document.getElementById('btn-' + planId);
-        if (btn) {
-            btn.outerHTML = '<div style="color: #22c55e; font-size: 18px; margin-top: 15px; font-weight: bold;"><i class="fas fa-circle-check"></i> Active Plan</div>';
-        }
-    }
+    // Button ko Green Tick se replace karne ka function
+    function showActivePlanTick(planId) {
+        const btn = document.getElementById('btn-' + planId);
+        if (btn) {
+            btn.outerHTML = '<div style="color: #22c55e; font-size: 18px; margin-top: 15px; font-weight: bold;"><i class="fas fa-circle-check"></i> Active Plan</div>';
+        }
+    }
 
-    // Plan Buy karne ka function
-    window.buyPlan = async function(planId, price) {
-        const user = window.auth.currentUser;
+    // Plan Buy karne ka function
+    window.buyPlan = async function(planId, price) {
+        const user = window.auth.currentUser;
 
-        if (!user) {
-            alert("Please login first.");
-            return;
-        }
+        if (!user) {
+            alert("Please login first.");
+            return;
+        }
 
-        const userRef = window.docRef(window.db, "users", user.uid);
-        const snap = await window.getDocRef(userRef);
+        const userRef = window.docRef(window.db, "users", user.uid);
+        const snap = await window.getDocRef(userRef);
 
-        if (!snap.exists()) {
-            alert("User data not found.");
-            return;
-        }
+        if (!snap.exists()) {
+            alert("User data not found.");
+            return;
+        }
 
-        const data = snap.data();
-        let currentDeposit = data.deposit || 0;
-        let currentPlans = data.activePlans || [];
+        const data = snap.data();
+        let currentDeposit = data.deposit || 0;
+        let currentPlans = data.activePlans || [];
 
-        if (currentPlans.includes(planId)) {
-            alert(`Aapke paas pehle se Plan ${planId} active hai!`);
-            return;
-        }
+        if (currentPlans.includes(planId)) {
+            alert(`Aapke paas pehle se Plan ${planId} active hai!`);
+            return;
+        }
 
-        if (currentDeposit < price) {
-            alert(`Plan ${planId} khareedne ke liye Deposit Balance na-kafi hai. Price: Rs. ${price}`);
-            return;
-        }
+        if (currentDeposit < price) {
+            alert(`Plan ${planId} khareedne ke liye Deposit Balance na-kafi hai. Price: Rs. ${price}`);
+            return;
+        }
 
-        currentDeposit -= price;
-        currentPlans.push(planId);
+        currentDeposit -= price;
+        currentPlans.push(planId);
 
-        await window.updateDocRef(userRef, {
-            deposit: currentDeposit,
-            activePlans: currentPlans
-        });
+        await window.updateDocRef(userRef, {
+            deposit: currentDeposit,
+            activePlans: currentPlans
+        });
 
-        depositBalance = currentDeposit;
-        activePlans = currentPlans;
+        depositBalance = currentDeposit;
+        activePlans = currentPlans;
 
-        document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-        showActivePlanTick(planId);
+        document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
+        showActivePlanTick(planId);
 
-        alert(`Mubarak ho! Aapne Plan ${planId} khareed liya hai.`);
-    };
+        alert(`Mubarak ho! Aapne Plan ${planId} khareed liya hai.`);
+    };
 });
 </script>
 
