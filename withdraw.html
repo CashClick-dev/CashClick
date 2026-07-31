@@ -314,7 +314,7 @@ input:focus {
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, arrayUnion, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, arrayUnion, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
@@ -339,7 +339,9 @@ input:focus {
     
     // Global variables
     let depositBalance = 0;
-    let earnBalance = 0;
+    let withdrawableEarnBalance = 0; // Added for main earning balance
+    let earnBalance = 0; // Keeping track of pending, but NOT adding to available
+    let referralEarnings = 0; // For dynamic referrals
     let availableBalance = 0;
     let validInvites = 0;
     let userRef;
@@ -356,21 +358,63 @@ input:focus {
         const uid = user.uid;
 
         userRef = doc(db, "users", uid);
-        const snap = await getDoc(userRef);
+        
+        try {
+            const snap = await getDoc(userRef);
+            if (!snap.exists()) return;
 
-        if (!snap.exists()) return;
+            const data = snap.data();
 
-        const data = snap.data();
+            depositBalance = data.deposit || 0;
+            earnBalance = data.earnBalance || 0;
+            withdrawableEarnBalance = data.withdrawableEarnBalance || 0;
 
-        depositBalance = data.deposit || 0;
-        earnBalance = data.earnBalance || 0;
-        availableBalance = depositBalance + earnBalance;
+            // === MIDNIGHT ROLLOVER LOGIC ===
+            let lastRolloverDate = data.lastRolloverDate || "";
+            const currentDate = new Date().toLocaleDateString("en-PK", { timeZone: "Asia/Karachi" });
 
-        // referrals count (valid invites)
-        validInvites = data.validReferrals || 0;
+            if (lastRolloverDate !== currentDate) {
+                if (earnBalance > 0) {
+                    withdrawableEarnBalance += earnBalance;
+                    earnBalance = 0; 
+                }
+                lastRolloverDate = currentDate;
 
-        document.getElementById('displayBalance').innerText = 
-            `Rs. ${availableBalance.toLocaleString()}`;
+                try {
+                    await updateDoc(userRef, {
+                        earnBalance: earnBalance,
+                        withdrawableEarnBalance: withdrawableEarnBalance,
+                        lastRolloverDate: lastRolloverDate
+                    });
+                } catch (error) {
+                    console.error("Error during midnight rollover update:", error);
+                }
+            }
+            // =================================
+
+            // --- REFERRAL EARNINGS CALCULATION ---
+            referralEarnings = 0; 
+            const referralsQuery = query(collection(db, "users"), where("referredBy", "==", uid));
+            const referralsSnap = await getDocs(referralsQuery);
+            
+            referralsSnap.forEach((refDoc) => {
+                const refData = refDoc.data();
+                const deposit = refData.firstDeposit || refData.deposit || 0;
+                if (deposit > 0) {
+                    referralEarnings += 50;
+                }
+            });
+
+            // TOTAL AVAILABLE BALANCE (Pending 'earnBalance' is excluded)
+            availableBalance = depositBalance + withdrawableEarnBalance + referralEarnings;
+
+            validInvites = data.validReferrals || 0;
+
+            document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
+
+        } catch(err) {
+            console.log("Error loading user data:", err);
+        }
     });
 
     async function loadWithdrawalHistory() {
@@ -467,16 +511,22 @@ input:focus {
 
         setTimeout(async () => {
 
-            // Balance deduction logic
+            // Balance deduction logic updated for Main Earning (withdrawableEarnBalance) and Deposit
             let remainingToDeduct = amount;
-            let newEarnBalance = earnBalance;
+            let newWithdrawableEarnBalance = withdrawableEarnBalance;
             let newDepositBalance = depositBalance;
 
-            if (newEarnBalance >= remainingToDeduct) {
-                newEarnBalance -= remainingToDeduct;
+            // Pehle earning (pichle dino ki) me se deduct karein
+            if (newWithdrawableEarnBalance >= remainingToDeduct) {
+                newWithdrawableEarnBalance -= remainingToDeduct;
+                remainingToDeduct = 0;
             } else {
-                remainingToDeduct -= newEarnBalance;
-                newEarnBalance = 0;
+                remainingToDeduct -= newWithdrawableEarnBalance;
+                newWithdrawableEarnBalance = 0;
+            }
+
+            // Agar mazeed paise deduct karne hain, toh wo Deposit me se katenge
+            if (remainingToDeduct > 0) {
                 newDepositBalance -= remainingToDeduct;
             }
 
@@ -494,8 +544,9 @@ input:focus {
 
                 // 2. Update user balances and user withdrawal history array in Firestore
                 await updateDoc(userRef, {
-                    earnBalance: newEarnBalance,
+                    withdrawableEarnBalance: newWithdrawableEarnBalance,
                     deposit: newDepositBalance,
+                    // Note: earnBalance (aaj ki earning) ko update nahi karna kyun ke wo touched nahi hai
                     withdrawals: arrayUnion({
                         amount: amount,
                         method: selectedMethod,
@@ -506,9 +557,9 @@ input:focus {
                 });
 
                 // Update local balances & UI
-                earnBalance = newEarnBalance;
+                withdrawableEarnBalance = newWithdrawableEarnBalance;
                 depositBalance = newDepositBalance;
-                availableBalance = earnBalance + depositBalance;
+                availableBalance = depositBalance + withdrawableEarnBalance + referralEarnings;
                 document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
 
             } catch (err) {
