@@ -230,10 +230,8 @@ header .dp {
         <h3>Total Available Balance</h3>
         <h1 id="totalBalanceDisplay">Rs. 0</h1>
         
-        <!-- Deposit, Earned aur Referral Earn ki tafseel -->
+        <!-- Referral Earn ki tafseel -->
         <div class="balance-breakdown">
-            <div>Deposit: <strong id="depositBalanceDisplay">Rs. 0</strong></div>
-            <div>Earned: <strong id="earnBalanceDisplay">Rs. 0</strong></div>
             <div>Referral: <strong id="referralEarnDisplay">Rs. 0</strong></div>
         </div>
         
@@ -269,7 +267,6 @@ header .dp {
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <!-- Updated link to index.html for home page consistency -->
     <a href="index.html">
         <i class="fas fa-home"></i>
         <span>Home</span>
@@ -401,8 +398,6 @@ header .dp {
 
                 // Updating HTML with commas (toLocaleString)
                 document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
-                document.getElementById('depositBalanceDisplay').innerText = 'Rs. ' + depositBalance.toLocaleString();
-                document.getElementById('earnBalanceDisplay').innerText = 'Rs. ' + withdrawableEarnBalance.toLocaleString();
                 document.getElementById('referralEarnDisplay').innerText = 'Rs. ' + referralEarnings.toLocaleString(); 
                 document.getElementById('pendingEarnDisplay').innerText = 'Rs. ' + earnBalance.toLocaleString(); 
 
