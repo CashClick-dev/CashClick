@@ -331,7 +331,6 @@ input:focus {
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     
-    // Updated imports/variables as requested
     const auth = getAuth(app);
     const db = getFirestore(app);
     let currentUser = null;
@@ -354,7 +353,6 @@ input:focus {
         }
         
         currentUser = user;
-
         const uid = user.uid;
 
         userRef = doc(db, "users", uid);
@@ -366,7 +364,6 @@ input:focus {
 
         depositBalance = data.deposit || 0;
         earnBalance = data.earnBalance || 0;
-
         availableBalance = depositBalance + earnBalance;
 
         // referrals count (valid invites)
@@ -398,7 +395,6 @@ input:focus {
             historyList.innerHTML = ""; // Clear loading message
 
             [...withdrawals].reverse().forEach(w => {
-
                 let maskedAccount = "XXXX";
                 if (w.account && w.account.length >= 11) {
                     maskedAccount = w.account.substring(0, 4) + "XXXX" + w.account.substring(8);
@@ -436,9 +432,7 @@ input:focus {
         if (view === 'history') {
             document.getElementById('formView').style.display = 'none';
             document.getElementById('historyView').style.display = 'block';
-
             loadWithdrawalHistory();
-
         } else {
             document.getElementById('historyView').style.display = 'none';
             document.getElementById('formView').style.display = 'block';
@@ -473,14 +467,24 @@ input:focus {
 
         setTimeout(async () => {
 
-            // Balance deduction code removed as requested
+            // Balance deduction logic
+            let remainingToDeduct = amount;
+            let newEarnBalance = earnBalance;
+            let newDepositBalance = depositBalance;
+
+            if (newEarnBalance >= remainingToDeduct) {
+                newEarnBalance -= remainingToDeduct;
+            } else {
+                remainingToDeduct -= newEarnBalance;
+                newEarnBalance = 0;
+                newDepositBalance -= remainingToDeduct;
+            }
 
             try {
-
-                // Updated saving logic to withdrawRequests collection as requested
+                // 1. Save to global withdrawRequests collection
                 await addDoc(collection(db, "withdrawRequests"), {
                     uid: currentUser.uid,
-                    name: document.getElementById("accountName").value.trim(),
+                    name: accName,
                     amount: amount,
                     method: selectedMethod,
                     account: accNumber,
@@ -488,17 +492,34 @@ input:focus {
                     createdAt: new Date().toISOString()
                 });
 
+                // 2. Update user balances and user withdrawal history array in Firestore
+                await updateDoc(userRef, {
+                    earnBalance: newEarnBalance,
+                    deposit: newDepositBalance,
+                    withdrawals: arrayUnion({
+                        amount: amount,
+                        method: selectedMethod,
+                        account: accNumber,
+                        status: "pending",
+                        date: new Date().toISOString()
+                    })
+                });
+
+                // Update local balances & UI
+                earnBalance = newEarnBalance;
+                depositBalance = newDepositBalance;
+                availableBalance = earnBalance + depositBalance;
+                document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
+
             } catch (err) {
-                showError("Error saving withdrawal");
-                
+                console.error(err);
+                showError("Error saving withdrawal request.");
                 submitBtn.innerText = "Submit Request";
                 submitBtn.disabled = false;
-                
                 return;
             }
 
             showSuccess(`Request Submitted! Rs. ${amount.toLocaleString()} pending`);
-
             addRecordToHistory(amount, selectedMethod, accNumber);
 
             document.getElementById('accountName').value = "";
@@ -537,7 +558,6 @@ input:focus {
         `;
 
         if (historyList) {
-            // Remove "No record" message if present
             if (historyList.children.length === 1 && historyList.children[0].tagName === 'P') {
                 historyList.innerHTML = "";
             }
