@@ -12,33 +12,33 @@
 * { box-sizing: border-box; }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    background: #0f172a;
-    color: white;
-    margin: 0;
-    padding-top: 70px;
-    padding-bottom: 90px; 
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    color: white;
+    margin: 0;
+    padding-top: 70px;
+    padding-bottom: 90px; 
 }
 
 /* FIXED HEADER */
 header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    background: #020617;
-    z-index: 1000;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #020617;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 header .logo { display: flex; align-items: center; }
 header .logo img {
-    max-height: 40px;
-    width: auto;
+    max-height: 40px;
+    width: auto;
 }
 
 header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8; color: #020617; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; border: 2px solid #0ea5e9; }
@@ -48,46 +48,46 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 
 /* PLAN SECTION */
 .plan-section {
-    background: #020617;
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background: #020617;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .plan-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #1e293b;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .plan-header h2 {
-    color: #22c55e;
-    margin: 0;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    color: #22c55e;
+    margin: 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .plan-header p {
-    color: #94a3b8;
-    margin: 0;
-    font-size: 14px;
+    color: #94a3b8;
+    margin: 0;
+    font-size: 14px;
 }
 
 /* NO PLAN MESSAGE */
 .no-plan-msg {
-    text-align: center;
-    padding: 40px 20px;
-    background: #020617;
-    border-radius: 10px;
-    display: none; 
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    text-align: center;
+    padding: 40px 20px;
+    background: #020617;
+    border-radius: 10px;
+    display: none; 
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 .no-plan-msg h3 { color: #ef4444; }
 .no-plan-msg a { display: inline-block; margin-top: 15px; padding: 10px 20px; background: #38bdf8; color: black; text-decoration: none; font-weight: bold; border-radius: 5px; }
@@ -96,17 +96,17 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 .ads-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
 
 .ad-card {
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    border-radius: 10px;
-    padding: 20px 10px;
-    text-align: center;
-    transition: 0.3s;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 20px 10px;
+    text-align: center;
+    transition: 0.3s;
 }
 .ad-card i { font-size: 30px; color: #38bdf8; margin-bottom: 10px; }
 .ad-card h4 { margin: 0 0 15px 0; font-size: 14px; }
 .ad-btn {
-    width: 100%; padding: 8px; border: none; background: #38bdf8; color: black; font-weight: bold; cursor: pointer; border-radius: 5px; font-size: 12px;
+    width: 100%; padding: 8px; border: none; background: #38bdf8; color: black; font-weight: bold; cursor: pointer; border-radius: 5px; font-size: 12px;
 }
 .ad-btn:hover { background: #0ea5e9; }
 .ad-btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
@@ -124,56 +124,56 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 
 /* VIDEO MODAL STYLES */
 .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.95); z-index: 2000; justify-content: center; align-items: center;
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95); z-index: 2000; justify-content: center; align-items: center;
 }
 .video-modal-content {
-    background: #020617; width: 90%; max-width: 600px; border: 1px solid #38bdf8; border-radius: 10px; padding: 20px; position: relative;
+    background: #020617; width: 90%; max-width: 600px; border: 1px solid #38bdf8; border-radius: 10px; padding: 20px; position: relative;
 }
 .close-modal {
-    position: absolute; top: 10px; right: 15px; color: #ef4444; font-size: 24px; font-weight: bold; cursor: pointer; user-select: none; z-index: 30;
+    position: absolute; top: 10px; right: 15px; color: #ef4444; font-size: 24px; font-weight: bold; cursor: pointer; user-select: none; z-index: 30;
 }
 .timeline-container {
-    width: 100%; height: 8px; background: #1e293b; border-radius: 5px; overflow: hidden; margin-bottom: 15px; margin-top: 15px;
+    width: 100%; height: 8px; background: #1e293b; border-radius: 5px; overflow: hidden; margin-bottom: 15px; margin-top: 15px;
 }
 .timeline-bar {
-    width: 0%; height: 100%; background: #22c55e; transition: width 0.2s linear;
+    width: 0%; height: 100%; background: #22c55e; transition: width 0.2s linear;
 }
 
 /* YOUTUBE EMBED CONTAINER WITH TRANSPARENT SHIELD */
 .yt-wrapper {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
-    border-radius: 8px;
-    overflow: hidden;
-    background: black;
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    border-radius: 8px;
+    overflow: hidden;
+    background: black;
 }
 .yt-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
 .yt-shield {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-    background: transparent;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    background: transparent;
 }
 
 #videoStatusText {
-    text-align: center; font-size: 14px; margin-top: 15px; color: #94a3b8;
+    text-align: center; font-size: 14px; margin-top: 15px; color: #94a3b8;
 }
 
-@media (max-width: 600px) { 
-    header { padding: 15px 20px; } 
-    .plan-header { flex-direction: column; gap: 10px; text-align: center; }
+@media (max-width: 600px) { 
+    header { padding: 15px 20px; } 
+    .plan-header { flex-direction: column; gap: 10px; text-align: center; }
 }
 </style>
 <!-- YOUTUBE IFRAME API SCRIPT -->
@@ -182,315 +182,315 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 <body>
 
 <header>
-    <div class="logo">
-        <img src="logo.png" alt="Logo">
-    </div>
-    <div class="dp" title="Profile">QA</div>
+    <div class="logo">
+        <img src="logo.png" alt="Logo">
+    </div>
+    <div class="dp" title="Profile">QA</div>
 </header>
 
 <div class="container">
-    <div class="current-balance" id="balanceDisplay">
-        Your Earn Balance: <span id="earnBalanceAmount">Rs. 0</span>
-    </div>
+    <div class="current-balance" id="balanceDisplay">
+        Your Earn Balance: <span id="earnBalanceAmount">Rs. 0</span>
+    </div>
 
-    <div class="no-plan-msg" id="noPlanMsg">
-        <h3>Aap ne abhi tak koi Plan buy nahi kiya!</h3>
-        <p>Ads dekhne ke liye pehle plan khareedein.</p>
-        <a href="index.html">Buy Plan Now</a>
-    </div>
+    <div class="no-plan-msg" id="noPlanMsg">
+        <h3>Aap ne abhi tak koi Plan buy nahi kiya!</h3>
+        <p>Ads dekhne ke liye pehle plan khareedein.</p>
+        <a href="index.html">Buy Plan Now</a>
+    </div>
 
-    <div id="allPlansContainer"></div>
+    <div id="allPlansContainer"></div>
 </div>
 
 <!-- VIDEO POPUP MODAL WITH YOUTUBE PLAYER -->
 <div class="modal-overlay" id="videoModal">
-    <div class="video-modal-content">
-        <span class="close-modal" id="closeVideoModal">&times;</span>
-        <h4 style="margin:0; color:white;">Watch & Earn</h4>
-        
-        <div class="timeline-container">
-            <div class="timeline-bar" id="timelineBar"></div>
-        </div>
-        
-        <div class="yt-wrapper">
-            <div class="yt-shield"></div>
-            <div id="youtubePlayer"></div>
-        </div>
-        
-        <div id="videoStatusText">Please watch the full video without skipping to earn reward.</div>
-    </div>
+    <div class="video-modal-content">
+        <span class="close-modal" id="closeVideoModal">&times;</span>
+        <h4 style="margin:0; color:white;">Watch & Earn</h4>
+        
+        <div class="timeline-container">
+            <div class="timeline-bar" id="timelineBar"></div>
+        </div>
+        
+        <div class="yt-wrapper">
+            <div class="yt-shield"></div>
+            <div id="youtubePlayer"></div>
+        </div>
+        
+        <div id="videoStatusText">Please watch the full video without skipping to earn reward.</div>
+    </div>
 </div>
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
-    <a href="promotion.html"><i class="fas fa-bullhorn"></i><span>Promotion</span></a>
-    <a href="earn.html" class="active"><i class="fas fa-coins"></i><span>Earn</span></a>
-    <a href="wallet.html"><i class="fas fa-wallet"></i><span>Wallet</span></a>
+    <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="promotion.html"><i class="fas fa-bullhorn"></i><span>Promotion</span></a>
+    <a href="earn.html" class="active"><i class="fas fa-coins"></i><span>Earn</span></a>
+    <a href="wallet.html"><i class="fas fa-wallet"></i><span>Wallet</span></a>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
-    authDomain: "cashwin-2cfdb.firebaseapp.com",
-    projectId: "cashwin-2cfdb",
-    storageBucket: "cashwin-2cfdb.firebasestorage.app",
-    messagingSenderId: "42491408938",
-    appId: "1:42491408938:web:719a556f8901e19b35c953",
-    measurementId: "G-SVBJQDMX79"
-  };
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9PTKknfHGgaZM4bhH_22HBT9tKkplCcE",
+    authDomain: "cashwin-2cfdb.firebaseapp.com",
+    projectId: "cashwin-2cfdb",
+    storageBucket: "cashwin-2cfdb.firebasestorage.app",
+    messagingSenderId: "42491408938",
+    appId: "1:42491408938:web:719a556f8901e19b35c953",
+    measurementId: "G-SVBJQDMX79"
+  };
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  // =========================================================================
-  // YOUTUBE VIDEO IDs POOL (Aap ki di hui tamam videos)
-  // =========================================================================
-  const youtubeVideoPool = [
-      "Df5Y-2ndQyU", "egvLKQe6I4I", "LgbyEFILLJI", "YA_kX8hu1gg", "XCGVurja73c", 
-      "r9aWeGqp43s", "xDuuM3ERr5Q", "xCl2gndzFqE", "y1UVAtHALaA", "hYahU_Cqwp8", 
-      "SllXaJiQjBA", "dqpCvSU-ECE", "QAkEMtJpq3c", "hCuqh2NU2Yg", "B9LizOAAoLg", 
-      "rqsRdfdN4uI", "feu5PQvoCiA", "EdT5Z16Y5WE", "ScjQAcbA9e4", "hRBpDdWbUpI", 
-      "pzxtGL9kzPs", "yy-Nt0dRhNI", "mFWpUx3FiyU", "6W_841xoprg", "VIJLIo5yT1I", 
-      "uNu6XEPTy5g", "_JUlWtSCNbs", "AKC50SZQFN8", "897gvApD6V4", "Z9NxQdQ8Rpg", 
-      "jCE1Ol3PYDs", "IqL-ZunFfpk", "purAsH7pXTQ", "IEuDUhGIJ5c", "IcuJ3vO_t3k", 
-      "c9VS_cgInT4", "KaUuPNYHFNg", "hjkbqeWQAM8", "XbaZ45LVzzM", "gar4U3n-ILY", 
-      "toIeUtplfWQ", "_sBRk9ADpK8", "kNLr-cduzuo", "wSh8fAFWEWs", "3GNyw4uaAqU", 
-      "ywIcdSNJolo", "mktYW177p6U", "7aE4EhHXzlA", "IJkB-oapuks", "RB71Z-vVvCc", 
-      "fO5FwBcCJBY", "U-x6KxH1kB4", "SE9xF1l3ZwE", "rF00lQ_upzg", "uZY9xr-QAk0", 
-      "AWBsoArakNY", "HISfrcjiNPM", "WROMyJAJmp4", "tAwzBYE18Us", "LyFMbY-c_Lc", 
-      "R7MkZL5i3FQ", "26QQE7EsnLA", "PryTbmudhS8", "yWEUL3crU_E", "JgJrQnDIRgg", 
-      "gtkqnhN0VkU", "UTdcX1e0cMA", "oiZvK6MY7tI", "686PL7rt654", "NfhuGUyWYfQ", 
-      "wIpWCJKfRXs", "9Xeepzg1B8I", "50G0kIty7Cg", "3ih2bPKSWsQ", "uA9Zcg3vHvo", 
-      "MOGW3v3pJ5Y", "XNtTO_339kU", "rB9NynBZ4go", "R_BmT1OJw98", "vpRW4JhzfSE", 
-      "qXW93Cois2s", "r7f0L48dHpc", "zxuICI0kL3s", "R1SFXJo-FlE", "lQz5aqjZ3lQ", 
-      "EiFcNbXBqeo", "R7oW0LwS_e4", "BfKI_TQnQvo", "NjlP2_l1Wr0", "gGcaGdHlt60", 
-      "V6In4tmd-w8", "ZGvn9ywXjpY", "KCRLP-zBacU", "c2ukL_zjFCk", "7qY-qalCI2Y", 
-      "N0pwLtonPdg", "0yPgljFcTR4", "TN1wErFGTzM", "3dxksf0CzS8", "x7yv72s8h0o", 
-      "M1STzb7k9L8", "7K-yxGWYsnk", "Tbn4cYCaZCk", "Uxc84UUrVHk", "BzKaMelDzqo", 
-      "4yx9ZJDfyKk", "kPa_S6jN9ls", "69g-YcbmgQA", "TNtpUQbW4mg", "TgCm8oDmxOk", 
-      "954wJ3uHVAk", "PXevNM0awlI", "PuQ5UxKUY48", "L5ihmu87xTE", "nAiKLoCP-kU", 
-      "MFpWEKN9c6Y", "TRxMLLuWIhw", "EvqtfK_RaRg", "3cWm9B_0_kI", "qtWqHIx8Z-o", 
-      "DBPYB8WkkDc", "zvBXpoBegwE", "SWc8fI_9iqA", "HcL1EQ5qD_g", "dc089EZRGcg", 
-      "vXNtju4VFm4", "I9mw5UlDyPI", "pS-fFdvyHLE", "9UtcHPCEBgg", "ZNt_GoOBHq8", 
-      "dDVFnfCwjHA", "Kt2HvqRruHQ", "vDrSCXFMAKk", "nbzQdlWrcnk", "8krJy31Diow", 
-      "Jo7sfpeWqwE", "QtD-CeUdRUQ", "AydS-vA3qa4", "8bTQMDM4qvY", "DBw0oD38z0Q", 
-      "XhuisK0bTSA", "lkCRPp7cnP8", "T8I165Qxeo8", "i-9V21MqlhY", "YyNz4--6fro", 
-      "f0cXJ6mJxGc", "oA4LSZvX4iE", "ZKxnjszkZto", "8_gdcaX9Xqk", "snUyLbGx6U4", 
-      "CWbV3NItSdY", "XE1Qyss8GIY", "6GzHPS0rEgc", "imhY0pe-Sd8", "OnTTThIzuNU", 
-      "sH48lKbayNU", "AFXoSFNMwIA", "k194wHZHjB0", "AjwAdtlRKf8", "ZVt9ZJfWV1c", 
-      "rWBOITBjitE", "AjZDwxt7S8w", "aZnqqXaT02g", "l9_8_pDTmis", "n7x4Jj9pdH8", 
-      "jGAJCAuV3pQ", "c0v8OPItCOg", "IemzxkkzI5s", "bvlFjrcpD6s", "AZlBZuS4hr0", 
-      "Gx6VeIIbWwM", "CAOY8EKH1qU", "IQxea9UB1nQ", "zgLhCT7aFCA", "L5kIXRdwGAI", 
-      "19NmWqv4Alk", "SGzWIoLAzmY", "NnNZLCl78Ao", "NTZhwAldqwg", "mKIhHNznt4s", 
-      "O3YVBJ2n5xg", "CP82DAKzL1U", "stUofW3whpE", "ooAwCOP67GQ", "ykRq_rp7NhM", 
-      "8kggT2ej-lo", "GGBy50KtvRk", "Y4-gFIfGXiQ", "Y0cBiGUuB1Y", "NPYPXWJBTWM", 
-      "lglIQkCHO0g", "se50viFJ0AQ", "FD-0KG-h2-c", "YlvcFJOE-OE", "S_CUEOBZ0P4"
-  ];
+  // =========================================================================
+  // YOUTUBE VIDEO IDs POOL (Aap ki di hui tamam videos)
+  // =========================================================================
+  const youtubeVideoPool = [
+      "Df5Y-2ndQyU", "egvLKQe6I4I", "LgbyEFILLJI", "YA_kX8hu1gg", "XCGVurja73c", 
+      "r9aWeGqp43s", "xDuuM3ERr5Q", "xCl2gndzFqE", "y1UVAtHALaA", "hYahU_Cqwp8", 
+      "SllXaJiQjBA", "dqpCvSU-ECE", "QAkEMtJpq3c", "hCuqh2NU2Yg", "B9LizOAAoLg", 
+      "rqsRdfdN4uI", "feu5PQvoCiA", "EdT5Z16Y5WE", "ScjQAcbA9e4", "hRBpDdWbUpI", 
+      "pzxtGL9kzPs", "yy-Nt0dRhNI", "mFWpUx3FiyU", "6W_841xoprg", "VIJLIo5yT1I", 
+      "uNu6XEPTy5g", "_JUlWtSCNbs", "AKC50SZQFN8", "897gvApD6V4", "Z9NxQdQ8Rpg", 
+      "jCE1Ol3PYDs", "IqL-ZunFfpk", "purAsH7pXTQ", "IEuDUhGIJ5c", "IcuJ3vO_t3k", 
+      "c9VS_cgInT4", "KaUuPNYHFNg", "hjkbqeWQAM8", "XbaZ45LVzzM", "gar4U3n-ILY", 
+      "toIeUtplfWQ", "_sBRk9ADpK8", "kNLr-cduzuo", "wSh8fAFWEWs", "3GNyw4uaAqU", 
+      "ywIcdSNJolo", "mktYW177p6U", "7aE4EhHXzlA", "IJkB-oapuks", "RB71Z-vVvCc", 
+      "fO5FwBcCJBY", "U-x6KxH1kB4", "SE9xF1l3ZwE", "rF00lQ_upzg", "uZY9xr-QAk0", 
+      "AWBsoArakNY", "HISfrcjiNPM", "WROMyJAJmp4", "tAwzBYE18Us", "LyFMbY-c_Lc", 
+      "R7MkZL5i3FQ", "26QQE7EsnLA", "PryTbmudhS8", "yWEUL3crU_E", "JgJrQnDIRgg", 
+      "gtkqnhN0VkU", "UTdcX1e0cMA", "oiZvK6MY7tI", "686PL7rt654", "NfhuGUyWYfQ", 
+      "wIpWCJKfRXs", "9Xeepzg1B8I", "50G0kIty7Cg", "3ih2bPKSWsQ", "uA9Zcg3vHvo", 
+      "MOGW3v3pJ5Y", "XNtTO_339kU", "rB9NynBZ4go", "R_BmT1OJw98", "vpRW4JhzfSE", 
+      "qXW93Cois2s", "r7f0L48dHpc", "zxuICI0kL3s", "R1SFXJo-FlE", "lQz5aqjZ3lQ", 
+      "EiFcNbXBqeo", "R7oW0LwS_e4", "BfKI_TQnQvo", "NjlP2_l1Wr0", "gGcaGdHlt60", 
+      "V6In4tmd-w8", "ZGvn9ywXjpY", "KCRLP-zBacU", "c2ukL_zjFCk", "7qY-qalCI2Y", 
+      "N0pwLtonPdg", "0yPgljFcTR4", "TN1wErFGTzM", "3dxksf0CzS8", "x7yv72s8h0o", 
+      "M1STzb7k9L8", "7K-yxGWYsnk", "Tbn4cYCaZCk", "Uxc84UUrVHk", "BzKaMelDzqo", 
+      "4yx9ZJDfyKk", "kPa_S6jN9ls", "69g-YcbmgQA", "TNtpUQbW4mg", "TgCm8oDmxOk", 
+      "954wJ3uHVAk", "PXevNM0awlI", "PuQ5UxKUY48", "L5ihmu87xTE", "nAiKLoCP-kU", 
+      "MFpWEKN9c6Y", "TRxMLLuWIhw", "EvqtfK_RaRg", "3cWm9B_0_kI", "qtWqHIx8Z-o", 
+      "DBPYB8WkkDc", "zvBXpoBegwE", "SWc8fI_9iqA", "HcL1EQ5qD_g", "dc089EZRGcg", 
+      "vXNtju4VFm4", "I9mw5UlDyPI", "pS-fFdvyHLE", "9UtcHPCEBgg", "ZNt_GoOBHq8", 
+      "dDVFnfCwjHA", "Kt2HvqRruHQ", "vDrSCXFMAKk", "nbzQdlWrcnk", "8krJy31Diow", 
+      "Jo7sfpeWqwE", "QtD-CeUdRUQ", "AydS-vA3qa4", "8bTQMDM4qvY", "DBw0oD38z0Q", 
+      "XhuisK0bTSA", "lkCRPp7cnP8", "T8I165Qxeo8", "i-9V21MqlhY", "YyNz4--6fro", 
+      "f0cXJ6mJxGc", "oA4LSZvX4iE", "ZKxnjszkZto", "8_gdcaX9Xqk", "snUyLbGx6U4", 
+      "CWbV3NItSdY", "XE1Qyss8GIY", "6GzHPS0rEgc", "imhY0pe-Sd8", "OnTTThIzuNU", 
+      "sH48lKbayNU", "AFXoSFNMwIA", "k194wHZHjB0", "AjwAdtlRKf8", "ZVt9ZJfWV1c", 
+      "rWBOITBjitE", "AjZDwxt7S8w", "aZnqqXaT02g", "l9_8_pDTmis", "n7x4Jj9pdH8", 
+      "jGAJCAuV3pQ", "c0v8OPItCOg", "IemzxkkzI5s", "bvlFjrcpD6s", "AZlBZuS4hr0", 
+      "Gx6VeIIbWwM", "CAOY8EKH1qU", "IQxea9UB1nQ", "zgLhCT7aFCA", "L5kIXRdwGAI", 
+      "19NmWqv4Alk", "SGzWIoLAzmY", "NnNZLCl78Ao", "NTZhwAldqwg", "mKIhHNznt4s", 
+      "O3YVBJ2n5xg", "CP82DAKzL1U", "stUofW3whpE", "ooAwCOP67GQ", "ykRq_rp7NhM", 
+      "8kggT2ej-lo", "GGBy50KtvRk", "Y4-gFIfGXiQ", "Y0cBiGUuB1Y", "NPYPXWJBTWM", 
+      "lglIQkCHO0g", "se50viFJ0AQ", "FD-0KG-h2-c", "YlvcFJOE-OE", "S_CUEOBZ0P4"
+  ];
 
-  let ytPlayer = null;
-  let ytTimerInterval = null;
+  let ytPlayer = null;
+  let ytTimerInterval = null;
 
-  document.addEventListener('DOMContentLoaded', () => {
-      
-      onAuthStateChanged(auth, async (user) => {
+  document.addEventListener('DOMContentLoaded', () => {
+      
+      onAuthStateChanged(auth, async (user) => {
 
-          if (!user) {
-              alert("Please login first");
-              window.location.href = "login.html";
-              return;
-          }
+          if (!user) {
+              alert("Please login first");
+              window.location.href = "login.html";
+              return;
+          }
 
-          const uid = user.uid;
-          const userRef = doc(db, "users", uid);
-          const snap = await getDoc(userRef);
+          const uid = user.uid;
+          const userRef = doc(db, "users", uid);
+          const snap = await getDoc(userRef);
 
-          if (!snap.exists()) return;
+          if (!snap.exists()) return;
 
-          const data = snap.data();
-          let earnBalance = data.earnBalance || 0;
-          let activePlans = data.activePlans || [];
-          let watchedAds = data.watchedAds || [];
+          const data = snap.data();
+          let earnBalance = data.earnBalance || 0;
+          let activePlans = data.activePlans || [];
+          let watchedAds = data.watchedAds || [];
 
-          const balanceDisplay = document.getElementById('earnBalanceAmount');
-          const noPlanMsg = document.getElementById('noPlanMsg');
-          const allPlansContainer = document.getElementById('allPlansContainer');
+          const balanceDisplay = document.getElementById('earnBalanceAmount');
+          const noPlanMsg = document.getElementById('noPlanMsg');
+          const allPlansContainer = document.getElementById('allPlansContainer');
 
-          balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
+          balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
 
-          const plansInfo = { '1': 10, '2': 20, '3': 30, '4': 40, '5': 50 };
-          const adReward = 20;
+          const plansInfo = { '1': 10, '2': 20, '3': 30, '4': 40, '5': 50 };
+          const adReward = 20;
 
-          if (activePlans.length === 0) {
-              noPlanMsg.style.display = 'block';
-              return;
-          }
+          if (activePlans.length === 0) {
+              noPlanMsg.style.display = 'block';
+              return;
+          }
 
-          // Modal & DOM Elements
-          const videoModal = document.getElementById('videoModal');
-          const closeVideoModal = document.getElementById('closeVideoModal');
-          const timelineBar = document.getElementById('timelineBar');
-          const videoStatusText = document.getElementById('videoStatusText');
-          
-          let currentAdBtn = null;
-          let currentAdId = null;
-          let rewardGiven = false;
+          // Modal & DOM Elements
+          const videoModal = document.getElementById('videoModal');
+          const closeVideoModal = document.getElementById('closeVideoModal');
+          const timelineBar = document.getElementById('timelineBar');
+          const videoStatusText = document.getElementById('videoStatusText');
+          
+          let currentAdBtn = null;
+          let currentAdId = null;
+          let rewardGiven = false;
 
-          // Close Modal Handler (No Reward on premature exit)
-          closeVideoModal.onclick = () => {
-              if (ytPlayer && ytPlayer.stopVideo) {
-                  ytPlayer.stopVideo();
-              }
-              clearInterval(ytTimerInterval);
-              videoModal.style.display = 'none';
-              
-              if (!rewardGiven && currentAdBtn) {
-                  currentAdBtn.innerText = "Watch Ad";
-                  currentAdBtn.disabled = false;
-              }
-          };
+          // Close Modal Handler (No Reward on premature exit)
+          closeVideoModal.onclick = () => {
+              if (ytPlayer && ytPlayer.stopVideo) {
+                  ytPlayer.stopVideo();
+              }
+              clearInterval(ytTimerInterval);
+              videoModal.style.display = 'none';
+              
+              if (!rewardGiven && currentAdBtn) {
+                  currentAdBtn.innerText = "Watch Ad";
+                  currentAdBtn.disabled = false;
+              }
+          };
 
-          // Function when YouTube video ends successfully
-          async function handleVideoCompleted() {
-              if (rewardGiven) return;
-              rewardGiven = true;
+          // Function when YouTube video ends successfully
+          async function handleVideoCompleted() {
+              if (rewardGiven) return;
+              rewardGiven = true;
 
-              videoStatusText.style.color = "#22c55e";
-              videoStatusText.innerText = "Task Completed! Updating balance...";
-              
-              earnBalance += adReward;
-              watchedAds.push(currentAdId);
+              videoStatusText.style.color = "#22c55e";
+              videoStatusText.innerText = "Task Completed! Updating balance...";
+              
+              earnBalance += adReward;
+              watchedAds.push(currentAdId);
 
-              await updateDoc(userRef, {
-                  earnBalance: earnBalance,
-                  watchedAds: watchedAds
-              });
+              await updateDoc(userRef, {
+                  earnBalance: earnBalance,
+                  watchedAds: watchedAds
+              });
 
-              balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
-              
-              currentAdBtn.innerText = "Watched";
-              currentAdBtn.classList.add('watched');
+              balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
+              
+              currentAdBtn.innerText = "Watched";
+              currentAdBtn.classList.add('watched');
 
-              setTimeout(() => {
-                  videoModal.style.display = 'none';
-              }, 1200);
-          }
+              setTimeout(() => {
+                  videoModal.style.display = 'none';
+              }, 1200);
+          }
 
-          // Track YouTube Progress for Timeline Bar
-          function startProgressTracker() {
-              clearInterval(ytTimerInterval);
-              ytTimerInterval = setInterval(() => {
-                  if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getDuration) {
-                      const currentTime = ytPlayer.getCurrentTime();
-                      const duration = ytPlayer.getDuration();
-                      if (duration > 0) {
-                          const percentage = (currentTime / duration) * 100;
-                          timelineBar.style.width = percentage + "%";
-                      }
-                  }
-              }, 200);
-          }
+          // Track YouTube Progress for Timeline Bar
+          function startProgressTracker() {
+              clearInterval(ytTimerInterval);
+              ytTimerInterval = setInterval(() => {
+                  if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getDuration) {
+                      const currentTime = ytPlayer.getCurrentTime();
+                      const duration = ytPlayer.getDuration();
+                      if (duration > 0) {
+                          const percentage = (currentTime / duration) * 100;
+                          timelineBar.style.width = percentage + "%";
+                      }
+                  }
+              }, 200);
+          }
 
-          // YouTube Player State Change Listener
-          window.onYouTubePlayerStateChange = function(event) {
-              if (event.data === YT.PlayerState.PLAYING) {
-                  startProgressTracker();
-              } else if (event.data === YT.PlayerState.ENDED) {
-                  clearInterval(ytTimerInterval);
-                  timelineBar.style.width = "100%";
-                  handleVideoCompleted();
-              }
-          };
+          // YouTube Player State Change Listener
+          window.onYouTubePlayerStateChange = function(event) {
+              if (event.data === YT.PlayerState.PLAYING) {
+                  startProgressTracker();
+              } else if (event.data === YT.PlayerState.ENDED) {
+                  clearInterval(ytTimerInterval);
+                  timelineBar.style.width = "100%";
+                  handleVideoCompleted();
+              }
+          };
 
-          // Load & Play Youtube Video Helper
-          function playYouTubeVideo(videoId) {
-              if (!ytPlayer) {
-                  ytPlayer = new YT.Player('youtubePlayer', {
-                      height: '100%',
-                      width: '100%',
-                      videoId: videoId,
-                      playerVars: {
-                          'autoplay': 1,
-                          'controls': 0,
-                          'disablekb': 1,
-                          'modestbranding': 1,
-                          'rel': 0,
-                          'fs': 0,
-                          'playsinline': 1
-                      },
-                      events: {
-                          'onStateChange': (e) => window.onYouTubePlayerStateChange(e)
-                      }
-                  });
-              } else {
-                  ytPlayer.loadVideoById(videoId);
-              }
-          }
+          // Load & Play Youtube Video Helper
+          function playYouTubeVideo(videoId) {
+              if (!ytPlayer) {
+                  ytPlayer = new YT.Player('youtubePlayer', {
+                      height: '100%',
+                      width: '100%',
+                      videoId: videoId,
+                      playerVars: {
+                          'autoplay': 1,
+                          'controls': 0,
+                          'disablekb': 1,
+                          'modestbranding': 1,
+                          'rel': 0,
+                          'fs': 0,
+                          'playsinline': 1
+                      },
+                      events: {
+                          'onStateChange': (e) => window.onYouTubePlayerStateChange(e)
+                      }
+                  });
+              } else {
+                  ytPlayer.loadVideoById(videoId);
+              }
+          }
 
-          // Render Active Plans & Tasks Grid
-          activePlans.forEach(planId => {
-              let totalAds = plansInfo[planId];
-              let planSection = document.createElement('div');
-              planSection.className = 'plan-section';
+          // Render Active Plans & Tasks Grid
+          activePlans.forEach(planId => {
+              let totalAds = plansInfo[planId];
+              let planSection = document.createElement('div');
+              planSection.className = 'plan-section';
 
-              planSection.innerHTML = `
-                  <div class="plan-header">
-                      <h2>Plan ${planId} Active</h2>
-                      <p>Available Tasks: ${totalAds}</p>
-                  </div>
-                  <div class="ads-grid" id="ads-${planId}"></div>
-              `;
+              planSection.innerHTML = `
+                  <div class="plan-header">
+                      <h2>Plan ${planId} Active</h2>
+                      <p>Available Tasks: ${totalAds}</p>
+                  </div>
+                  <div class="ads-grid" id="ads-${planId}"></div>
+              `;
 
-              allPlansContainer.appendChild(planSection);
-              let grid = document.getElementById(`ads-${planId}`);
+              allPlansContainer.appendChild(planSection);
+              let grid = document.getElementById(`ads-${planId}`);
 
-              for (let i = 1; i <= totalAds; i++) {
-                  let adId = `plan${planId}-ad${i}`;
-                  let isWatched = watchedAds.includes(adId);
+              for (let i = 1; i <= totalAds; i++) {
+                  let adId = `plan${planId}-ad${i}`;
+                  let isWatched = watchedAds.includes(adId);
 
-                  let card = document.createElement('div');
-                  card.className = 'ad-card';
+                  let card = document.createElement('div');
+                  card.className = 'ad-card';
 
-                  card.innerHTML = `
-                      <h4>Task ${i}</h4>
-                      <button class="ad-btn ${isWatched ? 'watched' : ''}" id="btn-${adId}" ${isWatched ? 'disabled' : ''}>
-                          ${isWatched ? 'Watched' : 'Watch Ad'}
-                      </button>
-                  `;
+                  card.innerHTML = `
+                      <h4>Task ${i}</h4>
+                      <button class="ad-btn ${isWatched ? 'watched' : ''}" id="btn-${adId}" ${isWatched ? 'disabled' : ''}>
+                          ${isWatched ? 'Watched' : 'Watch Ad'}
+                      </button>
+                  `;
 
-                  grid.appendChild(card);
-                  let btn = document.getElementById(`btn-${adId}`);
+                  grid.appendChild(card);
+                  let btn = document.getElementById(`btn-${adId}`);
 
-                  btn.onclick = async () => {
-                      if (watchedAds.includes(adId)) return;
+                  btn.onclick = async () => {
+                      if (watchedAds.includes(adId)) return;
 
-                      btn.innerText = "Playing...";
-                      btn.disabled = true;
+                      btn.innerText = "Playing...";
+                      btn.disabled = true;
 
-                      currentAdBtn = btn;
-                      currentAdId = adId;
-                      rewardGiven = false;
-                      timelineBar.style.width = "0%";
-                      videoStatusText.style.color = "#94a3b8";
-                      videoStatusText.innerText = "Please watch the full video without skipping to earn reward.";
+                      currentAdBtn = btn;
+                      currentAdId = adId;
+                      rewardGiven = false;
+                      timelineBar.style.width = "0%";
+                      videoStatusText.style.color = "#94a3b8";
+                      videoStatusText.innerText = "Please watch the full video without skipping to earn reward.";
 
-                      // Select YouTube Video ID randomly se pick karna
-                      const randomVideoId = youtubeVideoPool[Math.floor(Math.random() * youtubeVideoPool.length)];
+                      // Select YouTube Video ID randomly se pick karna
+                      const randomVideoId = youtubeVideoPool[Math.floor(Math.random() * youtubeVideoPool.length)];
 
-                      videoModal.style.display = 'flex';
-                      playYouTubeVideo(randomVideoId);
-                  };
-              }
-          });
-      });
-  });
+                      videoModal.style.display = 'flex';
+                      playYouTubeVideo(randomVideoId);
+                  };
+              }
+          });
+      });
+  });
 </script>
 
 </body>
