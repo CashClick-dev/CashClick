@@ -113,8 +113,11 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 .ad-btn.watched { background: #22c55e; color: white; border: none; }
 
 /* BALANCE DISPLAY */
-.current-balance { text-align: center; font-size: 18px; margin-bottom: 30px; color: #f8fafc; background: #020617; padding: 20px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.3); }
-.current-balance span { color: #22c55e; font-weight: bold; font-size: 26px; display: block; margin-top: 5px; }
+.balances-wrapper { display: flex; gap: 15px; margin-bottom: 30px; }
+.current-balance { flex: 1; text-align: center; font-size: 16px; color: #f8fafc; background: #020617; padding: 20px; border-radius: 10px; border: 1px solid rgba(34, 197, 94, 0.3); }
+.current-balance span { color: #22c55e; font-weight: bold; font-size: 24px; display: block; margin-top: 5px; }
+.yesterday-balance { border: 1px solid rgba(56, 189, 248, 0.3); }
+.yesterday-balance span { color: #38bdf8; }
 
 /* BOTTOM NAVIGATION */
 .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #020617; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -4px 6px rgba(0,0,0,0.3); z-index: 1000; }
@@ -174,6 +177,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 @media (max-width: 600px) { 
     header { padding: 15px 20px; } 
     .plan-header { flex-direction: column; gap: 10px; text-align: center; }
+    .balances-wrapper { flex-direction: column; gap: 10px; } /* Mobile par boxes upar neche honge */
 }
 </style>
 <!-- YOUTUBE IFRAME API SCRIPT -->
@@ -189,8 +193,13 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 </header>
 
 <div class="container">
-    <div class="current-balance" id="balanceDisplay">
-        Your Earn Balance: <span id="earnBalanceAmount">Rs. 0</span>
+    <div class="balances-wrapper">
+        <div class="current-balance" id="balanceDisplay">
+            Earn Balance: <span id="earnBalanceAmount">Rs. 0</span>
+        </div>
+        <div class="current-balance yesterday-balance" id="yesterdayBalanceDisplay">
+            Yesterday Earning: <span id="yesterdayBalanceAmount">Rs. 0</span>
+        </div>
     </div>
 
     <div class="no-plan-msg" id="noPlanMsg">
@@ -318,12 +327,34 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           let earnBalance = data.earnBalance || 0;
           let activePlans = data.activePlans || [];
           let watchedAds = data.watchedAds || [];
+          let dailyEarnings = data.dailyEarnings || {};
+
+          // DATE LOGIC (Today aur Yesterday nikalne ke liye)
+          function getFormattedDate(date) {
+              let d = new Date(date),
+                  month = '' + (d.getMonth() + 1),
+                  day = '' + d.getDate(),
+                  year = d.getFullYear();
+              if (month.length < 2) month = '0' + month;
+              if (day.length < 2) day = '0' + day;
+              return [year, month, day].join('-');
+          }
+
+          let todayStr = getFormattedDate(new Date());
+          
+          let yestObj = new Date();
+          yestObj.setDate(yestObj.getDate() - 1);
+          let yestStr = getFormattedDate(yestObj);
+          
+          let yesterdayEarn = dailyEarnings[yestStr] || 0;
 
           const balanceDisplay = document.getElementById('earnBalanceAmount');
+          const yesterdayDisplay = document.getElementById('yesterdayBalanceAmount');
           const noPlanMsg = document.getElementById('noPlanMsg');
           const allPlansContainer = document.getElementById('allPlansContainer');
 
           balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
+          yesterdayDisplay.innerText = "Rs. " + yesterdayEarn.toLocaleString();
 
           const plansInfo = { '1': 10, '2': 20, '3': 30, '4': 40, '5': 50 };
           const adReward = 20;
@@ -367,10 +398,14 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
               
               earnBalance += adReward;
               watchedAds.push(currentAdId);
+              
+              // DAILY EARNING UPDATE
+              dailyEarnings[todayStr] = (dailyEarnings[todayStr] || 0) + adReward;
 
               await updateDoc(userRef, {
                   earnBalance: earnBalance,
-                  watchedAds: watchedAds
+                  watchedAds: watchedAds,
+                  dailyEarnings: dailyEarnings
               });
 
               balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
