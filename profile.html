@@ -5,19 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile - Winwave</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-* { box-sizing: border-box; }
+* { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
 body {
-    font-family: 'Poppins', sans-serif;
     background: #0f172a;
     color: white;
     margin: 0;
-    padding-top: 70px;
-    padding-bottom: 80px; 
+    padding-top: 80px;
+    padding-bottom: 90px; 
 }
 
 /* FIXED HEADER */
@@ -35,10 +34,32 @@ header {
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-header .logo { display: flex; align-items: center; text-decoration: none; }
+header .logo { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
 header .logo img {
     max-height: 40px;
     width: auto;
+}
+
+/* LOGO TEXT STYLING */
+.logo-text h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
+    margin: 0;
+}
+.logo-text span {
+    font-size: 0.75rem;
+    color: #38bdf8;
+    font-weight: 300;
+    letter-spacing: 0.5px;
 }
 
 header .dp {
@@ -244,7 +265,7 @@ header .dp {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
-    display: none; /* Hidden by default */
+    display: none; 
     justify-content: center;
     align-items: center;
     z-index: 2000;
@@ -349,7 +370,6 @@ header .dp {
 .terms-text::-webkit-scrollbar { width: 5px; }
 .terms-text::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 10px; }
 
-
 /* SOCIAL SUPPORT ICONS CSS */
 .social-support {
     display: flex;
@@ -383,6 +403,8 @@ header .dp {
 /* MOBILE RESPONSIVE */
 @media (max-width: 600px) {
     header { padding: 15px 20px; }
+    .logo-text h1 { font-size: 0.95rem; }
+    .logo-text span { font-size: 0.65rem; }
 }
 </style>
 </head>
@@ -391,7 +413,11 @@ header .dp {
 
 <header>
     <a href="dashboard.html" class="logo">
-        <img src="logo.png" alt="Logo">
+        <img src="logo.png" alt="Winwave Logo">
+        <div class="logo-text">
+            <h1>Beast Rewards</h1>
+            <span>Watch Ads & Earn Money</span>
+        </div>
     </a>
     <div class="dp" id="headerDp" title="User">U</div>
 </header>
@@ -409,11 +435,11 @@ header .dp {
     <div class="stats-box">
         <div class="stat-item">
             <h3 id="profileDeposit">Rs. 0</h3>
-            <p>Total Balance</p> <!-- Updated Label -->
+            <p>Total Balance</p>
         </div>
         <div class="stat-item" style="border-right: 1px solid #1e293b;">
             <h3 id="profileEarn">Rs. 0</h3>
-            <p>Daily Earned Balance</p> <!-- Updated Label -->
+            <p>Daily Earned Balance</p>
         </div>
         <div class="stat-item">
             <h3 class="plan-text" id="profilePlan">None</h3>
@@ -450,22 +476,10 @@ header .dp {
 
 <!-- BOTTOM NAVIGATION -->
 <div class="bottom-nav">
-    <a href="dashboard.html" class="active">
-        <i class="fas fa-home"></i>
-        <span>Home</span>
-    </a>
-    <a href="promotion.html">
-        <i class="fas fa-bullhorn"></i>
-        <span>Promotion</span>
-    </a>
-    <a href="earn.html">
-        <i class="fas fa-coins"></i>
-        <span>Earn</span>
-    </a>
-    <a href="wallet.html">
-        <i class="fas fa-wallet"></i>
-        <span>Wallet</span>
-    </a>
+    <a href="index.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="promotion.html"><i class="fas fa-bullhorn"></i><span>Promotion</span></a>
+    <a href="earn.html"><i class="fas fa-coins"></i><span>Earn</span></a>
+    <a href="wallet.html"><i class="fas fa-wallet"></i><span>Wallet</span></a>
 </div>
 
 <!-- ================= MODALS (POPUPS) ================= -->
@@ -512,7 +526,6 @@ header .dp {
         <p style="font-size: 13px; color: #94a3b8; margin-bottom: 10px;">Reach out to us directly through any of our social channels below.</p>
         
         <div class="social-support">
-            <!-- Replace "#" with your actual links -->
             <a href="https://chat.whatsapp.com/CpHGV16HcbK7P32tq6vOqE?s=cl&p=a&ilr=0" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
             <a href="#" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
             <a href="https://t.me/+oc5c5OTORh9lOTM0" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
@@ -618,7 +631,6 @@ header .dp {
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
   
-  // Persistence set ki gayi hai taake session sahi tarike se handle ho
   setPersistence(auth, browserLocalPersistence).catch((error) => {
       console.error("Persistence error: ", error);
   });
@@ -638,7 +650,6 @@ header .dp {
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-      // Helper function for date check logic
       function getFormattedDate(date) {
           let d = new Date(date),
               month = '' + (d.getMonth() + 1),
@@ -667,18 +678,14 @@ header .dp {
           if (snap.exists()) {
               const data = snap.data();
 
-              // 1. Referral earnings ka hisaab lagayein
               let referralEarnings = 0;
-              // Agar aap referrals ka array use kar rahe hain:
               if (data.referrals && Array.isArray(data.referrals)) {
                   referralEarnings = data.referrals.length * 50; 
               } 
-              // Ya agar direct total referral balance database mein save hai:
               else if (data.referralEarnings) {
                   referralEarnings = data.referralEarnings;
               }
 
-              // 2. Teeno balances (Deposit + Earned + Referral) ko plus karein
               let totalBalance = (data.deposit || 0) + (data.withdrawableEarnBalance || 0) + referralEarnings;
 
               let dailyEarnBalance = data.earnBalance || 0; 
@@ -686,25 +693,22 @@ header .dp {
               let todayStr = getFormattedDate(new Date());
               let needsUpdate = false;
 
-              // Raat 12 baje ke baad daily earn balance ko total me add krne ki logic (Dashboard wali same logic)
               if (lastUpdate !== todayStr) {
                   totalBalance += dailyEarnBalance;
-                  dailyEarnBalance = 0; // Naye din ke liye reset
+                  dailyEarnBalance = 0; 
                   lastUpdate = todayStr;
                   needsUpdate = true;
               }
 
-              // UI Update karna (Aapne baaki elements ka ID update karne se mana kiya tha)
               document.getElementById('profileDeposit').innerText = 'Rs. ' + totalBalance.toLocaleString();
               document.getElementById('profileEarn').innerText = 'Rs. ' + dailyEarnBalance.toLocaleString();
 
               const plans = data.activePlans || [];
               document.getElementById('profilePlan').innerText = plans.length > 0 ? plans.join(', ') : 'None';
 
-              // Agar date change hui hai tou Database me update karna
               if (needsUpdate) {
                   await updateDoc(userRef, {
-                      deposit: totalBalance, // You may want to review if referral earnings should be saved directly into deposit later
+                      deposit: totalBalance,
                       earnBalance: dailyEarnBalance,
                       lastUpdate: lastUpdate
                   });
@@ -799,14 +803,9 @@ header .dp {
       let confirmLogout = confirm("Are you sure you want to logout?");
       if (confirmLogout) {
           try {
-              // 1. Clear local/session storage first
               localStorage.clear();
               sessionStorage.clear();
-              
-              // 2. Sign out from Firebase
               await signOut(auth);
-              
-              // Note: onAuthStateChanged will automatically redirect to index.html when user becomes null
           } catch (error) {
               console.error("Logout Error: ", error);
               alert("Logout failed: " + error.message);
