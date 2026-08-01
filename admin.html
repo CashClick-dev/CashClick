@@ -493,6 +493,13 @@
       await setDoc(userRef, { deposit: increment(Number(amount || 0)) }, { merge: true });
     }
 
+    // Naya function withdrawal balance user ke database mein update karne ke liye
+    async function updateWithdrawBalanceForUser(uid, amount) {
+      if (!uid) return;
+      const userRef = doc(db, 'users', uid);
+      await setDoc(userRef, { withdraw: increment(Number(amount || 0)) }, { merge: true });
+    }
+
     // APP INSTANT UPDATE (No Delay)
     async function approveRequest(kind, id) {
       const list = kind === 'withdrawal' ? withdrawalRequests : depositRequests;
@@ -520,6 +527,8 @@
           await updateDepositBalanceForUser(req.uid, req.amount);
           await updateDoc(doc(db, 'depositRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
         } else {
+          // Yahan pe balance update function call add kiya gaya hai
+          await updateWithdrawBalanceForUser(req.uid, req.amount);
           await updateDoc(doc(db, 'withdrawRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
         }
       } catch (error) {
