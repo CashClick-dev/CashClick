@@ -459,7 +459,7 @@
 
     async function selectRequest(kind, id) {
       const source = kind === 'withdrawal' ? withdrawalRequests : depositRequests;
-      selectedRequest = source.find(r => String(r.id) === String(id)) || null;
+      selectedRequest = source.find(r => r.id === id) || null;
       if (!selectedRequest) return;
 
       document.getElementById('detailRejectBtn').disabled = false;
@@ -488,89 +488,121 @@
 
     async function updateDepositBalanceForUser(uid, amount) {
       if (!uid) return;
-      const numAmount = parseFloat(String(amount || 0).replace(/[^0-9.-]+/g, '')) || 0;
       const userRef = doc(db, 'users', uid);
-      await setDoc(userRef, { deposit: increment(numAmount) }, { merge: true });
+      await setDoc(userRef, { deposit: increment(Number(amount || 0)) }, { merge: true });
     }
 
-    // MAIN APPROVE FUNCTION
+    // APP INSTANT UPDATE (No Delay)
     async function approveRequest(kind, id) {
+      const list = kind === 'withdrawal' ? withdrawalRequests : depositRequests;
+      const req = list.find(r => r.id === id);
+      if (!req) return;
+
+      // 1. FORAN UI UPDATE KAREIN BINA DELAY KE
+      req.status = 'approved';
+      updateDashboardCounts();
+      renderTable();
+      
+      // Agar detail tab me selected tha to reset karein
+      if (selectedRequest && selectedRequest.id === id) {
+        selectedRequest = null;
+        document.getElementById('detailsArea').innerHTML = `
+          <div class="details-card"><h4>Request Info</h4><p>Select a request to see details.</p></div>
+          <div class="details-card"><h4>Proof & Notes</h4><p>Transaction info and screenshot preview will appear here.</p></div>
+        `;
+        disableDetailButtons();
+      }
+
+      // 2. BACKGROUND ME DATABASE UPDATE CHALNE DEIN
       try {
-        const list = kind === 'withdrawal' ? withdrawalRequests : depositRequests;
-        const req = list.find(r => String(r.id) === String(id));
-        
-        if (!req) {
-          alert("Request not found in table data!");
-          return;
-        }
-
-        // 1. FORAN UI UPDATE KAREIN BINA DELAY KE
-        req.status = 'approved';
-        updateDashboardCounts();
-        renderTable();
-        
-        // Agar detail tab me selected tha to reset karein
-        if (selectedRequest && String(selectedRequest.id) === String(id)) {
-          selectedRequest = null;
-          document.getElementById('detailsArea').innerHTML = `
-            <div class="details-card"><h4>Request Info</h4><p>Select a request to see details.</p></div>
-            <div class="details-card"><h4>Proof & Notes</h4><p>Transaction info and screenshot preview will appear here.</p></div>
-          `;
-          disableDetailButtons();
-        }
-
-        // 2. BACKGROUND ME DATABASE UPDATE CHALNE DEIN
         if (kind === 'deposit') {
           await updateDepositBalanceForUser(req.uid, req.amount);
           await updateDoc(doc(db, 'depositRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
         } else {
-          // Extra logic removed, exact original working process restore kar diya gaya hai.
           await updateDoc(doc(db, 'withdrawRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
-        }
 
+          // Yahan nested users doc ke andar withdrawal array ka status bhi change karein
+          if (req.uid) {
+            const userRef = doc(db, 'users', req.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const userData = userSnap.data();
+              if (userData.withdrawals && Array.isArray(userData.withdrawals)) {
+                let updated = false;
+                const newWithdrawals = userData.withdrawals.map(w => {
+                  if (!updated && (w.status === 'pending' || !w.status) && Number(w.amount) === Number(req.amount)) {
+                    updated = true;
+                    return { ...w, status: 'approved' };
+                  }
+                  return w;
+                });
+                if (updated) {
+                  await updateDoc(userRef, { withdrawals: newWithdrawals });
+                }
+              }
+            }
+          }
+        }
       } catch (error) {
         console.error("Firebase Update Error:", error);
-        alert("Firebase me masla aa raha hai (Error): \n\n" + error.message);
+        alert("Database update fail ho gaya, page refresh ho raha hai.");
         await refreshData();
       }
     }
 
-    // MAIN REJECT FUNCTION
+    // INSTANT REJECT UPDATE (No Delay)
     async function rejectRequest(kind, id) {
+      const list = kind === 'withdrawal' ? withdrawalRequests : depositRequests;
+      const req = list.find(r => r.id === id);
+      if (!req) return;
+
+      // 1. FORAN UI UPDATE KAREIN BINA DELAY KE
+      req.status = 'rejected';
+      updateDashboardCounts();
+      renderTable();
+      
+      // Agar detail tab me selected tha to reset karein
+      if (selectedRequest && selectedRequest.id === id) {
+        selectedRequest = null;
+        document.getElementById('detailsArea').innerHTML = `
+          <div class="details-card"><h4>Request Info</h4><p>Select a request to see details.</p></div>
+          <div class="details-card"><h4>Proof & Notes</h4><p>Transaction info and screenshot preview will appear here.</p></div>
+        `;
+        disableDetailButtons();
+      }
+
+      // 2. BACKGROUND ME DATABASE UPDATE CHALNE DEIN
       try {
-        const list = kind === 'withdrawal' ? withdrawalRequests : depositRequests;
-        const req = list.find(r => String(r.id) === String(id));
-        
-        if (!req) {
-          alert("Request not found in table data!");
-          return;
-        }
-
-        // 1. FORAN UI UPDATE
-        req.status = 'rejected';
-        updateDashboardCounts();
-        renderTable();
-        
-        // Agar detail tab me selected tha to reset karein
-        if (selectedRequest && String(selectedRequest.id) === String(id)) {
-          selectedRequest = null;
-          document.getElementById('detailsArea').innerHTML = `
-            <div class="details-card"><h4>Request Info</h4><p>Select a request to see details.</p></div>
-            <div class="details-card"><h4>Proof & Notes</h4><p>Transaction info and screenshot preview will appear here.</p></div>
-          `;
-          disableDetailButtons();
-        }
-
-        // 2. BACKGROUND ME DATABASE UPDATE
         if (kind === 'deposit') {
           await updateDoc(doc(db, 'depositRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
         } else {
           await updateDoc(doc(db, 'withdrawRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
-        }
 
+          // Yahan nested users doc ke andar withdrawal array ka status bhi change karein
+          if (req.uid) {
+            const userRef = doc(db, 'users', req.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const userData = userSnap.data();
+              if (userData.withdrawals && Array.isArray(userData.withdrawals)) {
+                let updated = false;
+                const newWithdrawals = userData.withdrawals.map(w => {
+                  if (!updated && (w.status === 'pending' || !w.status) && Number(w.amount) === Number(req.amount)) {
+                    updated = true;
+                    return { ...w, status: 'rejected' };
+                  }
+                  return w;
+                });
+                if (updated) {
+                  await updateDoc(userRef, { withdrawals: newWithdrawals });
+                }
+              }
+            }
+          }
+        }
       } catch (error) {
         console.error("Firebase Update Error:", error);
-        alert("Firebase me masla aa raha hai (Error): \n\n" + error.message);
+        alert("Database update fail ho gaya, page refresh ho raha hai.");
         await refreshData();
       }
     }
@@ -607,7 +639,6 @@
         .map(part => part[0].toUpperCase())
         .join('') || 'AD';
 
-      // Optional guard: only users with role === 'admin' should continue
       if (data.role && data.role !== 'admin') {
         alert('Access denied');
         window.location.href = 'index.html';
