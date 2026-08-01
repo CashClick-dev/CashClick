@@ -420,7 +420,7 @@ header .dp {
       if (snap.exists()) {
           const data = snap.data();
 
-          totalBalance = data.deposit || 0;
+          totalBalance = (data.deposit || 0) + (data.withdrawableEarnBalance || 0);
           dailyEarnBalance = data.earnBalance || 0; 
           activePlans = data.activePlans || [];
 
