@@ -328,6 +328,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           let activePlans = data.activePlans || [];
           let watchedAds = data.watchedAds || [];
           let dailyEarnings = data.dailyEarnings || {};
+          let lastAdDate = data.lastAdDate || ""; // NEW: din track karne ke liye
 
           // DATE LOGIC (Today aur Yesterday nikalne ke liye)
           function getFormattedDate(date) {
@@ -346,6 +347,21 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           yestObj.setDate(yestObj.getDate() - 1);
           let yestStr = getFormattedDate(yestObj);
           
+          // ==============================================================
+          // FIX: DAILY RESET LOGIC (Raat 12 baje ke baad Ads reset honge)
+          // ==============================================================
+          if (lastAdDate !== todayStr) {
+              watchedAds = []; // Aaj ke naye din ke liye purane ads reset kar diye
+              lastAdDate = todayStr; // Current date set kardi
+              
+              // Database mein update kar rahe hain taake users fresh start lein
+              await updateDoc(userRef, {
+                  watchedAds: watchedAds,
+                  lastAdDate: lastAdDate
+              });
+          }
+          // ==============================================================
+
           let yesterdayEarn = dailyEarnings[yestStr] || 0;
 
           const balanceDisplay = document.getElementById('earnBalanceAmount');
@@ -405,7 +421,8 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
               await updateDoc(userRef, {
                   earnBalance: earnBalance,
                   watchedAds: watchedAds,
-                  dailyEarnings: dailyEarnings
+                  dailyEarnings: dailyEarnings,
+                  lastAdDate: todayStr // Ye bhi lazmi update hoga ab
               });
 
               balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
