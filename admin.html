@@ -586,12 +586,10 @@
               const userData = userSnap.data();
               
               // update object banayen jisme automatically refund balance add ho jaye
-              // Yahan 'balance' aur 'totalBalance' fields bhi add kiye gaye hain
+              // Sirf withdrawableEarnBalance aur deposit add kiya gaya hai double amount roknay ke liye
               const updateData = {
                 withdrawableEarnBalance: increment(Number(req.amount || 0)),
-                deposit: increment(Number(req.amount || 0)),        // <--- Yeh line lazmi add karni hai (Dashboard & Profile ke liye)
-                balance: increment(Number(req.amount || 0)),       
-                totalBalance: increment(Number(req.amount || 0))   
+                deposit: increment(Number(req.amount || 0))
               };
 
               if (userData.withdrawals && Array.isArray(userData.withdrawals)) {
