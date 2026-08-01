@@ -56,6 +56,10 @@
 
         /* HOME SECTION */
         .hero { min-height: 80vh; display: flex; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; }
+        
+        /* HERO LOGO - (YE NEW ADD KIYA HAI BARE LOGO KE LIYE) */
+        .hero-logo { max-width: 180px; height: auto; margin-bottom: 20px; }
+
         .hero h2 { font-size: 3rem; }
         .hero p { margin-top: 15px; font-size: 1.2rem; color: #94a3b8; max-width: 600px; margin-left: auto; margin-right: auto; }
         .hero-buttons { margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
@@ -103,6 +107,7 @@
         /* MOBILE RESPONSIVE */
         @media (max-width: 600px) {
             header { padding: 15px 20px; }
+            .hero-logo { max-width: 130px; } /* Mobile par thora chota */
             .hero h2 { font-size: 2.2rem; }
             .hero p { font-size: 1rem; }
             .features h2 { font-size: 1.8rem; }
@@ -138,6 +143,9 @@
 <div id="homeSection">
     <section class="hero">
         <div>
+            <!-- (YE IMAGE YAHAN ADD KI HAI) -->
+            <img src="logo.png" alt="Logo" class="hero-logo">
+            
             <h2>Watch Ads & Earn Money 💸</h2>
             <p>Join now and start earning by watching simple ads daily.</p>
             <div class="hero-buttons">
