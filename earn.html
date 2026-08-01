@@ -5,18 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Earn Ads - Winwave</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-* { box-sizing: border-box; }
+* { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
 body {
-    font-family: 'Poppins', sans-serif;
     background: #0f172a;
     color: white;
     margin: 0;
-    padding-top: 70px;
+    padding-top: 80px;
     padding-bottom: 90px; 
 }
 
@@ -35,13 +34,34 @@ header {
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-header .logo { display: flex; align-items: center; }
+header .logo { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px;
+    cursor: pointer;
+}
+
 header .logo img {
     max-height: 40px;
     width: auto;
 }
 
-header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8; color: #020617; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; border: 2px solid #0ea5e9; }
+/* LOGO TEXT STYLING */
+.logo-text h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
+    margin: 0;
+}
+.logo-text span {
+    font-size: 0.75rem;
+    color: #38bdf8;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8; color: #020617; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; border: 2px solid #0ea5e9; cursor: pointer; }
 
 /* CONTAINER */
 .container { padding: 20px; max-width: 1000px; margin: 0 auto; }
@@ -177,7 +197,9 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 @media (max-width: 600px) { 
     header { padding: 15px 20px; } 
     .plan-header { flex-direction: column; gap: 10px; text-align: center; }
-    .balances-wrapper { flex-direction: column; gap: 10px; } /* Mobile par boxes upar neche honge */
+    .balances-wrapper { flex-direction: column; gap: 10px; } 
+    .logo-text h1 { font-size: 0.95rem; }
+    .logo-text span { font-size: 0.65rem; }
 }
 </style>
 <!-- YOUTUBE IFRAME API SCRIPT -->
@@ -186,10 +208,14 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 <body>
 
 <header>
-    <div class="logo">
-        <img src="logo.png" alt="Logo">
+    <div class="logo" onclick="window.location.href='dashboard.html'">
+        <img src="logo.png" alt="Winwave Logo">
+        <div class="logo-text">
+            <h1>Beast Rewards</h1>
+            <span>Watch Ads & Earn Money</span>
+        </div>
     </div>
-    <div class="dp" title="Profile">QA</div>
+    <div class="dp" title="Profile" onclick="window.location.href='profile.html'">QA</div>
 </header>
 
 <div class="container">
@@ -328,7 +354,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           let activePlans = data.activePlans || [];
           let watchedAds = data.watchedAds || [];
           let dailyEarnings = data.dailyEarnings || {};
-          let lastAdDate = data.lastAdDate || ""; // NEW: din track karne ke liye
+          let lastAdDate = data.lastAdDate || ""; 
 
           // DATE LOGIC (Today aur Yesterday nikalne ke liye)
           function getFormattedDate(date) {
@@ -351,10 +377,9 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           // FIX: DAILY RESET LOGIC (Raat 12 baje ke baad Ads reset honge)
           // ==============================================================
           if (lastAdDate !== todayStr) {
-              watchedAds = []; // Aaj ke naye din ke liye purane ads reset kar diye
-              lastAdDate = todayStr; // Current date set kardi
+              watchedAds = []; 
+              lastAdDate = todayStr; 
               
-              // Database mein update kar rahe hain taake users fresh start lein
               await updateDoc(userRef, {
                   watchedAds: watchedAds,
                   lastAdDate: lastAdDate
@@ -422,7 +447,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
                   earnBalance: earnBalance,
                   watchedAds: watchedAds,
                   dailyEarnings: dailyEarnings,
-                  lastAdDate: todayStr // Ye bhi lazmi update hoga ab
+                  lastAdDate: todayStr 
               });
 
               balanceDisplay.innerText = "Rs. " + earnBalance.toLocaleString();
