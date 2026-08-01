@@ -498,12 +498,10 @@
       const req = list.find(r => r.id === id);
       if (!req) return;
 
-      // 1. FORAN UI UPDATE KAREIN BINA DELAY KE
       req.status = 'approved';
       updateDashboardCounts();
       renderTable();
       
-      // Agar detail tab me selected tha to reset karein
       if (selectedRequest && selectedRequest.id === id) {
         selectedRequest = null;
         document.getElementById('detailsArea').innerHTML = `
@@ -513,7 +511,6 @@
         disableDetailButtons();
       }
 
-      // 2. BACKGROUND ME DATABASE UPDATE CHALNE DEIN
       try {
         if (kind === 'deposit') {
           await updateDepositBalanceForUser(req.uid, req.amount);
@@ -521,7 +518,6 @@
         } else {
           await updateDoc(doc(db, 'withdrawRequests', id), { status: 'approved', reviewedAt: new Date().toISOString() });
 
-          // Yahan nested users doc ke andar withdrawal array ka status bhi change karein
           if (req.uid) {
             const userRef = doc(db, 'users', req.uid);
             const userSnap = await getDoc(userRef);
@@ -556,12 +552,10 @@
       const req = list.find(r => r.id === id);
       if (!req) return;
 
-      // 1. FORAN UI UPDATE KAREIN BINA DELAY KE
       req.status = 'rejected';
       updateDashboardCounts();
       renderTable();
       
-      // Agar detail tab me selected tha to reset karein
       if (selectedRequest && selectedRequest.id === id) {
         selectedRequest = null;
         document.getElementById('detailsArea').innerHTML = `
@@ -571,25 +565,22 @@
         disableDetailButtons();
       }
 
-      // 2. BACKGROUND ME DATABASE UPDATE CHALNE DEIN
       try {
         if (kind === 'deposit') {
           await updateDoc(doc(db, 'depositRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
         } else {
           await updateDoc(doc(db, 'withdrawRequests', id), { status: 'rejected', reviewedAt: new Date().toISOString() });
 
-          // Yahan nested users doc update karni hai: status rejected aur amount refund
           if (req.uid) {
             const userRef = doc(db, 'users', req.uid);
             const userSnap = await getDoc(userRef);
             if (userSnap.exists()) {
               const userData = userSnap.data();
               
-              // update object banayen jisme automatically refund balance add ho jaye
-              // Sirf withdrawableEarnBalance aur deposit add kiya gaya hai double amount roknay ke liye
+              // NOTE: Sirf withdrawableEarnBalance aur totalBalance ko increment kiya gaya hai, deposit ko hata diya gaya hai taake double amount add na ho
               const updateData = {
                 withdrawableEarnBalance: increment(Number(req.amount || 0)),
-                deposit: increment(Number(req.amount || 0))
+                totalBalance: increment(Number(req.amount || 0))
               };
 
               if (userData.withdrawals && Array.isArray(userData.withdrawals)) {
@@ -607,7 +598,6 @@
                 }
               }
 
-              // Database ko update karen refund aur new array status ke sath
               await updateDoc(userRef, updateData);
             }
           }
