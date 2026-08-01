@@ -577,10 +577,9 @@
             if (userSnap.exists()) {
               const userData = userSnap.data();
               
-              // NOTE: Sirf withdrawableEarnBalance aur totalBalance ko increment kiya gaya hai, deposit ko hata diya gaya hai taake double amount add na ho
+              // FIXED BUG HERE: Removed totalBalance increment so double amount is not added on dashboard
               const updateData = {
-                withdrawableEarnBalance: increment(Number(req.amount || 0)),
-                totalBalance: increment(Number(req.amount || 0))
+                withdrawableEarnBalance: increment(Number(req.amount || 0))
               };
 
               if (userData.withdrawals && Array.isArray(userData.withdrawals)) {
