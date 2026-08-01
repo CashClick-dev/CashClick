@@ -269,13 +269,36 @@ header .dp {
     color: #38bdf8;
 }
 
-/* MOBILE RESPONSIVE */
+/* MOBILE RESPONSIVE FIXES */
 @media (max-width: 600px) {
-    header { padding: 15px 20px; }
-    .logo-text h1 { font-size: 0.95rem; }
+    header { padding: 12px 15px; }
+    .logo { gap: 8px; }
+    .logo img { max-height: 35px; }
+    .logo-text h1 { font-size: 0.9rem; }
     .logo-text span { font-size: 0.65rem; }
-    .dashboard { padding: 15px; }
-    .stats-container { flex-direction: column; }
+    /* Prevent DP from squeezing */
+    header .dp { width: 35px; height: 35px; font-size: 14px; flex-shrink: 0; }
+    
+    .dashboard { padding: 15px 10px; }
+    .promo-card { padding: 20px 15px; }
+    
+    .mission-alert { font-size: 13px; padding: 10px; }
+    
+    .referral-link-container { margin-bottom: 15px; }
+    .referral-link-container input { padding: 10px; font-size: 12px; }
+    .referral-link-container button { padding: 10px 15px; font-size: 13px; }
+    
+    .stats-container { flex-direction: column; gap: 10px; }
+    .stat-box { padding: 15px; }
+    .stat-box h3 { font-size: 20px; }
+    
+    .referrals-list { padding: 15px 10px; }
+    /* Table layout fixed so long Firebase UIDs don't break mobile layout */
+    .referral-table { table-layout: fixed; }
+    .referral-table th, .referral-table td { padding: 8px 5px; font-size: 12px; word-break: break-all; }
+    
+    .bottom-nav a { font-size: 11px; }
+    .bottom-nav a i { font-size: 18px; margin-bottom: 3px; }
 }
 </style>
 </head>
