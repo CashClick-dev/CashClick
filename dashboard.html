@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (snap.exists()) {
             const data = snap.data();
 
-            totalBalance = data.deposit || 0;
+            totalBalance = data.totalBalance || 0; // Deposit ko totalBalance mein change kar diya
             dailyEarnBalance = data.earnBalance || 0; 
             activePlans = data.activePlans || [];
 
@@ -462,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Agar naya din shuru hua hai tou Firebase me data update karein
             if (needsUpdate) {
                 await window.updateDocRef(userRef, {
-                    deposit: totalBalance, // Using 'deposit' field as Total Balance
+                    totalBalance: totalBalance, // Deposit ki jagah totalBalance update hoga
                     earnBalance: dailyEarnBalance,
                     lastUpdate: lastUpdate
                 });
@@ -496,7 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const data = snap.data();
-        let currentDeposit = data.deposit || 0;
+        let currentTotalBalance = data.totalBalance || 0; // Deposit ki jagah currentTotalBalance
         let currentPlans = data.activePlans || [];
 
         if (currentPlans.includes(planId)) {
@@ -504,20 +504,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (currentDeposit < price) {
+        if (currentTotalBalance < price) {
             alert(`Plan ${planId} khareedne ke liye Total Balance na-kafi hai. Price: Rs. ${price}`);
             return;
         }
 
-        currentDeposit -= price;
+        currentTotalBalance -= price;
         currentPlans.push(planId);
 
         await window.updateDocRef(userRef, {
-            deposit: currentDeposit,
+            totalBalance: currentTotalBalance, // Deposit ki jagah totalBalance update hoga
             activePlans: currentPlans
         });
 
-        totalBalance = currentDeposit;
+        totalBalance = currentTotalBalance;
         activePlans = currentPlans;
 
         document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
