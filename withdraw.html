@@ -394,21 +394,23 @@ input:focus {
 
             // --- REFERRAL EARNINGS CALCULATION ---
             referralEarnings = 0; 
+            validInvites = 0; // Count zero se start kar rahe hain taake fresh check ho
+            
             const referralsQuery = query(collection(db, "users"), where("referredBy", "==", uid));
             const referralsSnap = await getDocs(referralsQuery);
             
             referralsSnap.forEach((refDoc) => {
                 const refData = refDoc.data();
                 const deposit = refData.firstDeposit || refData.deposit || 0;
+                
                 if (deposit > 0) {
                     referralEarnings += 50;
+                    validInvites++; // Har us member par count badhega jisne deposit kiya hai
                 }
             });
 
             // TOTAL AVAILABLE BALANCE (Pending 'earnBalance' is excluded)
             availableBalance = depositBalance + withdrawableEarnBalance + referralEarnings;
-
-            validInvites = data.validReferrals || 0;
 
             document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
 
