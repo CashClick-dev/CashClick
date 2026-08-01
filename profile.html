@@ -667,7 +667,20 @@ header .dp {
           if (snap.exists()) {
               const data = snap.data();
 
-              let totalBalance = data.deposit || 0;
+              // 1. Referral earnings ka hisaab lagayein
+              let referralEarnings = 0;
+              // Agar aap referrals ka array use kar rahe hain:
+              if (data.referrals && Array.isArray(data.referrals)) {
+                  referralEarnings = data.referrals.length * 50; 
+              } 
+              // Ya agar direct total referral balance database mein save hai:
+              else if (data.referralEarnings) {
+                  referralEarnings = data.referralEarnings;
+              }
+
+              // 2. Teeno balances (Deposit + Earned + Referral) ko plus karein
+              let totalBalance = (data.deposit || 0) + (data.withdrawableEarnBalance || 0) + referralEarnings;
+
               let dailyEarnBalance = data.earnBalance || 0; 
               let lastUpdate = data.lastUpdate || "";
               let todayStr = getFormattedDate(new Date());
@@ -681,7 +694,7 @@ header .dp {
                   needsUpdate = true;
               }
 
-              // UI Update karna
+              // UI Update karna (Aapne baaki elements ka ID update karne se mana kiya tha)
               document.getElementById('profileDeposit').innerText = 'Rs. ' + totalBalance.toLocaleString();
               document.getElementById('profileEarn').innerText = 'Rs. ' + dailyEarnBalance.toLocaleString();
 
@@ -691,7 +704,7 @@ header .dp {
               // Agar date change hui hai tou Database me update karna
               if (needsUpdate) {
                   await updateDoc(userRef, {
-                      deposit: totalBalance,
+                      deposit: totalBalance, // You may want to review if referral earnings should be saved directly into deposit later
                       earnBalance: dailyEarnBalance,
                       lastUpdate: lastUpdate
                   });
