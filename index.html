@@ -57,8 +57,53 @@
         /* HOME SECTION */
         .hero { min-height: 80vh; display: flex; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; }
         
-        /* HERO LOGO - (YE NEW ADD KIYA HAI BARE LOGO KE LIYE) */
-        .hero-logo { max-width: 180px; height: auto; margin-bottom: 20px; }
+        /* 🔥 NEW LOGO STYLING - BARA, UPAR AUR CHALTI HUI NEON LIGHT 🔥 */
+        .hero-logo-container {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: -40px auto 30px auto; /* Logo ko upar aur center me kiya */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Spinning Blue Neon Effect */
+        .hero-logo-container::before {
+            content: '';
+            position: absolute;
+            top: -5px; bottom: -5px; left: -5px; right: -5px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 50%, #38bdf8 100%);
+            box-shadow: 0 0 25px #38bdf8; /* Blue neon glow */
+            animation: spin-neon 2s linear infinite; /* Gol chalne wali light */
+        }
+
+        /* Center Dark Circle to hide inner gradient */
+        .hero-logo-container::after {
+            content: '';
+            position: absolute;
+            top: 4px; bottom: 4px; left: 4px; right: 4px;
+            background: #0f172a; /* Body ka background */
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        /* Keyframes for spinning animation */
+        @keyframes spin-neon {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-logo { 
+            width: 240px; 
+            height: 240px;
+            object-fit: contain;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2; /* Logo light ke upar dikhega */
+        }
 
         .hero h2 { font-size: 3rem; }
         .hero p { margin-top: 15px; font-size: 1.2rem; color: #94a3b8; max-width: 600px; margin-left: auto; margin-right: auto; }
@@ -107,7 +152,8 @@
         /* MOBILE RESPONSIVE */
         @media (max-width: 600px) {
             header { padding: 15px 20px; }
-            .hero-logo { max-width: 130px; } /* Mobile par thora chota */
+            .hero-logo-container { width: 240px; height: 240px; margin-top: -60px; } /* Mobile k liye set kiya */
+            .hero-logo { width: 160px; height: 160px; }
             .hero h2 { font-size: 2.2rem; }
             .hero p { font-size: 1rem; }
             .features h2 { font-size: 1.8rem; }
@@ -143,8 +189,10 @@
 <div id="homeSection">
     <section class="hero">
         <div>
-            <!-- (YE IMAGE YAHAN ADD KI HAI) -->
-            <img src="logo.png" alt="Logo" class="hero-logo">
+            <!-- 🔥 ANIMATED LOGO CONTAINER 🔥 -->
+            <div class="hero-logo-container">
+                <img src="logo.png" alt="Logo" class="hero-logo">
+            </div>
             
             <h2>Watch Ads & Earn Money 💸</h2>
             <p>Join now and start earning by watching simple ads daily.</p>
@@ -224,9 +272,8 @@
     const db = getFirestore(app);
 
     let isLogin = false;
-    let isProcessingAuth = false; // 🔥 YE LOCK HAI JO AUTO-REDIRECT KO ROKEGA
+    let isProcessingAuth = false; 
     
-    // STEP 1: Save referral to localStorage if URL has ref
     const urlParams = new URLSearchParams(window.location.search);
     const ref = urlParams.get("ref");
     if (ref) {
@@ -270,7 +317,7 @@
     }
 
     async function registerUser() {
-        isProcessingAuth = true; // 🔥 User create hone lag gaya hai, lock laga do
+        isProcessingAuth = true; 
         const name = document.getElementById("nameField").value;
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
@@ -279,34 +326,30 @@
             const userCred = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCred.user;
 
-            // STEP 2: Fetch referrer from localStorage
             const referrer = localStorage.getItem("referrer");
 
-            // STEP 3: Save to Firestore with referredBy
             await setDoc(doc(db, "users", user.uid), {
                 name: name,
                 email: email,
                 deposit: 0,
                 earned: 0,
                 createdAt: new Date(),
-                referredBy: referrer || null  // IMPORTANT LINE
+                referredBy: referrer || null  
             });
 
-            // STEP 4: Remove referrer from localStorage
             localStorage.removeItem("referrer");
             localStorage.setItem('winwave_username', name);
             
-            // Ab data save ho gaya hai, isliye redirect kar do
             window.location.replace("dashboard.html");
 
         } catch (err) {
-            isProcessingAuth = false; // 🔥 Error aaya toh lock khol do
+            isProcessingAuth = false; 
             alert(err.message);
         }
     }
 
     async function loginUser() {
-        isProcessingAuth = true; // 🔥 Login start hua, lock laga do
+        isProcessingAuth = true; 
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
@@ -314,7 +357,7 @@
             await signInWithEmailAndPassword(auth, email, password);
             window.location.replace("dashboard.html");
         } catch (err) {
-            isProcessingAuth = false; // 🔥 Error aaya toh lock khol do
+            isProcessingAuth = false; 
             alert(err.message);
         }
     }
@@ -354,19 +397,15 @@
         }
     }
 
-    // Auto-login check
     onAuthStateChanged(auth, (user) => {
-        // 🔥 Agar isProcessingAuth TRUE hai toh ye check kaam nahi karega, page nahi paltega!
         if (user && !isProcessingAuth) {
             const path = window.location.pathname;
-            // Safer check for redirect to avoid loops
             if (path.endsWith("index.html") || path === "/" || path === "") {
                 window.location.replace("dashboard.html");
             }
         }
     });
 
-    // Make UI functions globally available for inline onclick attributes
     window.showHomePage = showHomePage;
     window.openAuthPage = openAuthPage;
     window.toggleForm = toggleForm;
