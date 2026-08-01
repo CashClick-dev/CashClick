@@ -420,7 +420,15 @@ header .dp {
       if (snap.exists()) {
           const data = snap.data();
 
-          totalBalance = (data.deposit || 0) + (data.withdrawableEarnBalance || 0);
+          // 1. Pehle referral earnings calculate karein (agar referrals mojood hain)
+          let referralEarnings = 0;
+          if (data.referrals && data.referrals.length > 0) {
+              referralEarnings = data.referrals.length * 50; // Har referral ke 50 add honge
+          }
+          
+          // 2. Ab teeno amounts ko jama (add) kar lein
+          totalBalance = (data.deposit || 0) + (data.withdrawableEarnBalance || 0) + referralEarnings;
+
           dailyEarnBalance = data.earnBalance || 0; 
           activePlans = data.activePlans || [];
 
