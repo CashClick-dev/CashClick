@@ -19,10 +19,24 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        header .logo { display: flex; align-items: center; cursor: pointer; }
+        header .logo { display: flex; align-items: center; gap: 12px; cursor: pointer; }
         header .logo img {
             max-height: 40px;
             width: auto;
+        }
+        
+        /* LOGO TEXT STYLING */
+        .logo-text h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+        .logo-text span {
+            font-size: 0.75rem;
+            color: #38bdf8;
+            font-weight: 300;
+            letter-spacing: 0.5px;
         }
         
         /* HEADER BUTTONS */
@@ -94,6 +108,8 @@
             .features h2 { font-size: 1.8rem; }
             .card { max-width: 100%; }
             .auth-container { width: 90%; }
+            .logo-text h1 { font-size: 0.95rem; }
+            .logo-text span { font-size: 0.65rem; }
         }
     </style>
 </head>
@@ -102,6 +118,10 @@
 <header>
     <div class="logo" onclick="showHomePage()">
         <img src="logo.png" alt="Logo">
+        <div class="logo-text">
+            <h1>Beast Rewards</h1>
+            <span>Watch Ads & Earn Money</span>
+        </div>
     </div>
     
     <!-- Top Header Buttons (Hidden after login) -->
