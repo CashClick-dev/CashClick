@@ -276,7 +276,6 @@ header .dp {
     .logo img { max-height: 35px; }
     .logo-text h1 { font-size: 0.9rem; }
     .logo-text span { font-size: 0.65rem; }
-    /* Prevent DP from squeezing */
     header .dp { width: 35px; height: 35px; font-size: 14px; flex-shrink: 0; }
     
     .dashboard { padding: 15px 10px; }
@@ -293,7 +292,6 @@ header .dp {
     .stat-box h3 { font-size: 20px; }
     
     .referrals-list { padding: 15px 10px; }
-    /* Table layout fixed so long Firebase UIDs don't break mobile layout */
     .referral-table { table-layout: fixed; }
     .referral-table th, .referral-table td { padding: 8px 5px; font-size: 12px; word-break: break-all; }
     
@@ -337,7 +335,7 @@ header .dp {
             </div>
             <div class="stat-box">
                 <h3 id="referralEarnings">Rs. 0</h3>
-                <span>Referral Earnings</span>
+                <span>Today's Earnings</span> <!-- Changed label to reflect daily reset -->
             </div>
         </div>
 
@@ -463,7 +461,7 @@ header .dp {
             const referralsSnap = await getDocs(referralsQuery);
 
             const totalReferrals = referralsSnap.size;
-            let referralEarnings = 0;
+            let totalLifetimeEarnings = 0; // Pura lifetime record
             const tbody = document.getElementById("referralTableBody");
             tbody.innerHTML = "";
 
@@ -474,12 +472,10 @@ header .dp {
                     const refData = refDoc.data();
                     const deposit = refData.firstDeposit || refData.deposit || 0;
 
-                    // Sirf pehle deposit par hi ek dafa Rs. 50 bonus count hoga
                     if (deposit > 0) {
-                        referralEarnings += 50;
+                        totalLifetimeEarnings += 50;
                     }
 
-                    // Table mein invited member aur unka deposit show hoga
                     const row = document.createElement("tr");
                     row.innerHTML = `
                         <td>${refDoc.id}</td>
@@ -489,8 +485,28 @@ header .dp {
                 });
             }
 
+            // --- DATE-WISE RESET LOGIC (Raat 12 Baje Reset) ---
+            const currentDate = new Date().toLocaleDateString(); // Local date e.g. '8/3/2026'
+            let storedDate = localStorage.getItem('ref_date_' + uid);
+            let baselineEarnings = parseInt(localStorage.getItem('ref_baseline_' + uid)) || 0;
+
+            // Agar Date change ho gayi (Raat 12 baj gaye)
+            if (storedDate !== currentDate) {
+                // Pichli poori kamائی ko baseline bana diya jaye
+                baselineEarnings = totalLifetimeEarnings; 
+                localStorage.setItem('ref_date_' + uid, currentDate);
+                localStorage.setItem('ref_baseline_' + uid, baselineEarnings);
+            }
+
+            // Aaj ki kamai = Total Lifetime Kamai - Baseline Kamai
+            let todayEarnings = totalLifetimeEarnings - baselineEarnings;
+            
+            // Backup validation
+            if (todayEarnings < 0) todayEarnings = 0;
+
+            // UPDATE UI
             document.getElementById("totalReferrals").innerText = totalReferrals;
-            document.getElementById("referralEarnings").innerText = "Rs. " + referralEarnings.toLocaleString();
+            document.getElementById("referralEarnings").innerText = "Rs. " + todayEarnings.toLocaleString();
         }
     });
 
