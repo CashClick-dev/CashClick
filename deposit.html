@@ -173,17 +173,17 @@ input[type="file"]:focus { border-color: #38bdf8; }
     <div id="step2">
         <h3 id="paymentDetailsHeading">Pay Rs. 0</h3>
         <p style="text-align:center; font-size:14px; color:#94a3b8;">
-            QR code scan karke payment karo. Payment ke baad transaction ID bhejo.
+            QR code scan karke payment karo. Payment ke baad transaction ID ke aakhri 4 digits aur screenshot bhejo.
         </p>
     
         <div style="text-align:center; margin:20px 0;">
             <img src="qr-code.png" alt="Payment QR" style="width:220px; max-width:100%; border-radius:12px; border:1px solid #1e293b; background:#fff; padding:10px;">
         </div>
     
-        <label style="display:block; text-align:left; color:#94a3b8; font-size:14px; margin-bottom:5px;">Transaction ID</label>
-        <input type="text" id="txnId" placeholder="Enter transaction ID">
+        <label style="display:block; text-align:left; color:#94a3b8; font-size:14px; margin-bottom:5px;">Transaction ID (Last 4 Digits)</label>
+        <input type="text" id="txnId" placeholder="Enter last 4 digits" maxlength="4">
     
-        <label style="display:block; text-align:left; color:#94a3b8; font-size:14px; margin-bottom:5px;">Payment Screenshot</label>
+        <label style="display:block; text-align:left; color:#94a3b8; font-size:14px; margin-bottom:5px;">Payment Screenshot (Required)</label>
         <input type="file" id="paymentScreenshot" accept="image/*">
     
         <button class="btn" id="payBtn" onclick="submitDepositRequest()">Submit Deposit Request</button>
@@ -246,6 +246,9 @@ input[type="file"]:focus { border-color: #38bdf8; }
           statusMsg.className = "status-msg error";
           statusMsg.innerText = msg;
       }
+
+      // Reset message area on new attempt
+      statusMsg.style.display = "none";
   
       if (!currentUser) {
           alert("User not loaded yet.");
@@ -257,12 +260,19 @@ input[type="file"]:focus { border-color: #38bdf8; }
           return;
       }
   
-      if (!txnId) {
-          showError("Transaction ID enter karo.");
+      // Validation 1: Transaction ID strictly last 4 digits
+      if (!txnId || !/^\d{4}$/.test(txnId)) {
+          showError("Transaction ID ke aakhri 4 hindsay (4 digits) enter karo.");
+          return;
+      }
+
+      // Validation 2: Screenshot is Mandatory
+      if (!fileInput.files || fileInput.files.length === 0) {
+          showError("Payment ka screenshot upload karna lazmi hai.");
           return;
       }
   
-      // OPTIMISTIC UI UPDATE (0 Seconds Delay for User)
+      // OPTIMISTIC UI UPDATE
       payBtn.disabled = true;
       payBtn.innerHTML = "<i class='fa-solid fa-check'></i> Request Submitted!";
       payBtn.style.background = "#34d399"; // Green success color
@@ -272,7 +282,7 @@ input[type="file"]:focus { border-color: #38bdf8; }
       statusMsg.className = "status-msg success";
       statusMsg.innerText = "Aapki request instantly submit ho gayi hai! Background me process ho rahi hai...";
   
-      // BACKGROUND PROCESSING (User doesn't have to wait for this to finish to see "Success")
+      // BACKGROUND PROCESSING
       processUploadAndSave(fileInput, selectedAmount, selectedMethod, txnId);
   }
 
