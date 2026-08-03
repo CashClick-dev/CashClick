@@ -533,31 +533,57 @@ header .dp {
 
             const totalReferrals = referralsSnap.size;
             let totalLifetimeEarnings = 0; 
-            const tbody = document.getElementById("referralTableBody");
-            tbody.innerHTML = "";
+            const currentDate = new Date().toLocaleDateString(); 
+            let knownReferrals = JSON.parse(localStorage.getItem('known_refs_' + uid)) || {};
 
-            if (totalReferrals === 0) {
-                tbody.innerHTML = `<tr><td colspan="2" class="empty-state">No referrals yet. Start inviting!</td></tr>`;
-            } else {
-                referralsSnap.forEach((refDoc) => {
-                    const refData = refDoc.data();
-                    const deposit = refData.firstDeposit || refData.deposit || 0;
+            // Process all referrals and track their date
+            referralsSnap.forEach((refDoc) => {
+                const refData = refDoc.data();
+                const deposit = refData.firstDeposit || refData.deposit || 0;
 
-                    if (deposit > 0) {
-                        totalLifetimeEarnings += 50;
+                if (deposit > 0) {
+                    totalLifetimeEarnings += 50;
+                }
+
+                // Date tracking logic for the list
+                if (!knownReferrals[refDoc.id]) {
+                    knownReferrals[refDoc.id] = {
+                        date: currentDate,
+                        deposit: deposit
+                    };
+                } else {
+                    knownReferrals[refDoc.id].deposit = deposit;
+                }
+            });
+            localStorage.setItem('known_refs_' + uid, JSON.stringify(knownReferrals));
+
+            // Function to render the table list for a specific date
+            function renderTableForDate(targetDate) {
+                const tbody = document.getElementById("referralTableBody");
+                tbody.innerHTML = "";
+                let hasReferrals = false;
+
+                for (const [refId, data] of Object.entries(knownReferrals)) {
+                    if (data.date === targetDate) {
+                        hasReferrals = true;
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${refId}</td>
+                            <td>Rs. ${data.deposit.toLocaleString()}</td>
+                        `;
+                        tbody.appendChild(row);
                     }
+                }
 
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${refDoc.id}</td>
-                        <td>Rs. ${deposit.toLocaleString()}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
+                if (!hasReferrals) {
+                    tbody.innerHTML = `<tr><td colspan="2" class="empty-state">No referrals found for this date.</td></tr>`;
+                }
             }
 
-            // --- DATE-WISE RESET LOGIC ---
-            const currentDate = new Date().toLocaleDateString(); 
+            // By default, render today's list
+            renderTableForDate(currentDate);
+
+            // --- DATE-WISE RESET LOGIC FOR EARNINGS ---
             let storedDate = localStorage.getItem('ref_date_' + uid);
             let baselineEarnings = parseInt(localStorage.getItem('ref_baseline_' + uid)) || 0;
 
@@ -574,13 +600,12 @@ header .dp {
             document.getElementById("totalReferrals").innerText = totalReferrals;
             document.getElementById("referralEarnings").innerText = "Rs. " + todayEarnings.toLocaleString();
 
-            // --- DATE-WISE HISTORY CHECK LOGIC ---
-            // 1. Save today's live earnings into a history dictionary in localStorage
+            // Save today's live earnings into a history dictionary in localStorage
             let earningsHistory = JSON.parse(localStorage.getItem('ref_history_' + uid)) || {};
             earningsHistory[currentDate] = todayEarnings;
             localStorage.setItem('ref_history_' + uid, JSON.stringify(earningsHistory));
 
-            // 2. Handle Date Check Button Click
+            // 2. Handle Date Check Button Click (Update both text & table)
             const checkBtn = document.getElementById("checkHistoryBtn");
             const dateInput = document.getElementById("historyDate");
             const historyResult = document.getElementById("historyResult");
@@ -607,6 +632,9 @@ header .dp {
                     } else {
                         historyResult.innerHTML = `No earnings recorded for <strong>${dateInput.value}</strong>.`;
                     }
+
+                    // Render table for the selected date
+                    renderTableForDate(formattedDate);
                 };
             }
         }
