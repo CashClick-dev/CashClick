@@ -289,7 +289,7 @@ input:focus {
         </div>
 
         <label>Account Title (Name)</label>
-        <input type="text" id="accountName" placeholder="e.g. Mr Beast">
+        <input type="text" id="accountName" placeholder="e.g. Qasam Ali">
 
         <label>Account Number</label>
         <input type="number" id="accountNumber" placeholder="03XXXXXXXXX">
@@ -366,9 +366,10 @@ input:focus {
     
     // Global variables
     let depositBalance = 0;
-    let withdrawableEarnBalance = 0; // Added for main earning balance
-    let earnBalance = 0; // Keeping track of pending, but NOT adding to available
-    let referralEarnings = 0; // For dynamic referrals
+    let withdrawableEarnBalance = 0; 
+    let earnBalance = 0; 
+    let referralEarnings = 0; 
+    let claimedReferralEarnings = 0; // NEW: Jo bonus pehle withdraw ho chuka hai usko track karne ke liye
     let availableBalance = 0;
     let validInvites = 0;
     let userRef;
@@ -395,6 +396,7 @@ input:focus {
             depositBalance = data.deposit || 0;
             earnBalance = data.earnBalance || 0;
             withdrawableEarnBalance = data.withdrawableEarnBalance || 0;
+            claimedReferralEarnings = data.claimedReferralEarnings || 0; // NEW: Fetching claimed bonus
 
             // === MIDNIGHT ROLLOVER LOGIC ===
             let lastRolloverDate = data.lastRolloverDate || "";
@@ -421,7 +423,7 @@ input:focus {
 
             // --- REFERRAL EARNINGS CALCULATION ---
             referralEarnings = 0; 
-            validInvites = 0; // Count zero se start kar rahe hain taake fresh check ho
+            validInvites = 0; 
             
             const referralsQuery = query(collection(db, "users"), where("referredBy", "==", uid));
             const referralsSnap = await getDocs(referralsQuery);
@@ -432,12 +434,16 @@ input:focus {
                 
                 if (deposit > 0) {
                     referralEarnings += 50;
-                    validInvites++; // Har us member par count badhega jisne deposit kiya hai
+                    validInvites++; 
                 }
             });
 
-            // TOTAL AVAILABLE BALANCE (Pending 'earnBalance' is excluded)
-            availableBalance = depositBalance + withdrawableEarnBalance + referralEarnings;
+            // NEW: Sirf woh bonus milega jo abhi tak withdraw nahi hua
+            let actualReferralEarnings = referralEarnings - claimedReferralEarnings;
+            if (actualReferralEarnings < 0) actualReferralEarnings = 0;
+
+            // TOTAL AVAILABLE BALANCE
+            availableBalance = depositBalance + withdrawableEarnBalance + actualReferralEarnings;
 
             document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
 
@@ -540,12 +546,12 @@ input:focus {
 
         setTimeout(async () => {
 
-            // Balance deduction logic updated for Main Earning (withdrawableEarnBalance) and Deposit
             let remainingToDeduct = amount;
             let newWithdrawableEarnBalance = withdrawableEarnBalance;
             let newDepositBalance = depositBalance;
+            let newClaimedReferralEarnings = claimedReferralEarnings; // NEW
 
-            // Pehle earning (pichle dino ki) me se deduct karein
+            // 1. Pehle earning (withdrawableEarnBalance) me se deduct karein
             if (newWithdrawableEarnBalance >= remainingToDeduct) {
                 newWithdrawableEarnBalance -= remainingToDeduct;
                 remainingToDeduct = 0;
@@ -554,7 +560,19 @@ input:focus {
                 newWithdrawableEarnBalance = 0;
             }
 
-            // Agar mazeed paise deduct karne hain, toh wo Deposit me se katenge
+            // 2. Phir referral earnings me se deduct karein (Yeh naya logic add kiya hai)
+            let actualReferralEarnings = referralEarnings - newClaimedReferralEarnings;
+            if (remainingToDeduct > 0) {
+                if (actualReferralEarnings >= remainingToDeduct) {
+                    newClaimedReferralEarnings += remainingToDeduct;
+                    remainingToDeduct = 0;
+                } else {
+                    remainingToDeduct -= actualReferralEarnings;
+                    newClaimedReferralEarnings += actualReferralEarnings;
+                }
+            }
+
+            // 3. Agar mazeed paise deduct karne hain, toh wo Deposit me se katenge
             if (remainingToDeduct > 0) {
                 newDepositBalance -= remainingToDeduct;
             }
@@ -575,7 +593,7 @@ input:focus {
                 await updateDoc(userRef, {
                     withdrawableEarnBalance: newWithdrawableEarnBalance,
                     deposit: newDepositBalance,
-                    // Note: earnBalance (aaj ki earning) ko update nahi karna kyun ke wo touched nahi hai
+                    claimedReferralEarnings: newClaimedReferralEarnings, // NEW: Saving claimed amount
                     withdrawals: arrayUnion({
                         amount: amount,
                         method: selectedMethod,
@@ -588,7 +606,12 @@ input:focus {
                 // Update local balances & UI
                 withdrawableEarnBalance = newWithdrawableEarnBalance;
                 depositBalance = newDepositBalance;
-                availableBalance = depositBalance + withdrawableEarnBalance + referralEarnings;
+                claimedReferralEarnings = newClaimedReferralEarnings; // Update globally
+
+                let updatedActualReferralEarnings = referralEarnings - claimedReferralEarnings;
+                if (updatedActualReferralEarnings < 0) updatedActualReferralEarnings = 0;
+
+                availableBalance = depositBalance + withdrawableEarnBalance + updatedActualReferralEarnings;
                 document.getElementById('displayBalance').innerText = `Rs. ${availableBalance.toLocaleString()}`;
 
             } catch (err) {
