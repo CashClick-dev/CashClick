@@ -468,15 +468,33 @@ header .dp {
           document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
           document.getElementById('dailyEarnBalanceDisplay').innerText = 'Rs. ' + dailyEarnBalance.toLocaleString();
 
+          // --- 7 DAYS PLAN EXPIRATION CHECK LOGIC START ---
+          const now = Date.now();
+          let planExpiries = data.planExpiries || {};
+          let updatedActivePlans = [];
+          
           activePlans.forEach(planId => {
-              showActivePlanTick(planId);
+              if (planExpiries[planId] && now > planExpiries[planId]) {
+                  // Plan expire ho gaya (7 din poore ho gaye)
+                  needsUpdate = true;
+                  delete planExpiries[planId];
+              } else {
+                  // Plan abhi active hai
+                  updatedActivePlans.push(planId);
+                  showActivePlanTick(planId);
+              }
           });
+          
+          activePlans = updatedActivePlans;
+          // --- 7 DAYS PLAN EXPIRATION CHECK LOGIC END ---
 
           if (needsUpdate) {
               await updateDoc(userRef, {
                   deposit: totalBalance, 
                   earnBalance: dailyEarnBalance,
-                  lastUpdate: lastUpdate
+                  lastUpdate: lastUpdate,
+                  activePlans: activePlans,
+                  planExpiries: planExpiries
               });
           }
       }
@@ -516,9 +534,17 @@ header .dp {
       currentDeposit -= price;
       currentPlans.push(planId);
 
+      // --- ADD 7 DAYS EXPIRY TIME LOGIC START ---
+      let planExpiries = data.planExpiries || {};
+      // 7 din milliseconds mein (7 days * 24 hours * 60 mins * 60 secs * 1000 ms)
+      const expiryTime = Date.now() + (7 * 24 * 60 * 60 * 1000); 
+      planExpiries[planId] = expiryTime;
+      // --- ADD 7 DAYS EXPIRY TIME LOGIC END ---
+
       await updateDoc(userRef, {
           deposit: currentDeposit,
-          activePlans: currentPlans
+          activePlans: currentPlans,
+          planExpiries: planExpiries
       });
 
       totalBalance = currentDeposit;
@@ -527,7 +553,7 @@ header .dp {
       document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
       showActivePlanTick(planId);
 
-      alert(`Mubarak ho! Aapne Plan ${planId} khareed liya hai.`);
+      alert(`Mubarak ho! Aapne Plan ${planId} khareed liya hai. Yeh plan 7 din baad automatically expire ho jayega.`);
   };
 </script>
 
