@@ -286,7 +286,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
   const db = getFirestore(app);
 
   // =========================================================================
-  // YOUTUBE VIDEO IDs POOL (Aap ki di hui tamam videos)
+  // YOUTUBE VIDEO IDs POOL
   // =========================================================================
   const youtubeVideoPool = [
       "Df5Y-2ndQyU", "egvLKQe6I4I", "LgbyEFILLJI", "YA_kX8hu1gg", "XCGVurja73c", 
@@ -352,9 +352,41 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           const data = snap.data();
           let earnBalance = data.earnBalance || 0;
           let activePlans = data.activePlans || [];
+          let planExpiries = data.planExpiries || {}; // Expiry timestamps
           let watchedAds = data.watchedAds || [];
           let dailyEarnings = data.dailyEarnings || {};
           let lastAdDate = data.lastAdDate || ""; 
+
+          // ==============================================================
+          // 7 DAYS PLAN EXPIRY CHECK LOGIC
+          // ==============================================================
+          const now = Date.now();
+          let updatedActivePlans = [];
+          let expiredPlans = [];
+          let needsExpiryUpdate = false;
+
+          activePlans.forEach(planId => {
+              if (planExpiries[planId] && now > planExpiries[planId]) {
+                  needsExpiryUpdate = true;
+                  expiredPlans.push(planId);
+                  delete planExpiries[planId]; // Expiry record clear kardo
+              } else {
+                  updatedActivePlans.push(planId);
+              }
+          });
+
+          if (needsExpiryUpdate) {
+              activePlans = updatedActivePlans;
+              await updateDoc(userRef, {
+                  activePlans: activePlans,
+                  planExpiries: planExpiries
+              });
+
+              expiredPlans.forEach(pId => {
+                  alert(`Aap ka Plan ${pId} khatam ho gaya hai! Mazeed ads dekhne ke liye new plan khareedein.`);
+              });
+          }
+          // ==============================================================
 
           // DATE LOGIC (Today aur Yesterday nikalne ke liye)
           function getFormattedDate(date) {
@@ -374,7 +406,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           let yestStr = getFormattedDate(yestObj);
           
           // ==============================================================
-          // FIX: DAILY RESET LOGIC (Raat 12 baje ke baad Ads reset honge)
+          // DAILY RESET LOGIC (Raat 12 baje ke baad Ads reset honge)
           // ==============================================================
           if (lastAdDate !== todayStr) {
               watchedAds = []; 
@@ -415,7 +447,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           let currentAdId = null;
           let rewardGiven = false;
 
-          // Close Modal Handler (No Reward on premature exit)
+          // Close Modal Handler
           closeVideoModal.onclick = () => {
               if (ytPlayer && ytPlayer.stopVideo) {
                   ytPlayer.stopVideo();
