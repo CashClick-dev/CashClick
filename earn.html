@@ -100,6 +100,19 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
     font-size: 14px;
 }
 
+.plan-expiry-tag {
+    font-size: 12px;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+}
+
 /* NO PLAN MESSAGE */
 .no-plan-msg {
     text-align: center;
@@ -140,7 +153,7 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
 .yesterday-balance span { color: #38bdf8; }
 
 /* BOTTOM NAVIGATION */
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #020617; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -4px 6px rgba(0,0,0,0.3); z-index: 1000; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #020617; display: flex; justify-space-around: space-around; padding: 10px 0; box-shadow: 0 -4px 6px rgba(0,0,0,0.3); z-index: 1000; }
 .bottom-nav a { color: #94a3b8; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 12px; transition: 0.3s; }
 .bottom-nav a i { font-size: 20px; margin-bottom: 4px; }
 .bottom-nav a:hover, .bottom-nav a.active { color: #38bdf8; }
@@ -358,44 +371,44 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           let lastAdDate = data.lastAdDate || ""; 
 
           // ==============================================================
-// 7 DAYS PLAN EXPIRY CHECK LOGIC (WITH OLD USER FALLBACK)
-// ==============================================================
-const now = Date.now();
-const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000; // 7 Din milliseconds mein
+          // 7 DAYS PLAN EXPIRY CHECK LOGIC (WITH OLD USER FALLBACK)
+          // ==============================================================
+          const now = Date.now();
+          const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000; // 7 Din milliseconds mein
 
-let updatedActivePlans = [];
-let expiredPlans = [];
-let needsExpiryUpdate = false;
+          let updatedActivePlans = [];
+          let expiredPlans = [];
+          let needsExpiryUpdate = false;
 
-activePlans.forEach(planId => {
-    // 1. PURANE USERS KE LIYE: Agar expiry date missing hai toh aaj se 7 din set kar do
-    if (!planExpiries[planId]) {
-        planExpiries[planId] = now + SEVEN_DAYS_MS;
-        needsExpiryUpdate = true;
-    }
+          activePlans.forEach(planId => {
+              // 1. PURANE USERS KE LIYE: Agar expiry date missing hai toh aaj se 7 din set kar do
+              if (!planExpiries[planId]) {
+                  planExpiries[planId] = now + SEVEN_DAYS_MS;
+                  needsExpiryUpdate = true;
+              }
 
-    // 2. Expiry Check
-    if (now > planExpiries[planId]) {
-        needsExpiryUpdate = true;
-        expiredPlans.push(planId);
-        delete planExpiries[planId]; // Expiry record clear kardo
-    } else {
-        updatedActivePlans.push(planId);
-    }
-});
+              // 2. Expiry Check
+              if (now > planExpiries[planId]) {
+                  needsExpiryUpdate = true;
+                  expiredPlans.push(planId);
+                  delete planExpiries[planId]; // Expiry record clear kardo
+              } else {
+                  updatedActivePlans.push(planId);
+              }
+          });
 
-// Database update
-if (needsExpiryUpdate) {
-    activePlans = updatedActivePlans;
-    await updateDoc(userRef, {
-        activePlans: activePlans,
-        planExpiries: planExpiries
-    });
+          // Database update
+          if (needsExpiryUpdate) {
+              activePlans = updatedActivePlans;
+              await updateDoc(userRef, {
+                  activePlans: activePlans,
+                  planExpiries: planExpiries
+              });
 
-    expiredPlans.forEach(pId => {
-        alert(`Aap ka Plan ${pId} khatam ho gaya hai! Mazeed ads dekhne ke liye new plan khareedein.`);
-    });
-}
+              expiredPlans.forEach(pId => {
+                  alert(`Aap ka Plan ${pId} khatam ho gaya hai! Mazeed ads dekhne ke liye new plan khareedein.`);
+              });
+          }
           // ==============================================================
 
           // DATE LOGIC (Today aur Yesterday nikalne ke liye)
@@ -556,12 +569,23 @@ if (needsExpiryUpdate) {
           // Render Active Plans & Tasks Grid
           activePlans.forEach(planId => {
               let totalAds = plansInfo[planId];
+              
+              // Remaining Days Calculation
+              let expiryTimestamp = planExpiries[planId] || (now + SEVEN_DAYS_MS);
+              let diffMs = expiryTimestamp - now;
+              let daysLeft = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+
               let planSection = document.createElement('div');
               planSection.className = 'plan-section';
 
               planSection.innerHTML = `
                   <div class="plan-header">
-                      <h2>Plan ${planId} Active</h2>
+                      <div>
+                          <h2>Plan ${planId} Active</h2>
+                          <div class="plan-expiry-tag">
+                              <i class="fas fa-clock"></i> Expire in: ${daysLeft} ${daysLeft === 1 ? 'Day' : 'Days'}
+                          </div>
+                      </div>
                       <p>Available Tasks: ${totalAds}</p>
                   </div>
                   <div class="ads-grid" id="ads-${planId}"></div>
