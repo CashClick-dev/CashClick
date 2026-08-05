@@ -358,34 +358,44 @@ header .dp { width: 40px; height: 40px; border-radius: 50%; background: #38bdf8;
           let lastAdDate = data.lastAdDate || ""; 
 
           // ==============================================================
-          // 7 DAYS PLAN EXPIRY CHECK LOGIC
-          // ==============================================================
-          const now = Date.now();
-          let updatedActivePlans = [];
-          let expiredPlans = [];
-          let needsExpiryUpdate = false;
+// 7 DAYS PLAN EXPIRY CHECK LOGIC (WITH OLD USER FALLBACK)
+// ==============================================================
+const now = Date.now();
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000; // 7 Din milliseconds mein
 
-          activePlans.forEach(planId => {
-              if (planExpiries[planId] && now > planExpiries[planId]) {
-                  needsExpiryUpdate = true;
-                  expiredPlans.push(planId);
-                  delete planExpiries[planId]; // Expiry record clear kardo
-              } else {
-                  updatedActivePlans.push(planId);
-              }
-          });
+let updatedActivePlans = [];
+let expiredPlans = [];
+let needsExpiryUpdate = false;
 
-          if (needsExpiryUpdate) {
-              activePlans = updatedActivePlans;
-              await updateDoc(userRef, {
-                  activePlans: activePlans,
-                  planExpiries: planExpiries
-              });
+activePlans.forEach(planId => {
+    // 1. PURANE USERS KE LIYE: Agar expiry date missing hai toh aaj se 7 din set kar do
+    if (!planExpiries[planId]) {
+        planExpiries[planId] = now + SEVEN_DAYS_MS;
+        needsExpiryUpdate = true;
+    }
 
-              expiredPlans.forEach(pId => {
-                  alert(`Aap ka Plan ${pId} khatam ho gaya hai! Mazeed ads dekhne ke liye new plan khareedein.`);
-              });
-          }
+    // 2. Expiry Check
+    if (now > planExpiries[planId]) {
+        needsExpiryUpdate = true;
+        expiredPlans.push(planId);
+        delete planExpiries[planId]; // Expiry record clear kardo
+    } else {
+        updatedActivePlans.push(planId);
+    }
+});
+
+// Database update
+if (needsExpiryUpdate) {
+    activePlans = updatedActivePlans;
+    await updateDoc(userRef, {
+        activePlans: activePlans,
+        planExpiries: planExpiries
+    });
+
+    expiredPlans.forEach(pId => {
+        alert(`Aap ka Plan ${pId} khatam ho gaya hai! Mazeed ads dekhne ke liye new plan khareedein.`);
+    });
+}
           // ==============================================================
 
           // DATE LOGIC (Today aur Yesterday nikalne ke liye)
