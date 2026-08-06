@@ -372,6 +372,7 @@ input:focus {
     let claimedReferralEarnings = 0; // NEW: Jo bonus pehle withdraw ho chuka hai usko track karne ke liye
     let availableBalance = 0;
     let validInvites = 0;
+    let withdrawalsCount = 0; // NEW: Previous withdrawals count track karne ke liye
     let userRef;
 
     // Page load hone par user data load karna
@@ -397,6 +398,7 @@ input:focus {
             earnBalance = data.earnBalance || 0;
             withdrawableEarnBalance = data.withdrawableEarnBalance || 0;
             claimedReferralEarnings = data.claimedReferralEarnings || 0; // NEW: Fetching claimed bonus
+            withdrawalsCount = (data.withdrawals || []).length; // Fetch user total withdrawals count
 
             // === MIDNIGHT ROLLOVER LOGIC ===
             let lastRolloverDate = data.lastRolloverDate || "";
@@ -528,9 +530,10 @@ input:focus {
         const amount = parseInt(document.getElementById('withdrawAmount').value);
         const statusMsg = document.getElementById('statusMessage');
 
-        // CONDITION: 5 valid invites required
-        if (validInvites < 5) {
-            let needed = 5 - validInvites;
+        // CONDITION: Har withdrawal ke liye 5 extra valid invites zaroori hain (1st = 5, 2nd = 10, 3rd = 15...)
+        let requiredInvites = (withdrawalsCount + 1) * 5;
+        if (validInvites < requiredInvites) {
+            let needed = requiredInvites - validInvites;
             return showError(`Withdrawal Locked! You need ${needed} more valid invite(s) to withdraw. (Members must deposit & buy a plan).`);
         }
 
@@ -603,10 +606,11 @@ input:focus {
                     })
                 });
 
-                // Update local balances & UI
+                // Update local balances, withdrawal count & UI
                 withdrawableEarnBalance = newWithdrawableEarnBalance;
                 depositBalance = newDepositBalance;
                 claimedReferralEarnings = newClaimedReferralEarnings; // Update globally
+                withdrawalsCount++; // Increment withdrawal count locally for next limit check
 
                 let updatedActualReferralEarnings = referralEarnings - claimedReferralEarnings;
                 if (updatedActualReferralEarnings < 0) updatedActualReferralEarnings = 0;
