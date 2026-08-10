@@ -448,8 +448,11 @@ header .dp {
               referralEarnings = data.referrals.length * 50; // Har referral ke 50 add honge
           }
           
-          // 2. Ab teeno amounts ko jama (add) kar lein
-          totalBalance = (data.deposit || 0) + (data.withdrawableEarnBalance || 0) + referralEarnings;
+          // Naya logic - Asli deposit ko alag store karein taake double plus na ho
+          let currentDeposit = data.deposit || 0;
+
+          // 2. Ab teeno amounts ko jama (add) kar lein taake frontend par sahi nazar aye
+          totalBalance = currentDeposit + (data.withdrawableEarnBalance || 0) + referralEarnings;
 
           dailyEarnBalance = data.earnBalance || 0; 
           activePlans = data.activePlans || [];
@@ -458,8 +461,10 @@ header .dp {
           let todayStr = getFormattedDate(new Date());
           let needsUpdate = false;
 
+          // Agar aaj ka din badal gaya hai
           if (lastUpdate !== todayStr) {
-              totalBalance += dailyEarnBalance;
+              currentDeposit += dailyEarnBalance;  // Sirf kamaya hua paisa (kaam ka) deposit main jayega
+              totalBalance += dailyEarnBalance;    // Display ke liye total update karein
               dailyEarnBalance = 0; 
               lastUpdate = todayStr;
               needsUpdate = true;
@@ -490,7 +495,7 @@ header .dp {
 
           if (needsUpdate) {
               await updateDoc(userRef, {
-                  deposit: totalBalance, 
+                  deposit: currentDeposit, // Yahan 'totalBalance' ki bajaye 'currentDeposit' save hoga taake auto-increase band ho
                   earnBalance: dailyEarnBalance,
                   lastUpdate: lastUpdate,
                   activePlans: activePlans,
@@ -547,7 +552,8 @@ header .dp {
           planExpiries: planExpiries
       });
 
-      totalBalance = currentDeposit;
+      // Update total balance immediately by subtracting plan price
+      totalBalance -= price;
       activePlans = currentPlans;
 
       document.getElementById('totalBalanceDisplay').innerText = 'Rs. ' + totalBalance.toLocaleString();
