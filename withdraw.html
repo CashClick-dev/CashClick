@@ -369,10 +369,10 @@ input:focus {
     let withdrawableEarnBalance = 0; 
     let earnBalance = 0; 
     let referralEarnings = 0; 
-    let claimedReferralEarnings = 0; // NEW: Jo bonus pehle withdraw ho chuka hai usko track karne ke liye
+    let claimedReferralEarnings = 0; 
     let availableBalance = 0;
     let validInvites = 0;
-    let withdrawalsCount = 0; // NEW: Previous withdrawals count track karne ke liye
+    let withdrawalsCount = 0;
     let userRef;
 
     // Page load hone par user data load karna
@@ -397,8 +397,8 @@ input:focus {
             depositBalance = data.deposit || 0;
             earnBalance = data.earnBalance || 0;
             withdrawableEarnBalance = data.withdrawableEarnBalance || 0;
-            claimedReferralEarnings = data.claimedReferralEarnings || 0; // NEW: Fetching claimed bonus
-            withdrawalsCount = (data.withdrawals || []).length; // Fetch user total withdrawals count
+            claimedReferralEarnings = data.claimedReferralEarnings || 0;
+            withdrawalsCount = (data.withdrawals || []).length;
 
             // === MIDNIGHT ROLLOVER LOGIC ===
             let lastRolloverDate = data.lastRolloverDate || "";
@@ -440,7 +440,6 @@ input:focus {
                 }
             });
 
-            // NEW: Sirf woh bonus milega jo abhi tak withdraw nahi hua
             let actualReferralEarnings = referralEarnings - claimedReferralEarnings;
             if (actualReferralEarnings < 0) actualReferralEarnings = 0;
 
@@ -530,12 +529,7 @@ input:focus {
         const amount = parseInt(document.getElementById('withdrawAmount').value);
         const statusMsg = document.getElementById('statusMessage');
 
-        // CONDITION: Har withdrawal ke liye 5 extra valid invites zaroori hain (1st = 5, 2nd = 10, 3rd = 15...)
-        let requiredInvites = (withdrawalsCount + 1) * 5;
-        if (validInvites < requiredInvites) {
-            let needed = requiredInvites - validInvites;
-            return showError(`Withdrawal Locked! You need ${needed} more valid invite(s) to withdraw. (Members must deposit & buy a plan).`);
-        }
+        // NOTE: Invite limit restriction has been removed completely as requested.
 
         if (!selectedMethod) return showError("Please select a withdrawal method.");
         if (!accName) return showError("Please enter your account title.");
@@ -552,7 +546,7 @@ input:focus {
             let remainingToDeduct = amount;
             let newWithdrawableEarnBalance = withdrawableEarnBalance;
             let newDepositBalance = depositBalance;
-            let newClaimedReferralEarnings = claimedReferralEarnings; // NEW
+            let newClaimedReferralEarnings = claimedReferralEarnings;
 
             // 1. Pehle earning (withdrawableEarnBalance) me se deduct karein
             if (newWithdrawableEarnBalance >= remainingToDeduct) {
@@ -563,7 +557,7 @@ input:focus {
                 newWithdrawableEarnBalance = 0;
             }
 
-            // 2. Phir referral earnings me se deduct karein (Yeh naya logic add kiya hai)
+            // 2. Phir referral earnings me se deduct karein
             let actualReferralEarnings = referralEarnings - newClaimedReferralEarnings;
             if (remainingToDeduct > 0) {
                 if (actualReferralEarnings >= remainingToDeduct) {
@@ -596,7 +590,7 @@ input:focus {
                 await updateDoc(userRef, {
                     withdrawableEarnBalance: newWithdrawableEarnBalance,
                     deposit: newDepositBalance,
-                    claimedReferralEarnings: newClaimedReferralEarnings, // NEW: Saving claimed amount
+                    claimedReferralEarnings: newClaimedReferralEarnings,
                     withdrawals: arrayUnion({
                         amount: amount,
                         method: selectedMethod,
@@ -609,8 +603,8 @@ input:focus {
                 // Update local balances, withdrawal count & UI
                 withdrawableEarnBalance = newWithdrawableEarnBalance;
                 depositBalance = newDepositBalance;
-                claimedReferralEarnings = newClaimedReferralEarnings; // Update globally
-                withdrawalsCount++; // Increment withdrawal count locally for next limit check
+                claimedReferralEarnings = newClaimedReferralEarnings;
+                withdrawalsCount++;
 
                 let updatedActualReferralEarnings = referralEarnings - claimedReferralEarnings;
                 if (updatedActualReferralEarnings < 0) updatedActualReferralEarnings = 0;
